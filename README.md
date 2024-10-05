@@ -22,7 +22,7 @@ Manage your game catalog effortlessly, with features like user accounts, order t
 | Ismail    |    |
 | Hamza   |      |
 | Nicholas                 |         |
-| Amgad               |    |
+| Amgad El Gamal     | amgadelgamal       |
 
 ## For More Information
 
