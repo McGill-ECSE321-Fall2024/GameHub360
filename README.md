@@ -19,9 +19,9 @@ Manage your game catalog effortlessly, with features like user accounts, order t
 |--------------------|--------------------|
 | Ahmed Mossa        | AhmedAlRawi0       |
 | Benzaid Mohamed-Amine |           |
-| Ismail    |    |
-| Hamza   |      |
-| Nicholas                 |         |
+| Ismail Sentissi    |    |
+| Hamza Alfarrash  |      |
+| Nicolas Bolouri                 |         |
 | Amgad El Gamal     | amgadelgamal       |
 
 ## For More Information
