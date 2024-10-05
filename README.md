@@ -1,10 +1,10 @@
 # Game Shop Management System 🎮
 
-**Streamlining the gaming experience!** Our Game Shop Management System offers a seamless way to manage inventory, customer orders, and reviews for an independent game shop.
+**Streamlining the gaming experience!** Our Game Shop Management System offers a seamless way to manage inventory, customer orders and reviews for an independent game shop 🕹️
 
 ## Project Overview
 
-Manage your game catalog effortlessly, with features like user accounts, order tracking, and employee management.
+Manage your game catalog effortlessly, with features like user accounts, order tracking and employee management!
 
 ## Key Features
 
@@ -23,9 +23,6 @@ Manage your game catalog effortlessly, with features like user accounts, order t
 | Hamza   |      |
 | Nicholas                 |         |
 | Amgad               |    |
-
-
-   ```
 
 ## For More Information
 
