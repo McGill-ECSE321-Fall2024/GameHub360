@@ -24,7 +24,7 @@ Our Game Shop Management System offers a seamless way to manage inventory, custo
 ## Links
 * [Wiki Home Page]
 * [Meeting Minutes D1]
-* [Requirements]
+* [Requirements](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Requirements)
 * [Use Case Diagrams and Specifications]
 * [Domain Model & Rationale] 
 
