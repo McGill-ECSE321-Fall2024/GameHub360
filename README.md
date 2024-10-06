@@ -20,12 +20,15 @@ Our Game Shop Management System offers a seamless way to manage inventory, custo
 ### Nicolas Bolouri
 [insert intro]
 
+### Mohamed-Amine Benzaid
+[insert intro]
+
 # Deliverable 1
 ## Links
 * [Wiki Home Page]
 * [Meeting Minutes D1]
 * [Requirements](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Requirements)
-* [Use Case Diagrams and Specifications]
+* [Use Case Diagrams and Specifications](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Use-Cases-and-Specifications)
 * [Domain Model & Rationale] 
 
 ## Effort Table (D1)
