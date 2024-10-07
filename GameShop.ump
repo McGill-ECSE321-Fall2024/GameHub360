@@ -1,5 +1,6 @@
-namespace ca.mcgill.ecse.gameshop.model;
+namespace ca.mcgill.ecse321.GameShop.model;
 
+/* Since we are only developing one game shop system, the root class is unnecessary. Solution: remove the root class (as per the tutorial.)
 class GameShop
 {
   1 <@>- * CustomerAccount customerAccount;
@@ -13,6 +14,8 @@ class GameShop
   1 <@>- * Review review; //TBC: it's an association class so there should not be multiplicity, but let's try.
 }
 // I have removed Boolean + singleton attrs as they were causing many errors.
+*/
+
 class Account {
 abstract; 
 immutable email; //Apparently I am unable to to add two properties here if I add String and unique...
