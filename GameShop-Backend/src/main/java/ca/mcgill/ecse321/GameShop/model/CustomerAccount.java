@@ -400,13 +400,13 @@ public class CustomerAccount extends Account
     boolean wasAdded = false;
     if (wishListedGames.contains(aWishListedGame)) { return false; }
     wishListedGames.add(aWishListedGame);
-    if (aWishListedGame.indexOfWishlist(this) != -1)
+    if (aWishListedGame.indexOfWishList(this) != -1)
     {
       wasAdded = true;
     }
     else
     {
-      wasAdded = aWishListedGame.addWishlist(this);
+      wasAdded = aWishListedGame.addWishList(this);
       if (!wasAdded)
       {
         wishListedGames.remove(aWishListedGame);
@@ -425,13 +425,13 @@ public class CustomerAccount extends Account
 
     int oldIndex = wishListedGames.indexOf(aWishListedGame);
     wishListedGames.remove(oldIndex);
-    if (aWishListedGame.indexOfWishlist(this) == -1)
+    if (aWishListedGame.indexOfWishList(this) == -1)
     {
       wasRemoved = true;
     }
     else
     {
-      wasRemoved = aWishListedGame.removeWishlist(this);
+      wasRemoved = aWishListedGame.removeWishList(this);
       if (!wasRemoved)
       {
         wishListedGames.add(oldIndex,aWishListedGame);
@@ -495,7 +495,7 @@ public class CustomerAccount extends Account
     wishListedGames.clear();
     for(Game aWishListedGame : copyOfWishListedGames)
     {
-      aWishListedGame.removeWishlist(this);
+      aWishListedGame.removeWishList(this);
     }
     super.delete();
   }

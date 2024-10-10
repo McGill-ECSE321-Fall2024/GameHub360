@@ -63,7 +63,7 @@ class Game {
   Integer gameId;
   Integer quantityInStock;
   Boolean isAvailable;
-  Integer price; 
+  Double price; 
 }
 
 class GameRequest {
@@ -124,9 +124,9 @@ association {
   1 CustomerAccount reviewAuthor -- * Review reviews;
   1 Order reviewedOrder -- 1 Review orderReview;
   1 CustomerAccount orderedBy -- * Order orderHistory;
-  * CustomerAccount wishlist -- * Game wishListedGames;
+  * CustomerAccount wishLists -- * Game wishListedGames;
   1 PaymentDetails paymentInformation -- * Order paidOrders;
-  * Order order -- 1..* Game games;
+  * Order orders -- 1..* Game games;
   * Promotion promotions -- * Game promotedGames;
   * Promotion promotions -- * GameCategory promotedCategories;
   * GameEntity games -- 1..* GameCategory categories;
