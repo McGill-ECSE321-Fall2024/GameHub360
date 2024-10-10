@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 23 "../../../../../../model.ump"
-// line 160 "../../../../../../model.ump"
+// line 24 "../../../../../../model.ump"
+// line 158 "../../../../../../model.ump"
 public class EmployeeAccount extends StaffAccount
 {
 
@@ -15,7 +15,6 @@ public class EmployeeAccount extends StaffAccount
   //------------------------
 
   //EmployeeAccount Attributes
-  private int employeeId;
   private boolean isActive;
 
   //EmployeeAccount Associations
@@ -26,10 +25,9 @@ public class EmployeeAccount extends StaffAccount
   // CONSTRUCTOR
   //------------------------
 
-  public EmployeeAccount(String aEmail, String aPassword, int aEmployeeId, boolean aIsActive)
+  public EmployeeAccount(String aEmail, String aPassword, int aStaffId, boolean aIsActive)
   {
-    super(aEmail, aPassword);
-    employeeId = aEmployeeId;
+    super(aEmail, aPassword, aStaffId);
     isActive = aIsActive;
     logs = new ArrayList<ActivityLog>();
     requests = new ArrayList<GameRequest>();
@@ -39,25 +37,12 @@ public class EmployeeAccount extends StaffAccount
   // INTERFACE
   //------------------------
 
-  public boolean setEmployeeId(int aEmployeeId)
-  {
-    boolean wasSet = false;
-    employeeId = aEmployeeId;
-    wasSet = true;
-    return wasSet;
-  }
-
   public boolean setIsActive(boolean aIsActive)
   {
     boolean wasSet = false;
     isActive = aIsActive;
     wasSet = true;
     return wasSet;
-  }
-
-  public int getEmployeeId()
-  {
-    return employeeId;
   }
 
   public boolean getIsActive()
@@ -207,9 +192,9 @@ public class EmployeeAccount extends StaffAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public GameRequest addRequest(String aName, String aDescription, String aImageURL, int aRequestId, Date aRequestDate, GameCategory... allCategories)
+  public GameRequest addRequest(int aGameEntityId, String aName, String aDescription, String aImageURL, Date aRequestDate, GameCategory... allCategories)
   {
-    return new GameRequest(aName, aDescription, aImageURL, aRequestId, aRequestDate, this, allCategories);
+    return new GameRequest(aGameEntityId, aName, aDescription, aImageURL, aRequestDate, this, allCategories);
   }
 
   public boolean addRequest(GameRequest aRequest)
@@ -295,7 +280,6 @@ public class EmployeeAccount extends StaffAccount
   public String toString()
   {
     return super.toString() + "["+
-            "employeeId" + ":" + getEmployeeId()+ "," +
             "isActive" + ":" + getIsActive()+ "]";
   }
 }

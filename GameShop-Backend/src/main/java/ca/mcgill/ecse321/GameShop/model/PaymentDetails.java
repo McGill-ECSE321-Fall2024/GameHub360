@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 46 "../../../../../../model.ump"
-// line 218 "../../../../../../model.ump"
+// line 45 "../../../../../../model.ump"
+// line 211 "../../../../../../model.ump"
 public class PaymentDetails
 {
 
@@ -24,7 +24,7 @@ public class PaymentDetails
 
   //PaymentDetails Associations
   private CustomerAccount cardOwner;
-  private List<Order> paidOrders;
+  private List<CustomerOrder> paidOrders;
 
   //------------------------
   // CONSTRUCTOR
@@ -43,7 +43,7 @@ public class PaymentDetails
     {
       throw new RuntimeException("Unable to create paymentCard due to cardOwner. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    paidOrders = new ArrayList<Order>();
+    paidOrders = new ArrayList<CustomerOrder>();
   }
 
   //------------------------
@@ -133,15 +133,15 @@ public class PaymentDetails
     return cardOwner;
   }
   /* Code from template association_GetMany */
-  public Order getPaidOrder(int index)
+  public CustomerOrder getPaidOrder(int index)
   {
-    Order aPaidOrder = paidOrders.get(index);
+    CustomerOrder aPaidOrder = paidOrders.get(index);
     return aPaidOrder;
   }
 
-  public List<Order> getPaidOrders()
+  public List<CustomerOrder> getPaidOrders()
   {
-    List<Order> newPaidOrders = Collections.unmodifiableList(paidOrders);
+    List<CustomerOrder> newPaidOrders = Collections.unmodifiableList(paidOrders);
     return newPaidOrders;
   }
 
@@ -157,7 +157,7 @@ public class PaymentDetails
     return has;
   }
 
-  public int indexOfPaidOrder(Order aPaidOrder)
+  public int indexOfPaidOrder(CustomerOrder aPaidOrder)
   {
     int index = paidOrders.indexOf(aPaidOrder);
     return index;
@@ -187,12 +187,12 @@ public class PaymentDetails
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addPaidOrder(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, Game... allGames)
+  public CustomerOrder addPaidOrder(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, Game... allGames)
   {
-    return new Order(aOrderId, aOrderDate, aOrderReview, aOrderedBy, this, allGames);
+    return new CustomerOrder(aOrderId, aOrderDate, aOrderReview, aOrderedBy, this, allGames);
   }
 
-  public boolean addPaidOrder(Order aPaidOrder)
+  public boolean addPaidOrder(CustomerOrder aPaidOrder)
   {
     boolean wasAdded = false;
     if (paidOrders.contains(aPaidOrder)) { return false; }
@@ -210,7 +210,7 @@ public class PaymentDetails
     return wasAdded;
   }
 
-  public boolean removePaidOrder(Order aPaidOrder)
+  public boolean removePaidOrder(CustomerOrder aPaidOrder)
   {
     boolean wasRemoved = false;
     //Unable to remove aPaidOrder, as it must always have a paymentInformation
@@ -222,7 +222,7 @@ public class PaymentDetails
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addPaidOrderAt(Order aPaidOrder, int index)
+  public boolean addPaidOrderAt(CustomerOrder aPaidOrder, int index)
   {  
     boolean wasAdded = false;
     if(addPaidOrder(aPaidOrder))
@@ -236,7 +236,7 @@ public class PaymentDetails
     return wasAdded;
   }
 
-  public boolean addOrMovePaidOrderAt(Order aPaidOrder, int index)
+  public boolean addOrMovePaidOrderAt(CustomerOrder aPaidOrder, int index)
   {
     boolean wasAdded = false;
     if(paidOrders.contains(aPaidOrder))
@@ -264,7 +264,7 @@ public class PaymentDetails
     }
     for(int i=paidOrders.size(); i > 0; i--)
     {
-      Order aPaidOrder = paidOrders.get(i - 1);
+      CustomerOrder aPaidOrder = paidOrders.get(i - 1);
       aPaidOrder.delete();
     }
   }

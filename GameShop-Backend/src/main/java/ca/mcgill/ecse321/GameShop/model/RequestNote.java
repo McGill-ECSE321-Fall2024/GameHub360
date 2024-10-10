@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 
-// line 40 "../../../../../../model.ump"
-// line 175 "../../../../../../model.ump"
+// line 39 "../../../../../../model.ump"
+// line 173 "../../../../../../model.ump"
 public class RequestNote
 {
 
