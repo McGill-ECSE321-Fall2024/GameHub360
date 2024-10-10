@@ -4,7 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 107 "../../../../../../GameShop.ump"
+// line 116 "../../../../../../model.ump"
+// line 220 "../../../../../../model.ump"
 public class StoreInformation
 {
 
@@ -13,24 +14,48 @@ public class StoreInformation
   //------------------------
 
   //StoreInformation Attributes
+  private int storeInfoId;
   private String storePolicy;
 
   //StoreInformation Associations
-  private List<Promotion> promotion;
+  private List<Promotion> currentPromotions;
+  private GameShop gameShop;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public StoreInformation()
+  public StoreInformation(int aStoreInfoId, GameShop aGameShop)
   {
+    storeInfoId = aStoreInfoId;
     storePolicy = null;
-    promotion = new ArrayList<Promotion>();
+    currentPromotions = new ArrayList<Promotion>();
+    if (aGameShop == null || aGameShop.getStoreInformation() != null)
+    {
+      throw new RuntimeException("Unable to create StoreInformation due to aGameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    gameShop = aGameShop;
+  }
+
+  public StoreInformation(int aStoreInfoId, int aGameShopIdForGameShop, ManagerAccount aManagerAccountForGameShop)
+  {
+    storeInfoId = aStoreInfoId;
+    storePolicy = null;
+    currentPromotions = new ArrayList<Promotion>();
+    gameShop = new GameShop(aGameShopIdForGameShop, aManagerAccountForGameShop, this);
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setStoreInfoId(int aStoreInfoId)
+  {
+    boolean wasSet = false;
+    storeInfoId = aStoreInfoId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setStorePolicy(String aStorePolicy)
   {
@@ -40,135 +65,146 @@ public class StoreInformation
     return wasSet;
   }
 
-  /**
-   * lazy keyword has to be added due to the singleton keyword, if we end up having it
-   */
+  public int getStoreInfoId()
+  {
+    return storeInfoId;
+  }
+
   public String getStorePolicy()
   {
     return storePolicy;
   }
   /* Code from template association_GetMany */
-  public Promotion getPromotion(int index)
+  public Promotion getCurrentPromotion(int index)
   {
-    Promotion aPromotion = promotion.get(index);
-    return aPromotion;
+    Promotion aCurrentPromotion = currentPromotions.get(index);
+    return aCurrentPromotion;
   }
 
-  /**
-   * singleton;
-   * might need a better role name here
-   */
-  public List<Promotion> getPromotion()
+  public List<Promotion> getCurrentPromotions()
   {
-    List<Promotion> newPromotion = Collections.unmodifiableList(promotion);
-    return newPromotion;
+    List<Promotion> newCurrentPromotions = Collections.unmodifiableList(currentPromotions);
+    return newCurrentPromotions;
   }
 
-  public int numberOfPromotion()
+  public int numberOfCurrentPromotions()
   {
-    int number = promotion.size();
+    int number = currentPromotions.size();
     return number;
   }
 
-  public boolean hasPromotion()
+  public boolean hasCurrentPromotions()
   {
-    boolean has = promotion.size() > 0;
+    boolean has = currentPromotions.size() > 0;
     return has;
   }
 
-  public int indexOfPromotion(Promotion aPromotion)
+  public int indexOfCurrentPromotion(Promotion aCurrentPromotion)
   {
-    int index = promotion.indexOf(aPromotion);
+    int index = currentPromotions.indexOf(aCurrentPromotion);
     return index;
   }
+  /* Code from template association_GetOne */
+  public GameShop getGameShop()
+  {
+    return gameShop;
+  }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfPromotion()
+  public static int minimumNumberOfCurrentPromotions()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Promotion addPromotion(double aDiscountPercentageValue)
+  public Promotion addCurrentPromotion(int aPromotionId, double aDiscountPercentageValue)
   {
-    return new Promotion(aDiscountPercentageValue, this);
+    return new Promotion(aPromotionId, aDiscountPercentageValue, this);
   }
 
-  public boolean addPromotion(Promotion aPromotion)
+  public boolean addCurrentPromotion(Promotion aCurrentPromotion)
   {
     boolean wasAdded = false;
-    if (promotion.contains(aPromotion)) { return false; }
-    StoreInformation existingInfo = aPromotion.getInfo();
+    if (currentPromotions.contains(aCurrentPromotion)) { return false; }
+    StoreInformation existingInfo = aCurrentPromotion.getInfo();
     boolean isNewInfo = existingInfo != null && !this.equals(existingInfo);
     if (isNewInfo)
     {
-      aPromotion.setInfo(this);
+      aCurrentPromotion.setInfo(this);
     }
     else
     {
-      promotion.add(aPromotion);
+      currentPromotions.add(aCurrentPromotion);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removePromotion(Promotion aPromotion)
+  public boolean removeCurrentPromotion(Promotion aCurrentPromotion)
   {
     boolean wasRemoved = false;
-    //Unable to remove aPromotion, as it must always have a info
-    if (!this.equals(aPromotion.getInfo()))
+    //Unable to remove aCurrentPromotion, as it must always have a info
+    if (!this.equals(aCurrentPromotion.getInfo()))
     {
-      promotion.remove(aPromotion);
+      currentPromotions.remove(aCurrentPromotion);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addPromotionAt(Promotion aPromotion, int index)
+  public boolean addCurrentPromotionAt(Promotion aCurrentPromotion, int index)
   {  
     boolean wasAdded = false;
-    if(addPromotion(aPromotion))
+    if(addCurrentPromotion(aCurrentPromotion))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfPromotion()) { index = numberOfPromotion() - 1; }
-      promotion.remove(aPromotion);
-      promotion.add(index, aPromotion);
+      if(index > numberOfCurrentPromotions()) { index = numberOfCurrentPromotions() - 1; }
+      currentPromotions.remove(aCurrentPromotion);
+      currentPromotions.add(index, aCurrentPromotion);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMovePromotionAt(Promotion aPromotion, int index)
+  public boolean addOrMoveCurrentPromotionAt(Promotion aCurrentPromotion, int index)
   {
     boolean wasAdded = false;
-    if(promotion.contains(aPromotion))
+    if(currentPromotions.contains(aCurrentPromotion))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfPromotion()) { index = numberOfPromotion() - 1; }
-      promotion.remove(aPromotion);
-      promotion.add(index, aPromotion);
+      if(index > numberOfCurrentPromotions()) { index = numberOfCurrentPromotions() - 1; }
+      currentPromotions.remove(aCurrentPromotion);
+      currentPromotions.add(index, aCurrentPromotion);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addPromotionAt(aPromotion, index);
+      wasAdded = addCurrentPromotionAt(aCurrentPromotion, index);
     }
     return wasAdded;
   }
 
   public void delete()
   {
-    while (promotion.size() > 0)
+    while (currentPromotions.size() > 0)
     {
-      Promotion aPromotion = promotion.get(promotion.size() - 1);
-      aPromotion.delete();
-      promotion.remove(aPromotion);
+      Promotion aCurrentPromotion = currentPromotions.get(currentPromotions.size() - 1);
+      aCurrentPromotion.delete();
+      currentPromotions.remove(aCurrentPromotion);
     }
     
+    GameShop existingGameShop = gameShop;
+    gameShop = null;
+    if (existingGameShop != null)
+    {
+      existingGameShop.delete();
+    }
   }
 
 
   public String toString()
   {
     return super.toString() + "["+
-            "storePolicy" + ":" + getStorePolicy()+ "]";
+            "storeInfoId" + ":" + getStoreInfoId()+ "," +
+            "storePolicy" + ":" + getStorePolicy()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
   }
 }

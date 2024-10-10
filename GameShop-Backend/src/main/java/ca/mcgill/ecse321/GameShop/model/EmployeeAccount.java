@@ -5,7 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 36 "../../../../../../GameShop.ump"
+// line 37 "../../../../../../model.ump"
+// line 174 "../../../../../../model.ump"
 public class EmployeeAccount extends StaffAccount
 {
 
@@ -14,29 +15,45 @@ public class EmployeeAccount extends StaffAccount
   //------------------------
 
   //EmployeeAccount Attributes
-  private String isActive;
+  private int employeeId;
+  private boolean isActive;
 
   //EmployeeAccount Associations
   private List<ActivityLog> logs;
-  private List<GameRequest> request;
+  private GameShop gameShop;
+  private List<GameRequest> requests;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public EmployeeAccount(String aEmail, String aPassword, String aIsActive)
+  public EmployeeAccount(String aEmail, String aPassword, int aEmployeeId, boolean aIsActive, GameShop aGameShop, RequestNote... allWrittenNotes)
   {
-    super(aEmail, aPassword);
+    super(aEmail, aPassword, allWrittenNotes);
+    employeeId = aEmployeeId;
     isActive = aIsActive;
     logs = new ArrayList<ActivityLog>();
-    request = new ArrayList<GameRequest>();
+    boolean didAddGameShop = setGameShop(aGameShop);
+    if (!didAddGameShop)
+    {
+      throw new RuntimeException("Unable to create employeeAccount due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    requests = new ArrayList<GameRequest>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
 
-  public boolean setIsActive(String aIsActive)
+  public boolean setEmployeeId(int aEmployeeId)
+  {
+    boolean wasSet = false;
+    employeeId = aEmployeeId;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public boolean setIsActive(boolean aIsActive)
   {
     boolean wasSet = false;
     isActive = aIsActive;
@@ -44,7 +61,17 @@ public class EmployeeAccount extends StaffAccount
     return wasSet;
   }
 
-  public String getIsActive()
+  public int getEmployeeId()
+  {
+    return employeeId;
+  }
+
+  public boolean getIsActive()
+  {
+    return isActive;
+  }
+  /* Code from template attribute_IsBoolean */
+  public boolean isIsActive()
   {
     return isActive;
   }
@@ -78,34 +105,39 @@ public class EmployeeAccount extends StaffAccount
     int index = logs.indexOf(aLog);
     return index;
   }
+  /* Code from template association_GetOne */
+  public GameShop getGameShop()
+  {
+    return gameShop;
+  }
   /* Code from template association_GetMany */
   public GameRequest getRequest(int index)
   {
-    GameRequest aRequest = request.get(index);
+    GameRequest aRequest = requests.get(index);
     return aRequest;
   }
 
-  public List<GameRequest> getRequest()
+  public List<GameRequest> getRequests()
   {
-    List<GameRequest> newRequest = Collections.unmodifiableList(request);
-    return newRequest;
+    List<GameRequest> newRequests = Collections.unmodifiableList(requests);
+    return newRequests;
   }
 
-  public int numberOfRequest()
+  public int numberOfRequests()
   {
-    int number = request.size();
+    int number = requests.size();
     return number;
   }
 
-  public boolean hasRequest()
+  public boolean hasRequests()
   {
-    boolean has = request.size() > 0;
+    boolean has = requests.size() > 0;
     return has;
   }
 
   public int indexOfRequest(GameRequest aRequest)
   {
-    int index = request.indexOf(aRequest);
+    int index = requests.indexOf(aRequest);
     return index;
   }
   /* Code from template association_MinimumNumberOfMethod */
@@ -114,9 +146,9 @@ public class EmployeeAccount extends StaffAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ActivityLog addLog(String aContent)
+  public ActivityLog addLog(int aLogId, String aContent)
   {
-    return new ActivityLog(aContent, this);
+    return new ActivityLog(aLogId, aContent, this);
   }
 
   public boolean addLog(ActivityLog aLog)
@@ -180,21 +212,40 @@ public class EmployeeAccount extends StaffAccount
     }
     return wasAdded;
   }
+  /* Code from template association_SetOneToMany */
+  public boolean setGameShop(GameShop aGameShop)
+  {
+    boolean wasSet = false;
+    if (aGameShop == null)
+    {
+      return wasSet;
+    }
+
+    GameShop existingGameShop = gameShop;
+    gameShop = aGameShop;
+    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
+    {
+      existingGameShop.removeEmployeeAccount(this);
+    }
+    gameShop.addEmployeeAccount(this);
+    wasSet = true;
+    return wasSet;
+  }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfRequest()
+  public static int minimumNumberOfRequests()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public GameRequest addRequest(String aName, String aDescription, String aImageURL, String aNameOfX, Date aDate, GameCategory... allCategories)
+  public GameRequest addRequest(String aName, String aDescription, String aImageURL, int aRequestId, Date aRequestDate, GameShop aGameShop, GameCategory... allCategories)
   {
-    return new GameRequest(aName, aDescription, aImageURL, aNameOfX, aDate, this, allCategories);
+    return new GameRequest(aName, aDescription, aImageURL, aRequestId, aRequestDate, aGameShop, this, allCategories);
   }
 
   public boolean addRequest(GameRequest aRequest)
   {
     boolean wasAdded = false;
-    if (request.contains(aRequest)) { return false; }
+    if (requests.contains(aRequest)) { return false; }
     EmployeeAccount existingRequestPlacer = aRequest.getRequestPlacer();
     boolean isNewRequestPlacer = existingRequestPlacer != null && !this.equals(existingRequestPlacer);
     if (isNewRequestPlacer)
@@ -203,7 +254,7 @@ public class EmployeeAccount extends StaffAccount
     }
     else
     {
-      request.add(aRequest);
+      requests.add(aRequest);
     }
     wasAdded = true;
     return wasAdded;
@@ -215,7 +266,7 @@ public class EmployeeAccount extends StaffAccount
     //Unable to remove aRequest, as it must always have a requestPlacer
     if (!this.equals(aRequest.getRequestPlacer()))
     {
-      request.remove(aRequest);
+      requests.remove(aRequest);
       wasRemoved = true;
     }
     return wasRemoved;
@@ -227,9 +278,9 @@ public class EmployeeAccount extends StaffAccount
     if(addRequest(aRequest))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfRequest()) { index = numberOfRequest() - 1; }
-      request.remove(aRequest);
-      request.add(index, aRequest);
+      if(index > numberOfRequests()) { index = numberOfRequests() - 1; }
+      requests.remove(aRequest);
+      requests.add(index, aRequest);
       wasAdded = true;
     }
     return wasAdded;
@@ -238,12 +289,12 @@ public class EmployeeAccount extends StaffAccount
   public boolean addOrMoveRequestAt(GameRequest aRequest, int index)
   {
     boolean wasAdded = false;
-    if(request.contains(aRequest))
+    if(requests.contains(aRequest))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfRequest()) { index = numberOfRequest() - 1; }
-      request.remove(aRequest);
-      request.add(index, aRequest);
+      if(index > numberOfRequests()) { index = numberOfRequests() - 1; }
+      requests.remove(aRequest);
+      requests.add(index, aRequest);
       wasAdded = true;
     } 
     else 
@@ -262,9 +313,15 @@ public class EmployeeAccount extends StaffAccount
       logs.remove(aLog);
     }
     
-    for(int i=request.size(); i > 0; i--)
+    GameShop placeholderGameShop = gameShop;
+    this.gameShop = null;
+    if(placeholderGameShop != null)
     {
-      GameRequest aRequest = request.get(i - 1);
+      placeholderGameShop.removeEmployeeAccount(this);
+    }
+    for(int i=requests.size(); i > 0; i--)
+    {
+      GameRequest aRequest = requests.get(i - 1);
       aRequest.delete();
     }
     super.delete();
@@ -274,6 +331,8 @@ public class EmployeeAccount extends StaffAccount
   public String toString()
   {
     return super.toString() + "["+
-            "isActive" + ":" + getIsActive()+ "]";
+            "employeeId" + ":" + getEmployeeId()+ "," +
+            "isActive" + ":" + getIsActive()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
   }
 }

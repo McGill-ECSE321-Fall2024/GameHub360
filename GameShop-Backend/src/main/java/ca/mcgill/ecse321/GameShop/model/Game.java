@@ -4,8 +4,9 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 70 "../../../../../../GameShop.ump"
-public class Game extends GameInformation
+// line 76 "../../../../../../model.ump"
+// line 199 "../../../../../../model.ump"
+public class Game extends GameEntity
 {
 
   //------------------------
@@ -13,12 +14,14 @@ public class Game extends GameInformation
   //------------------------
 
   //Game Attributes
+  private int gameId;
   private int quantityInStock;
-  private String isAvailable;
+  private boolean isAvailable;
   private int price;
 
   //Game Associations
-  private List<CustomerAccount> inWishList;
+  private GameShop gameShop;
+  private List<CustomerAccount> wishlist;
   private List<Order> order;
   private List<Promotion> promotions;
 
@@ -26,13 +29,19 @@ public class Game extends GameInformation
   // CONSTRUCTOR
   //------------------------
 
-  public Game(String aName, String aDescription, String aImageURL, String aNameOfX, int aQuantityInStock, String aIsAvailable, int aPrice, GameCategory... allCategories)
+  public Game(String aName, String aDescription, String aImageURL, int aGameId, int aQuantityInStock, boolean aIsAvailable, int aPrice, GameShop aGameShop, GameCategory... allCategories)
   {
-    super(aName, aDescription, aImageURL, aNameOfX, allCategories);
+    super(aName, aDescription, aImageURL, allCategories);
+    gameId = aGameId;
     quantityInStock = aQuantityInStock;
     isAvailable = aIsAvailable;
     price = aPrice;
-    inWishList = new ArrayList<CustomerAccount>();
+    boolean didAddGameShop = setGameShop(aGameShop);
+    if (!didAddGameShop)
+    {
+      throw new RuntimeException("Unable to create game due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    wishlist = new ArrayList<CustomerAccount>();
     order = new ArrayList<Order>();
     promotions = new ArrayList<Promotion>();
   }
@@ -40,6 +49,14 @@ public class Game extends GameInformation
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setGameId(int aGameId)
+  {
+    boolean wasSet = false;
+    gameId = aGameId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setQuantityInStock(int aQuantityInStock)
   {
@@ -49,7 +66,7 @@ public class Game extends GameInformation
     return wasSet;
   }
 
-  public boolean setIsAvailable(String aIsAvailable)
+  public boolean setIsAvailable(boolean aIsAvailable)
   {
     boolean wasSet = false;
     isAvailable = aIsAvailable;
@@ -65,15 +82,17 @@ public class Game extends GameInformation
     return wasSet;
   }
 
-  /**
-   * this does not make sense... saying that "Game is a GameInformation does not make sense", we need to re-look at this.
-   */
+  public int getGameId()
+  {
+    return gameId;
+  }
+
   public int getQuantityInStock()
   {
     return quantityInStock;
   }
 
-  public String getIsAvailable()
+  public boolean getIsAvailable()
   {
     return isAvailable;
   }
@@ -82,34 +101,44 @@ public class Game extends GameInformation
   {
     return price;
   }
+  /* Code from template attribute_IsBoolean */
+  public boolean isIsAvailable()
+  {
+    return isAvailable;
+  }
+  /* Code from template association_GetOne */
+  public GameShop getGameShop()
+  {
+    return gameShop;
+  }
   /* Code from template association_GetMany */
-  public CustomerAccount getInWishList(int index)
+  public CustomerAccount getWishlist(int index)
   {
-    CustomerAccount aInWishList = inWishList.get(index);
-    return aInWishList;
+    CustomerAccount aWishlist = wishlist.get(index);
+    return aWishlist;
   }
 
-  public List<CustomerAccount> getInWishList()
+  public List<CustomerAccount> getWishlist()
   {
-    List<CustomerAccount> newInWishList = Collections.unmodifiableList(inWishList);
-    return newInWishList;
+    List<CustomerAccount> newWishlist = Collections.unmodifiableList(wishlist);
+    return newWishlist;
   }
 
-  public int numberOfInWishList()
+  public int numberOfWishlist()
   {
-    int number = inWishList.size();
+    int number = wishlist.size();
     return number;
   }
 
-  public boolean hasInWishList()
+  public boolean hasWishlist()
   {
-    boolean has = inWishList.size() > 0;
+    boolean has = wishlist.size() > 0;
     return has;
   }
 
-  public int indexOfInWishList(CustomerAccount aInWishList)
+  public int indexOfWishlist(CustomerAccount aWishlist)
   {
-    int index = inWishList.indexOf(aInWishList);
+    int index = wishlist.indexOf(aWishlist);
     return index;
   }
   /* Code from template association_GetMany */
@@ -172,85 +201,104 @@ public class Game extends GameInformation
     int index = promotions.indexOf(aPromotion);
     return index;
   }
+  /* Code from template association_SetOneToMany */
+  public boolean setGameShop(GameShop aGameShop)
+  {
+    boolean wasSet = false;
+    if (aGameShop == null)
+    {
+      return wasSet;
+    }
+
+    GameShop existingGameShop = gameShop;
+    gameShop = aGameShop;
+    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
+    {
+      existingGameShop.removeGame(this);
+    }
+    gameShop.addGame(this);
+    wasSet = true;
+    return wasSet;
+  }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfInWishList()
+  public static int minimumNumberOfWishlist()
   {
     return 0;
   }
   /* Code from template association_AddManyToManyMethod */
-  public boolean addInWishList(CustomerAccount aInWishList)
+  public boolean addWishlist(CustomerAccount aWishlist)
   {
     boolean wasAdded = false;
-    if (inWishList.contains(aInWishList)) { return false; }
-    inWishList.add(aInWishList);
-    if (aInWishList.indexOfWishListedGame(this) != -1)
+    if (wishlist.contains(aWishlist)) { return false; }
+    wishlist.add(aWishlist);
+    if (aWishlist.indexOfWishListedGame(this) != -1)
     {
       wasAdded = true;
     }
     else
     {
-      wasAdded = aInWishList.addWishListedGame(this);
+      wasAdded = aWishlist.addWishListedGame(this);
       if (!wasAdded)
       {
-        inWishList.remove(aInWishList);
+        wishlist.remove(aWishlist);
       }
     }
     return wasAdded;
   }
   /* Code from template association_RemoveMany */
-  public boolean removeInWishList(CustomerAccount aInWishList)
+  public boolean removeWishlist(CustomerAccount aWishlist)
   {
     boolean wasRemoved = false;
-    if (!inWishList.contains(aInWishList))
+    if (!wishlist.contains(aWishlist))
     {
       return wasRemoved;
     }
 
-    int oldIndex = inWishList.indexOf(aInWishList);
-    inWishList.remove(oldIndex);
-    if (aInWishList.indexOfWishListedGame(this) == -1)
+    int oldIndex = wishlist.indexOf(aWishlist);
+    wishlist.remove(oldIndex);
+    if (aWishlist.indexOfWishListedGame(this) == -1)
     {
       wasRemoved = true;
     }
     else
     {
-      wasRemoved = aInWishList.removeWishListedGame(this);
+      wasRemoved = aWishlist.removeWishListedGame(this);
       if (!wasRemoved)
       {
-        inWishList.add(oldIndex,aInWishList);
+        wishlist.add(oldIndex,aWishlist);
       }
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addInWishListAt(CustomerAccount aInWishList, int index)
+  public boolean addWishlistAt(CustomerAccount aWishlist, int index)
   {  
     boolean wasAdded = false;
-    if(addInWishList(aInWishList))
+    if(addWishlist(aWishlist))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfInWishList()) { index = numberOfInWishList() - 1; }
-      inWishList.remove(aInWishList);
-      inWishList.add(index, aInWishList);
+      if(index > numberOfWishlist()) { index = numberOfWishlist() - 1; }
+      wishlist.remove(aWishlist);
+      wishlist.add(index, aWishlist);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveInWishListAt(CustomerAccount aInWishList, int index)
+  public boolean addOrMoveWishlistAt(CustomerAccount aWishlist, int index)
   {
     boolean wasAdded = false;
-    if(inWishList.contains(aInWishList))
+    if(wishlist.contains(aWishlist))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfInWishList()) { index = numberOfInWishList() - 1; }
-      inWishList.remove(aInWishList);
-      inWishList.add(index, aInWishList);
+      if(index > numberOfWishlist()) { index = numberOfWishlist() - 1; }
+      wishlist.remove(aWishlist);
+      wishlist.add(index, aWishlist);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addInWishListAt(aInWishList, index);
+      wasAdded = addWishlistAt(aWishlist, index);
     }
     return wasAdded;
   }
@@ -421,17 +469,23 @@ public class Game extends GameInformation
 
   public void delete()
   {
-    ArrayList<CustomerAccount> copyOfInWishList = new ArrayList<CustomerAccount>(inWishList);
-    inWishList.clear();
-    for(CustomerAccount aInWishList : copyOfInWishList)
+    GameShop placeholderGameShop = gameShop;
+    this.gameShop = null;
+    if(placeholderGameShop != null)
     {
-      aInWishList.removeWishListedGame(this);
+      placeholderGameShop.removeGame(this);
+    }
+    ArrayList<CustomerAccount> copyOfWishlist = new ArrayList<CustomerAccount>(wishlist);
+    wishlist.clear();
+    for(CustomerAccount aWishlist : copyOfWishlist)
+    {
+      aWishlist.removeWishListedGame(this);
     }
     ArrayList<Order> copyOfOrder = new ArrayList<Order>(order);
     order.clear();
     for(Order aOrder : copyOfOrder)
     {
-      if (aOrder.numberOfGame() <= Order.minimumNumberOfGame())
+      if (aOrder.numberOfGames() <= Order.minimumNumberOfGames())
       {
         aOrder.delete();
       }
@@ -453,8 +507,10 @@ public class Game extends GameInformation
   public String toString()
   {
     return super.toString() + "["+
+            "gameId" + ":" + getGameId()+ "," +
             "quantityInStock" + ":" + getQuantityInStock()+ "," +
             "isAvailable" + ":" + getIsAvailable()+ "," +
-            "price" + ":" + getPrice()+ "]";
+            "price" + ":" + getPrice()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
   }
 }

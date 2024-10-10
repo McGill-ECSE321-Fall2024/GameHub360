@@ -4,7 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 
-// line 51 "../../../../../../GameShop.ump"
+// line 54 "../../../../../../model.ump"
+// line 189 "../../../../../../model.ump"
 public class RequestNote
 {
 
@@ -13,8 +14,9 @@ public class RequestNote
   //------------------------
 
   //RequestNote Attributes
+  private int noteId;
   private String content;
-  private Date date;
+  private Date noteDate;
 
   //RequestNote Associations
   private GameRequest gameRequest;
@@ -24,25 +26,29 @@ public class RequestNote
   // CONSTRUCTOR
   //------------------------
 
-  public RequestNote(String aContent, Date aDate, GameRequest aGameRequest, StaffAccount aNotesWriter)
+  public RequestNote(int aNoteId, String aContent, Date aNoteDate, GameRequest aGameRequest)
   {
+    noteId = aNoteId;
     content = aContent;
-    date = aDate;
+    noteDate = aNoteDate;
     boolean didAddGameRequest = setGameRequest(aGameRequest);
     if (!didAddGameRequest)
     {
-      throw new RuntimeException("Unable to create requestNote due to gameRequest. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    boolean didAddNotesWriter = setNotesWriter(aNotesWriter);
-    if (!didAddNotesWriter)
-    {
-      throw new RuntimeException("Unable to create writtenNote due to notesWriter. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create associatedNote due to gameRequest. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setNoteId(int aNoteId)
+  {
+    boolean wasSet = false;
+    noteId = aNoteId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setContent(String aContent)
   {
@@ -52,12 +58,17 @@ public class RequestNote
     return wasSet;
   }
 
-  public boolean setDate(Date aDate)
+  public boolean setNoteDate(Date aNoteDate)
   {
     boolean wasSet = false;
-    date = aDate;
+    noteDate = aNoteDate;
     wasSet = true;
     return wasSet;
+  }
+
+  public int getNoteId()
+  {
+    return noteId;
   }
 
   public String getContent()
@@ -65,9 +76,9 @@ public class RequestNote
     return content;
   }
 
-  public Date getDate()
+  public Date getNoteDate()
   {
-    return date;
+    return noteDate;
   }
   /* Code from template association_GetOne */
   public GameRequest getGameRequest()
@@ -78,6 +89,12 @@ public class RequestNote
   public StaffAccount getNotesWriter()
   {
     return notesWriter;
+  }
+
+  public boolean hasNotesWriter()
+  {
+    boolean has = notesWriter != null;
+    return has;
   }
   /* Code from template association_SetOneToMany */
   public boolean setGameRequest(GameRequest aGameRequest)
@@ -92,56 +109,83 @@ public class RequestNote
     gameRequest = aGameRequest;
     if (existingGameRequest != null && !existingGameRequest.equals(aGameRequest))
     {
-      existingGameRequest.removeRequestNote(this);
+      existingGameRequest.removeAssociatedNote(this);
     }
-    gameRequest.addRequestNote(this);
+    gameRequest.addAssociatedNote(this);
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetOneToMandatoryMany */
+  /* Code from template association_SetOptionalOneToMandatoryMany */
   public boolean setNotesWriter(StaffAccount aNotesWriter)
   {
+    //
+    // This source of this source generation is association_SetOptionalOneToMandatoryMany.jet
+    // This set file assumes the generation of a maximumNumberOfXXX method does not exist because 
+    // it's not required (No upper bound)
+    //   
     boolean wasSet = false;
-    //Must provide notesWriter to writtenNote
-    if (aNotesWriter == null)
-    {
-      return wasSet;
-    }
-
-    if (notesWriter != null && notesWriter.numberOfWrittenNotes() <= StaffAccount.minimumNumberOfWrittenNotes())
-    {
-      return wasSet;
-    }
-
     StaffAccount existingNotesWriter = notesWriter;
-    notesWriter = aNotesWriter;
-    if (existingNotesWriter != null && !existingNotesWriter.equals(aNotesWriter))
+
+    if (existingNotesWriter == null)
     {
-      boolean didRemove = existingNotesWriter.removeWrittenNote(this);
-      if (!didRemove)
+      if (aNotesWriter != null)
       {
-        notesWriter = existingNotesWriter;
-        return wasSet;
+        if (aNotesWriter.addWrittenNote(this))
+        {
+          existingNotesWriter = aNotesWriter;
+          wasSet = true;
+        }
+      }
+    } 
+    else if (existingNotesWriter != null)
+    {
+      if (aNotesWriter == null)
+      {
+        if (existingNotesWriter.minimumNumberOfWrittenNotes() < existingNotesWriter.numberOfWrittenNotes())
+        {
+          existingNotesWriter.removeWrittenNote(this);
+          existingNotesWriter = aNotesWriter;  // aNotesWriter == null
+          wasSet = true;
+        }
+      } 
+      else
+      {
+        if (existingNotesWriter.minimumNumberOfWrittenNotes() < existingNotesWriter.numberOfWrittenNotes())
+        {
+          existingNotesWriter.removeWrittenNote(this);
+          aNotesWriter.addWrittenNote(this);
+          existingNotesWriter = aNotesWriter;
+          wasSet = true;
+        }
       }
     }
-    notesWriter.addWrittenNote(this);
-    wasSet = true;
+    if (wasSet)
+    {
+      notesWriter = existingNotesWriter;
+    }
     return wasSet;
   }
-
+  
   public void delete()
   {
     GameRequest placeholderGameRequest = gameRequest;
     this.gameRequest = null;
     if(placeholderGameRequest != null)
     {
-      placeholderGameRequest.removeRequestNote(this);
+      placeholderGameRequest.removeAssociatedNote(this);
     }
-    StaffAccount placeholderNotesWriter = notesWriter;
-    this.notesWriter = null;
-    if(placeholderNotesWriter != null)
+    if (notesWriter != null)
     {
-      placeholderNotesWriter.removeWrittenNote(this);
+      if (notesWriter.numberOfWrittenNotes() <= 1)
+      {
+        notesWriter.delete();
+      }
+      else
+      {
+        StaffAccount placeholderNotesWriter = notesWriter;
+        this.notesWriter = null;
+        placeholderNotesWriter.removeWrittenNote(this);
+      }
     }
   }
 
@@ -149,8 +193,9 @@ public class RequestNote
   public String toString()
   {
     return super.toString() + "["+
+            "noteId" + ":" + getNoteId()+ "," +
             "content" + ":" + getContent()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "noteDate" + "=" + (getNoteDate() != null ? !getNoteDate().equals(this)  ? getNoteDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "gameRequest = "+(getGameRequest()!=null?Integer.toHexString(System.identityHashCode(getGameRequest())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "notesWriter = "+(getNotesWriter()!=null?Integer.toHexString(System.identityHashCode(getNotesWriter())):"null");
   }

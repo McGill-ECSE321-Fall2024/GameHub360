@@ -5,7 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 42 "../../../../../../GameShop.ump"
+// line 44 "../../../../../../model.ump"
+// line 179 "../../../../../../model.ump"
 public class ManagerAccount extends StaffAccount
 {
 
@@ -13,32 +14,68 @@ public class ManagerAccount extends StaffAccount
   // MEMBER VARIABLES
   //------------------------
 
+  //ManagerAccount Attributes
+  private int managerId;
+
   //ManagerAccount Associations
-  private List<ReviewReply> reviewReplies;
+  private GameShop gameShop;
+  private List<Reply> reviewReplies;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ManagerAccount(String aEmail, String aPassword)
+  public ManagerAccount(String aEmail, String aPassword, int aManagerId, GameShop aGameShop, RequestNote... allWrittenNotes)
   {
-    super(aEmail, aPassword);
-    reviewReplies = new ArrayList<ReviewReply>();
+    super(aEmail, aPassword, allWrittenNotes);
+    managerId = aManagerId;
+    if (aGameShop == null || aGameShop.getManagerAccount() != null)
+    {
+      throw new RuntimeException("Unable to create ManagerAccount due to aGameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    gameShop = aGameShop;
+    reviewReplies = new ArrayList<Reply>();
+  }
+
+  public ManagerAccount(String aEmail, String aPassword, int aManagerId, int aGameShopIdForGameShop, StoreInformation aStoreInformationForGameShop, RequestNote... allWrittenNotes)
+  {
+    super(aEmail, aPassword, allWrittenNotes);
+    managerId = aManagerId;
+    gameShop = new GameShop(aGameShopIdForGameShop, this, aStoreInformationForGameShop);
+    reviewReplies = new ArrayList<Reply>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
-  /* Code from template association_GetMany */
-  public ReviewReply getReviewReply(int index)
+
+  public boolean setManagerId(int aManagerId)
   {
-    ReviewReply aReviewReply = reviewReplies.get(index);
+    boolean wasSet = false;
+    managerId = aManagerId;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getManagerId()
+  {
+    return managerId;
+  }
+  /* Code from template association_GetOne */
+  public GameShop getGameShop()
+  {
+    return gameShop;
+  }
+  /* Code from template association_GetMany */
+  public Reply getReviewReply(int index)
+  {
+    Reply aReviewReply = reviewReplies.get(index);
     return aReviewReply;
   }
 
-  public List<ReviewReply> getReviewReplies()
+  public List<Reply> getReviewReplies()
   {
-    List<ReviewReply> newReviewReplies = Collections.unmodifiableList(reviewReplies);
+    List<Reply> newReviewReplies = Collections.unmodifiableList(reviewReplies);
     return newReviewReplies;
   }
 
@@ -54,7 +91,7 @@ public class ManagerAccount extends StaffAccount
     return has;
   }
 
-  public int indexOfReviewReply(ReviewReply aReviewReply)
+  public int indexOfReviewReply(Reply aReviewReply)
   {
     int index = reviewReplies.indexOf(aReviewReply);
     return index;
@@ -65,20 +102,20 @@ public class ManagerAccount extends StaffAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ReviewReply addReviewReply(String aContent, Date aDate, Review aReview)
+  public Reply addReviewReply(int aReplyId, String aContent, Date aReplyDate, Review aReviewRecord)
   {
-    return new ReviewReply(aContent, aDate, aReview, this);
+    return new Reply(aReplyId, aContent, aReplyDate, aReviewRecord, this);
   }
 
-  public boolean addReviewReply(ReviewReply aReviewReply)
+  public boolean addReviewReply(Reply aReviewReply)
   {
     boolean wasAdded = false;
     if (reviewReplies.contains(aReviewReply)) { return false; }
-    ManagerAccount existingReviewr = aReviewReply.getReviewr();
-    boolean isNewReviewr = existingReviewr != null && !this.equals(existingReviewr);
-    if (isNewReviewr)
+    ManagerAccount existingReviewer = aReviewReply.getReviewer();
+    boolean isNewReviewer = existingReviewer != null && !this.equals(existingReviewer);
+    if (isNewReviewer)
     {
-      aReviewReply.setReviewr(this);
+      aReviewReply.setReviewer(this);
     }
     else
     {
@@ -88,11 +125,11 @@ public class ManagerAccount extends StaffAccount
     return wasAdded;
   }
 
-  public boolean removeReviewReply(ReviewReply aReviewReply)
+  public boolean removeReviewReply(Reply aReviewReply)
   {
     boolean wasRemoved = false;
-    //Unable to remove aReviewReply, as it must always have a reviewr
-    if (!this.equals(aReviewReply.getReviewr()))
+    //Unable to remove aReviewReply, as it must always have a reviewer
+    if (!this.equals(aReviewReply.getReviewer()))
     {
       reviewReplies.remove(aReviewReply);
       wasRemoved = true;
@@ -100,7 +137,7 @@ public class ManagerAccount extends StaffAccount
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addReviewReplyAt(ReviewReply aReviewReply, int index)
+  public boolean addReviewReplyAt(Reply aReviewReply, int index)
   {  
     boolean wasAdded = false;
     if(addReviewReply(aReviewReply))
@@ -114,7 +151,7 @@ public class ManagerAccount extends StaffAccount
     return wasAdded;
   }
 
-  public boolean addOrMoveReviewReplyAt(ReviewReply aReviewReply, int index)
+  public boolean addOrMoveReviewReplyAt(Reply aReviewReply, int index)
   {
     boolean wasAdded = false;
     if(reviewReplies.contains(aReviewReply))
@@ -134,12 +171,25 @@ public class ManagerAccount extends StaffAccount
 
   public void delete()
   {
+    GameShop existingGameShop = gameShop;
+    gameShop = null;
+    if (existingGameShop != null)
+    {
+      existingGameShop.delete();
+    }
     for(int i=reviewReplies.size(); i > 0; i--)
     {
-      ReviewReply aReviewReply = reviewReplies.get(i - 1);
+      Reply aReviewReply = reviewReplies.get(i - 1);
       aReviewReply.delete();
     }
     super.delete();
   }
 
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "managerId" + ":" + getManagerId()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
+  }
 }

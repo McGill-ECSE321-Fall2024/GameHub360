@@ -3,7 +3,8 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 
-// line 47 "../../../../../../GameShop.ump"
+// line 49 "../../../../../../model.ump"
+// line 184 "../../../../../../model.ump"
 public class ActivityLog
 {
 
@@ -12,6 +13,7 @@ public class ActivityLog
   //------------------------
 
   //ActivityLog Attributes
+  private int logId;
   private String content;
 
   //ActivityLog Associations
@@ -21,8 +23,9 @@ public class ActivityLog
   // CONSTRUCTOR
   //------------------------
 
-  public ActivityLog(String aContent, EmployeeAccount aEmployee)
+  public ActivityLog(int aLogId, String aContent, EmployeeAccount aEmployee)
   {
+    logId = aLogId;
     content = aContent;
     boolean didAddEmployee = setEmployee(aEmployee);
     if (!didAddEmployee)
@@ -35,12 +38,25 @@ public class ActivityLog
   // INTERFACE
   //------------------------
 
+  public boolean setLogId(int aLogId)
+  {
+    boolean wasSet = false;
+    logId = aLogId;
+    wasSet = true;
+    return wasSet;
+  }
+
   public boolean setContent(String aContent)
   {
     boolean wasSet = false;
     content = aContent;
     wasSet = true;
     return wasSet;
+  }
+
+  public int getLogId()
+  {
+    return logId;
   }
 
   public String getContent()
@@ -86,6 +102,7 @@ public class ActivityLog
   public String toString()
   {
     return super.toString() + "["+
+            "logId" + ":" + getLogId()+ "," +
             "content" + ":" + getContent()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "employee = "+(getEmployee()!=null?Integer.toHexString(System.identityHashCode(getEmployee())):"null");
   }

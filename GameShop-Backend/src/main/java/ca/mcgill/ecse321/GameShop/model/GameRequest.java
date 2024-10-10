@@ -5,8 +5,9 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 77 "../../../../../../GameShop.ump"
-public class GameRequest extends GameInformation
+// line 84 "../../../../../../model.ump"
+// line 204 "../../../../../../model.ump"
+public class GameRequest extends GameEntity
 {
 
   //------------------------
@@ -20,22 +21,30 @@ public class GameRequest extends GameInformation
   //------------------------
 
   //GameRequest Attributes
+  private int requestId;
   private RequestStatus requestStatus;
-  private Date date;
+  private Date requestDate;
 
   //GameRequest Associations
-  private List<RequestNote> requestNotes;
+  private List<RequestNote> associatedNotes;
+  private GameShop gameShop;
   private EmployeeAccount requestPlacer;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public GameRequest(String aName, String aDescription, String aImageURL, String aNameOfX, Date aDate, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
+  public GameRequest(String aName, String aDescription, String aImageURL, int aRequestId, Date aRequestDate, GameShop aGameShop, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
   {
-    super(aName, aDescription, aImageURL, aNameOfX, allCategories);
-    date = aDate;
-    requestNotes = new ArrayList<RequestNote>();
+    super(aName, aDescription, aImageURL, allCategories);
+    requestId = aRequestId;
+    requestDate = aRequestDate;
+    associatedNotes = new ArrayList<RequestNote>();
+    boolean didAddGameShop = setGameShop(aGameShop);
+    if (!didAddGameShop)
+    {
+      throw new RuntimeException("Unable to create gameRequest due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
     boolean didAddRequestPlacer = setRequestPlacer(aRequestPlacer);
     if (!didAddRequestPlacer)
     {
@@ -47,6 +56,14 @@ public class GameRequest extends GameInformation
   // INTERFACE
   //------------------------
 
+  public boolean setRequestId(int aRequestId)
+  {
+    boolean wasSet = false;
+    requestId = aRequestId;
+    wasSet = true;
+    return wasSet;
+  }
+
   public boolean setRequestStatus(RequestStatus aRequestStatus)
   {
     boolean wasSet = false;
@@ -55,12 +72,17 @@ public class GameRequest extends GameInformation
     return wasSet;
   }
 
-  public boolean setDate(Date aDate)
+  public boolean setRequestDate(Date aRequestDate)
   {
     boolean wasSet = false;
-    date = aDate;
+    requestDate = aRequestDate;
     wasSet = true;
     return wasSet;
+  }
+
+  public int getRequestId()
+  {
+    return requestId;
   }
 
   public RequestStatus getRequestStatus()
@@ -68,42 +90,44 @@ public class GameRequest extends GameInformation
     return requestStatus;
   }
 
-  public Date getDate()
+  public Date getRequestDate()
   {
-    return date;
+    return requestDate;
   }
   /* Code from template association_GetMany */
-  public RequestNote getRequestNote(int index)
+  public RequestNote getAssociatedNote(int index)
   {
-    RequestNote aRequestNote = requestNotes.get(index);
-    return aRequestNote;
+    RequestNote aAssociatedNote = associatedNotes.get(index);
+    return aAssociatedNote;
   }
 
-  /**
-   * isA does not make sense here too...
-   */
-  public List<RequestNote> getRequestNotes()
+  public List<RequestNote> getAssociatedNotes()
   {
-    List<RequestNote> newRequestNotes = Collections.unmodifiableList(requestNotes);
-    return newRequestNotes;
+    List<RequestNote> newAssociatedNotes = Collections.unmodifiableList(associatedNotes);
+    return newAssociatedNotes;
   }
 
-  public int numberOfRequestNotes()
+  public int numberOfAssociatedNotes()
   {
-    int number = requestNotes.size();
+    int number = associatedNotes.size();
     return number;
   }
 
-  public boolean hasRequestNotes()
+  public boolean hasAssociatedNotes()
   {
-    boolean has = requestNotes.size() > 0;
+    boolean has = associatedNotes.size() > 0;
     return has;
   }
 
-  public int indexOfRequestNote(RequestNote aRequestNote)
+  public int indexOfAssociatedNote(RequestNote aAssociatedNote)
   {
-    int index = requestNotes.indexOf(aRequestNote);
+    int index = associatedNotes.indexOf(aAssociatedNote);
     return index;
+  }
+  /* Code from template association_GetOne */
+  public GameShop getGameShop()
+  {
+    return gameShop;
   }
   /* Code from template association_GetOne */
   public EmployeeAccount getRequestPlacer()
@@ -111,76 +135,95 @@ public class GameRequest extends GameInformation
     return requestPlacer;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfRequestNotes()
+  public static int minimumNumberOfAssociatedNotes()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public RequestNote addRequestNote(String aContent, Date aDate, StaffAccount aNotesWriter)
+  public RequestNote addAssociatedNote(int aNoteId, String aContent, Date aNoteDate)
   {
-    return new RequestNote(aContent, aDate, this, aNotesWriter);
+    return new RequestNote(aNoteId, aContent, aNoteDate, this);
   }
 
-  public boolean addRequestNote(RequestNote aRequestNote)
+  public boolean addAssociatedNote(RequestNote aAssociatedNote)
   {
     boolean wasAdded = false;
-    if (requestNotes.contains(aRequestNote)) { return false; }
-    GameRequest existingGameRequest = aRequestNote.getGameRequest();
+    if (associatedNotes.contains(aAssociatedNote)) { return false; }
+    GameRequest existingGameRequest = aAssociatedNote.getGameRequest();
     boolean isNewGameRequest = existingGameRequest != null && !this.equals(existingGameRequest);
     if (isNewGameRequest)
     {
-      aRequestNote.setGameRequest(this);
+      aAssociatedNote.setGameRequest(this);
     }
     else
     {
-      requestNotes.add(aRequestNote);
+      associatedNotes.add(aAssociatedNote);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeRequestNote(RequestNote aRequestNote)
+  public boolean removeAssociatedNote(RequestNote aAssociatedNote)
   {
     boolean wasRemoved = false;
-    //Unable to remove aRequestNote, as it must always have a gameRequest
-    if (!this.equals(aRequestNote.getGameRequest()))
+    //Unable to remove aAssociatedNote, as it must always have a gameRequest
+    if (!this.equals(aAssociatedNote.getGameRequest()))
     {
-      requestNotes.remove(aRequestNote);
+      associatedNotes.remove(aAssociatedNote);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addRequestNoteAt(RequestNote aRequestNote, int index)
+  public boolean addAssociatedNoteAt(RequestNote aAssociatedNote, int index)
   {  
     boolean wasAdded = false;
-    if(addRequestNote(aRequestNote))
+    if(addAssociatedNote(aAssociatedNote))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfRequestNotes()) { index = numberOfRequestNotes() - 1; }
-      requestNotes.remove(aRequestNote);
-      requestNotes.add(index, aRequestNote);
+      if(index > numberOfAssociatedNotes()) { index = numberOfAssociatedNotes() - 1; }
+      associatedNotes.remove(aAssociatedNote);
+      associatedNotes.add(index, aAssociatedNote);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveRequestNoteAt(RequestNote aRequestNote, int index)
+  public boolean addOrMoveAssociatedNoteAt(RequestNote aAssociatedNote, int index)
   {
     boolean wasAdded = false;
-    if(requestNotes.contains(aRequestNote))
+    if(associatedNotes.contains(aAssociatedNote))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfRequestNotes()) { index = numberOfRequestNotes() - 1; }
-      requestNotes.remove(aRequestNote);
-      requestNotes.add(index, aRequestNote);
+      if(index > numberOfAssociatedNotes()) { index = numberOfAssociatedNotes() - 1; }
+      associatedNotes.remove(aAssociatedNote);
+      associatedNotes.add(index, aAssociatedNote);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addRequestNoteAt(aRequestNote, index);
+      wasAdded = addAssociatedNoteAt(aAssociatedNote, index);
     }
     return wasAdded;
+  }
+  /* Code from template association_SetOneToMany */
+  public boolean setGameShop(GameShop aGameShop)
+  {
+    boolean wasSet = false;
+    if (aGameShop == null)
+    {
+      return wasSet;
+    }
+
+    GameShop existingGameShop = gameShop;
+    gameShop = aGameShop;
+    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
+    {
+      existingGameShop.removeGameRequest(this);
+    }
+    gameShop.addGameRequest(this);
+    wasSet = true;
+    return wasSet;
   }
   /* Code from template association_SetOneToMany */
   public boolean setRequestPlacer(EmployeeAccount aRequestPlacer)
@@ -204,13 +247,19 @@ public class GameRequest extends GameInformation
 
   public void delete()
   {
-    while (requestNotes.size() > 0)
+    while (associatedNotes.size() > 0)
     {
-      RequestNote aRequestNote = requestNotes.get(requestNotes.size() - 1);
-      aRequestNote.delete();
-      requestNotes.remove(aRequestNote);
+      RequestNote aAssociatedNote = associatedNotes.get(associatedNotes.size() - 1);
+      aAssociatedNote.delete();
+      associatedNotes.remove(aAssociatedNote);
     }
     
+    GameShop placeholderGameShop = gameShop;
+    this.gameShop = null;
+    if(placeholderGameShop != null)
+    {
+      placeholderGameShop.removeGameRequest(this);
+    }
     EmployeeAccount placeholderRequestPlacer = requestPlacer;
     this.requestPlacer = null;
     if(placeholderRequestPlacer != null)
@@ -223,9 +272,11 @@ public class GameRequest extends GameInformation
 
   public String toString()
   {
-    return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
+    return super.toString() + "["+
+            "requestId" + ":" + getRequestId()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "requestStatus" + "=" + (getRequestStatus() != null ? !getRequestStatus().equals(this)  ? getRequestStatus().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "requestDate" + "=" + (getRequestDate() != null ? !getRequestDate().equals(this)  ? getRequestDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "requestPlacer = "+(getRequestPlacer()!=null?Integer.toHexString(System.identityHashCode(getRequestPlacer())):"null");
   }
 }
