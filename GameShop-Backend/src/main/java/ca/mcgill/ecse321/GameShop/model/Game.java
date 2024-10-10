@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 76 "../../../../../../model.ump"
-// line 199 "../../../../../../model.ump"
+// line 62 "../../../../../../model.ump"
+// line 185 "../../../../../../model.ump"
 public class Game extends GameEntity
 {
 
@@ -20,7 +20,6 @@ public class Game extends GameEntity
   private int price;
 
   //Game Associations
-  private GameShop gameShop;
   private List<CustomerAccount> wishlist;
   private List<Order> order;
   private List<Promotion> promotions;
@@ -29,18 +28,13 @@ public class Game extends GameEntity
   // CONSTRUCTOR
   //------------------------
 
-  public Game(String aName, String aDescription, String aImageURL, int aGameId, int aQuantityInStock, boolean aIsAvailable, int aPrice, GameShop aGameShop, GameCategory... allCategories)
+  public Game(String aName, String aDescription, String aImageURL, int aGameId, int aQuantityInStock, boolean aIsAvailable, int aPrice, GameCategory... allCategories)
   {
     super(aName, aDescription, aImageURL, allCategories);
     gameId = aGameId;
     quantityInStock = aQuantityInStock;
     isAvailable = aIsAvailable;
     price = aPrice;
-    boolean didAddGameShop = setGameShop(aGameShop);
-    if (!didAddGameShop)
-    {
-      throw new RuntimeException("Unable to create game due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
     wishlist = new ArrayList<CustomerAccount>();
     order = new ArrayList<Order>();
     promotions = new ArrayList<Promotion>();
@@ -105,11 +99,6 @@ public class Game extends GameEntity
   public boolean isIsAvailable()
   {
     return isAvailable;
-  }
-  /* Code from template association_GetOne */
-  public GameShop getGameShop()
-  {
-    return gameShop;
   }
   /* Code from template association_GetMany */
   public CustomerAccount getWishlist(int index)
@@ -200,25 +189,6 @@ public class Game extends GameEntity
   {
     int index = promotions.indexOf(aPromotion);
     return index;
-  }
-  /* Code from template association_SetOneToMany */
-  public boolean setGameShop(GameShop aGameShop)
-  {
-    boolean wasSet = false;
-    if (aGameShop == null)
-    {
-      return wasSet;
-    }
-
-    GameShop existingGameShop = gameShop;
-    gameShop = aGameShop;
-    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
-    {
-      existingGameShop.removeGame(this);
-    }
-    gameShop.addGame(this);
-    wasSet = true;
-    return wasSet;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfWishlist()
@@ -469,12 +439,6 @@ public class Game extends GameEntity
 
   public void delete()
   {
-    GameShop placeholderGameShop = gameShop;
-    this.gameShop = null;
-    if(placeholderGameShop != null)
-    {
-      placeholderGameShop.removeGame(this);
-    }
     ArrayList<CustomerAccount> copyOfWishlist = new ArrayList<CustomerAccount>(wishlist);
     wishlist.clear();
     for(CustomerAccount aWishlist : copyOfWishlist)
@@ -510,7 +474,6 @@ public class Game extends GameEntity
             "gameId" + ":" + getGameId()+ "," +
             "quantityInStock" + ":" + getQuantityInStock()+ "," +
             "isAvailable" + ":" + getIsAvailable()+ "," +
-            "price" + ":" + getPrice()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
+            "price" + ":" + getPrice()+ "]";
   }
 }

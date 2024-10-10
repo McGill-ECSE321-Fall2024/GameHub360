@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 101 "../../../../../../model.ump"
-// line 210 "../../../../../../model.ump"
+// line 87 "../../../../../../model.ump"
+// line 196 "../../../../../../model.ump"
 public class GameCategory
 {
 
@@ -26,7 +26,6 @@ public class GameCategory
   private String name;
 
   //GameCategory Associations
-  private GameShop gameShop;
   private List<Promotion> promotions;
   private List<GameEntity> games;
 
@@ -34,16 +33,11 @@ public class GameCategory
   // CONSTRUCTOR
   //------------------------
 
-  public GameCategory(int aCategoryId, boolean aIsAvailable, String aName, GameShop aGameShop)
+  public GameCategory(int aCategoryId, boolean aIsAvailable, String aName)
   {
     categoryId = aCategoryId;
     isAvailable = aIsAvailable;
     name = aName;
-    boolean didAddGameShop = setGameShop(aGameShop);
-    if (!didAddGameShop)
-    {
-      throw new RuntimeException("Unable to create gameCategory due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
     promotions = new ArrayList<Promotion>();
     games = new ArrayList<GameEntity>();
   }
@@ -108,11 +102,6 @@ public class GameCategory
   {
     return isAvailable;
   }
-  /* Code from template association_GetOne */
-  public GameShop getGameShop()
-  {
-    return gameShop;
-  }
   /* Code from template association_GetMany */
   public Promotion getPromotion(int index)
   {
@@ -172,25 +161,6 @@ public class GameCategory
   {
     int index = games.indexOf(aGame);
     return index;
-  }
-  /* Code from template association_SetOneToMany */
-  public boolean setGameShop(GameShop aGameShop)
-  {
-    boolean wasSet = false;
-    if (aGameShop == null)
-    {
-      return wasSet;
-    }
-
-    GameShop existingGameShop = gameShop;
-    gameShop = aGameShop;
-    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
-    {
-      existingGameShop.removeGameCategory(this);
-    }
-    gameShop.addGameCategory(this);
-    wasSet = true;
-    return wasSet;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfPromotions()
@@ -359,12 +329,6 @@ public class GameCategory
 
   public void delete()
   {
-    GameShop placeholderGameShop = gameShop;
-    this.gameShop = null;
-    if(placeholderGameShop != null)
-    {
-      placeholderGameShop.removeGameCategory(this);
-    }
     ArrayList<Promotion> copyOfPromotions = new ArrayList<Promotion>(promotions);
     promotions.clear();
     for(Promotion aPromotion : copyOfPromotions)
@@ -393,7 +357,6 @@ public class GameCategory
             "categoryId" + ":" + getCategoryId()+ "," +
             "isAvailable" + ":" + getIsAvailable()+ "," +
             "name" + ":" + getName()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "categoryType" + "=" + (getCategoryType() != null ? !getCategoryType().equals(this)  ? getCategoryType().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
+            "  " + "categoryType" + "=" + (getCategoryType() != null ? !getCategoryType().equals(this)  ? getCategoryType().toString().replaceAll("  ","    ") : "this" : "null");
   }
 }

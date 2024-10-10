@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 26 "../../../../../../model.ump"
-// line 162 "../../../../../../model.ump"
+// line 12 "../../../../../../model.ump"
+// line 148 "../../../../../../model.ump"
 public class CustomerAccount extends Account
 {
 
@@ -19,7 +19,6 @@ public class CustomerAccount extends Account
 
   //CustomerAccount Associations
   private List<PaymentDetails> paymentCards;
-  private GameShop gameShop;
   private List<Review> reviews;
   private List<Order> orderHistory;
   private List<Game> wishListedGames;
@@ -28,16 +27,11 @@ public class CustomerAccount extends Account
   // CONSTRUCTOR
   //------------------------
 
-  public CustomerAccount(String aEmail, String aPassword, int aCustomerId, GameShop aGameShop)
+  public CustomerAccount(String aEmail, String aPassword, int aCustomerId)
   {
     super(aEmail, aPassword);
     customerId = aCustomerId;
     paymentCards = new ArrayList<PaymentDetails>();
-    boolean didAddGameShop = setGameShop(aGameShop);
-    if (!didAddGameShop)
-    {
-      throw new RuntimeException("Unable to create customerAccount due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
     reviews = new ArrayList<Review>();
     orderHistory = new ArrayList<Order>();
     wishListedGames = new ArrayList<Game>();
@@ -88,11 +82,6 @@ public class CustomerAccount extends Account
   {
     int index = paymentCards.indexOf(aPaymentCard);
     return index;
-  }
-  /* Code from template association_GetOne */
-  public GameShop getGameShop()
-  {
-    return gameShop;
   }
   /* Code from template association_GetMany */
   public Review getReview(int index)
@@ -256,34 +245,15 @@ public class CustomerAccount extends Account
     }
     return wasAdded;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setGameShop(GameShop aGameShop)
-  {
-    boolean wasSet = false;
-    if (aGameShop == null)
-    {
-      return wasSet;
-    }
-
-    GameShop existingGameShop = gameShop;
-    gameShop = aGameShop;
-    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
-    {
-      existingGameShop.removeCustomerAccount(this);
-    }
-    gameShop.addCustomerAccount(this);
-    wasSet = true;
-    return wasSet;
-  }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfReviews()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Review addReview(int aReviewId, Date aReviewDate, GameShop aGameShop, Order aReviewedOrder)
+  public Review addReview(int aReviewId, Date aReviewDate, Order aReviewedOrder)
   {
-    return new Review(aReviewId, aReviewDate, aGameShop, this, aReviewedOrder);
+    return new Review(aReviewId, aReviewDate, this, aReviewedOrder);
   }
 
   public boolean addReview(Review aReview)
@@ -353,9 +323,9 @@ public class CustomerAccount extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addOrderHistory(int aOrderId, Date aOrderDate, GameShop aGameShop, Review aOrderReview, PaymentDetails aPaymentInformation, Game... allGames)
+  public Order addOrderHistory(int aOrderId, Date aOrderDate, Review aOrderReview, PaymentDetails aPaymentInformation, Game... allGames)
   {
-    return new Order(aOrderId, aOrderDate, aGameShop, aOrderReview, this, aPaymentInformation, allGames);
+    return new Order(aOrderId, aOrderDate, aOrderReview, this, aPaymentInformation, allGames);
   }
 
   public boolean addOrderHistory(Order aOrderHistory)
@@ -511,12 +481,6 @@ public class CustomerAccount extends Account
       paymentCards.remove(aPaymentCard);
     }
     
-    GameShop placeholderGameShop = gameShop;
-    this.gameShop = null;
-    if(placeholderGameShop != null)
-    {
-      placeholderGameShop.removeCustomerAccount(this);
-    }
     for(int i=reviews.size(); i > 0; i--)
     {
       Review aReview = reviews.get(i - 1);
@@ -540,7 +504,6 @@ public class CustomerAccount extends Account
   public String toString()
   {
     return super.toString() + "["+
-            "customerId" + ":" + getCustomerId()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
+            "customerId" + ":" + getCustomerId()+ "]";
   }
 }

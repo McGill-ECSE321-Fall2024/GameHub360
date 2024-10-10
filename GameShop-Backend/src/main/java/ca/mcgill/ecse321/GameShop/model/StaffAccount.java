@@ -3,9 +3,10 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
+import java.sql.Date;
 
-// line 32 "../../../../../../model.ump"
-// line 169 "../../../../../../model.ump"
+// line 18 "../../../../../../model.ump"
+// line 155 "../../../../../../model.ump"
 public abstract class StaffAccount extends Account
 {
 
@@ -20,15 +21,10 @@ public abstract class StaffAccount extends Account
   // CONSTRUCTOR
   //------------------------
 
-  public StaffAccount(String aEmail, String aPassword, RequestNote... allWrittenNotes)
+  public StaffAccount(String aEmail, String aPassword)
   {
     super(aEmail, aPassword);
     writtenNotes = new ArrayList<RequestNote>();
-    boolean didAddWrittenNotes = setWrittenNotes(allWrittenNotes);
-    if (!didAddWrittenNotes)
-    {
-      throw new RuntimeException("Unable to create StaffAccount, must have at least 1 writtenNotes. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
   }
 
   //------------------------
@@ -67,24 +63,28 @@ public abstract class StaffAccount extends Account
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfWrittenNotes()
   {
-    return 1;
+    return 0;
   }
-  /* Code from template association_AddMNToOptionalOne */
+  /* Code from template association_AddManyToOne */
+  public RequestNote addWrittenNote(int aNoteId, String aContent, Date aNoteDate, GameRequest aGameRequest)
+  {
+    return new RequestNote(aNoteId, aContent, aNoteDate, aGameRequest, this);
+  }
+
   public boolean addWrittenNote(RequestNote aWrittenNote)
   {
     boolean wasAdded = false;
     if (writtenNotes.contains(aWrittenNote)) { return false; }
     StaffAccount existingNotesWriter = aWrittenNote.getNotesWriter();
-    if (existingNotesWriter != null && existingNotesWriter.numberOfWrittenNotes() <= minimumNumberOfWrittenNotes())
+    boolean isNewNotesWriter = existingNotesWriter != null && !this.equals(existingNotesWriter);
+    if (isNewNotesWriter)
     {
-      return wasAdded;
+      aWrittenNote.setNotesWriter(this);
     }
-    else if (existingNotesWriter != null)
+    else
     {
-      existingNotesWriter.writtenNotes.remove(aWrittenNote);
+      writtenNotes.add(aWrittenNote);
     }
-    writtenNotes.add(aWrittenNote);
-    setNotesWriter(aWrittenNote,this);
     wasAdded = true;
     return wasAdded;
   }
@@ -92,81 +92,13 @@ public abstract class StaffAccount extends Account
   public boolean removeWrittenNote(RequestNote aWrittenNote)
   {
     boolean wasRemoved = false;
-    if (writtenNotes.contains(aWrittenNote) && numberOfWrittenNotes() > minimumNumberOfWrittenNotes())
+    //Unable to remove aWrittenNote, as it must always have a notesWriter
+    if (!this.equals(aWrittenNote.getNotesWriter()))
     {
       writtenNotes.remove(aWrittenNote);
-      setNotesWriter(aWrittenNote,null);
       wasRemoved = true;
     }
     return wasRemoved;
-  }
-  /* Code from template association_SetMNToOptionalOne */
-  public boolean setWrittenNotes(RequestNote... newWrittenNotes)
-  {
-    boolean wasSet = false;
-    if (newWrittenNotes.length < minimumNumberOfWrittenNotes())
-    {
-      return wasSet;
-    }
-
-    ArrayList<RequestNote> checkNewWrittenNotes = new ArrayList<RequestNote>();
-    HashMap<StaffAccount,Integer> notesWriterToNewWrittenNotes = new HashMap<StaffAccount,Integer>();
-    for (RequestNote aWrittenNote : newWrittenNotes)
-    {
-      if (checkNewWrittenNotes.contains(aWrittenNote))
-      {
-        return wasSet;
-      }
-      else if (aWrittenNote.getNotesWriter() != null && !this.equals(aWrittenNote.getNotesWriter()))
-      {
-        StaffAccount existingNotesWriter = aWrittenNote.getNotesWriter();
-        if (!notesWriterToNewWrittenNotes.containsKey(existingNotesWriter))
-        {
-          notesWriterToNewWrittenNotes.put(existingNotesWriter, Integer.valueOf(existingNotesWriter.numberOfWrittenNotes()));
-        }
-        Integer currentCount = notesWriterToNewWrittenNotes.get(existingNotesWriter);
-        int nextCount = currentCount - 1;
-        if (nextCount < 1)
-        {
-          return wasSet;
-        }
-        notesWriterToNewWrittenNotes.put(existingNotesWriter, Integer.valueOf(nextCount));
-      }
-      checkNewWrittenNotes.add(aWrittenNote);
-    }
-
-    writtenNotes.removeAll(checkNewWrittenNotes);
-
-    for (RequestNote orphan : writtenNotes)
-    {
-      setNotesWriter(orphan, null);
-    }
-    writtenNotes.clear();
-    for (RequestNote aWrittenNote : newWrittenNotes)
-    {
-      if (aWrittenNote.getNotesWriter() != null)
-      {
-        aWrittenNote.getNotesWriter().writtenNotes.remove(aWrittenNote);
-      }
-      setNotesWriter(aWrittenNote, this);
-      writtenNotes.add(aWrittenNote);
-    }
-    wasSet = true;
-    return wasSet;
-  }
-  /* Code from template association_GetPrivate */
-  private void setNotesWriter(RequestNote aWrittenNote, StaffAccount aNotesWriter)
-  {
-    try
-    {
-      java.lang.reflect.Field mentorField = aWrittenNote.getClass().getDeclaredField("notesWriter");
-      mentorField.setAccessible(true);
-      mentorField.set(aWrittenNote, aNotesWriter);
-    }
-    catch (Exception e)
-    {
-      throw new RuntimeException("Issue internally setting aNotesWriter to aWrittenNote", e);
-    }
   }
   /* Code from template association_AddIndexControlFunctions */
   public boolean addWrittenNoteAt(RequestNote aWrittenNote, int index)
@@ -203,11 +135,11 @@ public abstract class StaffAccount extends Account
 
   public void delete()
   {
-    for(RequestNote aWrittenNote : writtenNotes)
+    for(int i=writtenNotes.size(); i > 0; i--)
     {
-      setNotesWriter(aWrittenNote,null);
+      RequestNote aWrittenNote = writtenNotes.get(i - 1);
+      aWrittenNote.delete();
     }
-    writtenNotes.clear();
     super.delete();
   }
 

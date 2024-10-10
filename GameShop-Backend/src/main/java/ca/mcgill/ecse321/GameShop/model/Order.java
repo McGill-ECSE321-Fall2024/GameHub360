@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 69 "../../../../../../model.ump"
-// line 194 "../../../../../../model.ump"
+// line 55 "../../../../../../model.ump"
+// line 180 "../../../../../../model.ump"
 public class Order
 {
 
@@ -26,7 +26,6 @@ public class Order
   private Date orderDate;
 
   //Order Associations
-  private GameShop gameShop;
   private Review orderReview;
   private CustomerAccount orderedBy;
   private PaymentDetails paymentInformation;
@@ -36,15 +35,10 @@ public class Order
   // CONSTRUCTOR
   //------------------------
 
-  public Order(int aOrderId, Date aOrderDate, GameShop aGameShop, Review aOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
+  public Order(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
   {
     orderId = aOrderId;
     orderDate = aOrderDate;
-    boolean didAddGameShop = setGameShop(aGameShop);
-    if (!didAddGameShop)
-    {
-      throw new RuntimeException("Unable to create order due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
     if (aOrderReview == null || aOrderReview.getReviewedOrder() != null)
     {
       throw new RuntimeException("Unable to create Order due to aOrderReview. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
@@ -68,16 +62,11 @@ public class Order
     }
   }
 
-  public Order(int aOrderId, Date aOrderDate, GameShop aGameShop, int aReviewIdForOrderReview, Date aReviewDateForOrderReview, GameShop aGameShopForOrderReview, CustomerAccount aReviewAuthorForOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
+  public Order(int aOrderId, Date aOrderDate, int aReviewIdForOrderReview, Date aReviewDateForOrderReview, CustomerAccount aReviewAuthorForOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
   {
     orderId = aOrderId;
     orderDate = aOrderDate;
-    boolean didAddGameShop = setGameShop(aGameShop);
-    if (!didAddGameShop)
-    {
-      throw new RuntimeException("Unable to create order due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    orderReview = new Review(aReviewIdForOrderReview, aReviewDateForOrderReview, aGameShopForOrderReview, aReviewAuthorForOrderReview, this);
+    orderReview = new Review(aReviewIdForOrderReview, aReviewDateForOrderReview, aReviewAuthorForOrderReview, this);
     boolean didAddOrderedBy = setOrderedBy(aOrderedBy);
     if (!didAddOrderedBy)
     {
@@ -139,11 +128,6 @@ public class Order
     return orderDate;
   }
   /* Code from template association_GetOne */
-  public GameShop getGameShop()
-  {
-    return gameShop;
-  }
-  /* Code from template association_GetOne */
   public Review getOrderReview()
   {
     return orderReview;
@@ -187,25 +171,6 @@ public class Order
   {
     int index = games.indexOf(aGame);
     return index;
-  }
-  /* Code from template association_SetOneToMany */
-  public boolean setGameShop(GameShop aGameShop)
-  {
-    boolean wasSet = false;
-    if (aGameShop == null)
-    {
-      return wasSet;
-    }
-
-    GameShop existingGameShop = gameShop;
-    gameShop = aGameShop;
-    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
-    {
-      existingGameShop.removeOrder(this);
-    }
-    gameShop.addOrder(this);
-    wasSet = true;
-    return wasSet;
   }
   /* Code from template association_SetOneToMany */
   public boolean setOrderedBy(CustomerAccount aOrderedBy)
@@ -382,12 +347,6 @@ public class Order
 
   public void delete()
   {
-    GameShop placeholderGameShop = gameShop;
-    this.gameShop = null;
-    if(placeholderGameShop != null)
-    {
-      placeholderGameShop.removeOrder(this);
-    }
     Review existingOrderReview = orderReview;
     orderReview = null;
     if (existingOrderReview != null)
@@ -421,7 +380,6 @@ public class Order
             "orderId" + ":" + getOrderId()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "orderStatus" + "=" + (getOrderStatus() != null ? !getOrderStatus().equals(this)  ? getOrderStatus().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "orderDate" + "=" + (getOrderDate() != null ? !getOrderDate().equals(this)  ? getOrderDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "orderReview = "+(getOrderReview()!=null?Integer.toHexString(System.identityHashCode(getOrderReview())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "orderedBy = "+(getOrderedBy()!=null?Integer.toHexString(System.identityHashCode(getOrderedBy())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "paymentInformation = "+(getPaymentInformation()!=null?Integer.toHexString(System.identityHashCode(getPaymentInformation())):"null");

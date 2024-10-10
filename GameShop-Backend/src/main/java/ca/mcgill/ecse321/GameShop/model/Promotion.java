@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 109 "../../../../../../model.ump"
-// line 215 "../../../../../../model.ump"
+// line 95 "../../../../../../model.ump"
+// line 201 "../../../../../../model.ump"
 public class Promotion
 {
 

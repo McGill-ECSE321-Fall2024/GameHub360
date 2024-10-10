@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 60 "../../../../../../model.ump"
-// line 247 "../../../../../../model.ump"
+// line 46 "../../../../../../model.ump"
+// line 218 "../../../../../../model.ump"
 public class PaymentDetails
 {
 
@@ -187,9 +187,9 @@ public class PaymentDetails
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addPaidOrder(int aOrderId, Date aOrderDate, GameShop aGameShop, Review aOrderReview, CustomerAccount aOrderedBy, Game... allGames)
+  public Order addPaidOrder(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, Game... allGames)
   {
-    return new Order(aOrderId, aOrderDate, aGameShop, aOrderReview, aOrderedBy, this, allGames);
+    return new Order(aOrderId, aOrderDate, aOrderReview, aOrderedBy, this, allGames);
   }
 
   public boolean addPaidOrder(Order aPaidOrder)

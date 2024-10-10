@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 44 "../../../../../../model.ump"
-// line 179 "../../../../../../model.ump"
+// line 30 "../../../../../../model.ump"
+// line 165 "../../../../../../model.ump"
 public class ManagerAccount extends StaffAccount
 {
 
@@ -18,30 +18,16 @@ public class ManagerAccount extends StaffAccount
   private int managerId;
 
   //ManagerAccount Associations
-  private GameShop gameShop;
   private List<Reply> reviewReplies;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ManagerAccount(String aEmail, String aPassword, int aManagerId, GameShop aGameShop, RequestNote... allWrittenNotes)
+  public ManagerAccount(String aEmail, String aPassword, int aManagerId)
   {
-    super(aEmail, aPassword, allWrittenNotes);
+    super(aEmail, aPassword);
     managerId = aManagerId;
-    if (aGameShop == null || aGameShop.getManagerAccount() != null)
-    {
-      throw new RuntimeException("Unable to create ManagerAccount due to aGameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    gameShop = aGameShop;
-    reviewReplies = new ArrayList<Reply>();
-  }
-
-  public ManagerAccount(String aEmail, String aPassword, int aManagerId, int aGameShopIdForGameShop, StoreInformation aStoreInformationForGameShop, RequestNote... allWrittenNotes)
-  {
-    super(aEmail, aPassword, allWrittenNotes);
-    managerId = aManagerId;
-    gameShop = new GameShop(aGameShopIdForGameShop, this, aStoreInformationForGameShop);
     reviewReplies = new ArrayList<Reply>();
   }
 
@@ -60,11 +46,6 @@ public class ManagerAccount extends StaffAccount
   public int getManagerId()
   {
     return managerId;
-  }
-  /* Code from template association_GetOne */
-  public GameShop getGameShop()
-  {
-    return gameShop;
   }
   /* Code from template association_GetMany */
   public Reply getReviewReply(int index)
@@ -171,12 +152,6 @@ public class ManagerAccount extends StaffAccount
 
   public void delete()
   {
-    GameShop existingGameShop = gameShop;
-    gameShop = null;
-    if (existingGameShop != null)
-    {
-      existingGameShop.delete();
-    }
     for(int i=reviewReplies.size(); i > 0; i--)
     {
       Reply aReviewReply = reviewReplies.get(i - 1);
@@ -189,7 +164,6 @@ public class ManagerAccount extends StaffAccount
   public String toString()
   {
     return super.toString() + "["+
-            "managerId" + ":" + getManagerId()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
+            "managerId" + ":" + getManagerId()+ "]";
   }
 }

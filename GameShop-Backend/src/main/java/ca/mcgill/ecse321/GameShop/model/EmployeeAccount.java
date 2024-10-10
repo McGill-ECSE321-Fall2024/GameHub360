@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 37 "../../../../../../model.ump"
-// line 174 "../../../../../../model.ump"
+// line 23 "../../../../../../model.ump"
+// line 160 "../../../../../../model.ump"
 public class EmployeeAccount extends StaffAccount
 {
 
@@ -20,24 +20,18 @@ public class EmployeeAccount extends StaffAccount
 
   //EmployeeAccount Associations
   private List<ActivityLog> logs;
-  private GameShop gameShop;
   private List<GameRequest> requests;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public EmployeeAccount(String aEmail, String aPassword, int aEmployeeId, boolean aIsActive, GameShop aGameShop, RequestNote... allWrittenNotes)
+  public EmployeeAccount(String aEmail, String aPassword, int aEmployeeId, boolean aIsActive)
   {
-    super(aEmail, aPassword, allWrittenNotes);
+    super(aEmail, aPassword);
     employeeId = aEmployeeId;
     isActive = aIsActive;
     logs = new ArrayList<ActivityLog>();
-    boolean didAddGameShop = setGameShop(aGameShop);
-    if (!didAddGameShop)
-    {
-      throw new RuntimeException("Unable to create employeeAccount due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
     requests = new ArrayList<GameRequest>();
   }
 
@@ -104,11 +98,6 @@ public class EmployeeAccount extends StaffAccount
   {
     int index = logs.indexOf(aLog);
     return index;
-  }
-  /* Code from template association_GetOne */
-  public GameShop getGameShop()
-  {
-    return gameShop;
   }
   /* Code from template association_GetMany */
   public GameRequest getRequest(int index)
@@ -212,34 +201,15 @@ public class EmployeeAccount extends StaffAccount
     }
     return wasAdded;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setGameShop(GameShop aGameShop)
-  {
-    boolean wasSet = false;
-    if (aGameShop == null)
-    {
-      return wasSet;
-    }
-
-    GameShop existingGameShop = gameShop;
-    gameShop = aGameShop;
-    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
-    {
-      existingGameShop.removeEmployeeAccount(this);
-    }
-    gameShop.addEmployeeAccount(this);
-    wasSet = true;
-    return wasSet;
-  }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfRequests()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public GameRequest addRequest(String aName, String aDescription, String aImageURL, int aRequestId, Date aRequestDate, GameShop aGameShop, GameCategory... allCategories)
+  public GameRequest addRequest(String aName, String aDescription, String aImageURL, int aRequestId, Date aRequestDate, GameCategory... allCategories)
   {
-    return new GameRequest(aName, aDescription, aImageURL, aRequestId, aRequestDate, aGameShop, this, allCategories);
+    return new GameRequest(aName, aDescription, aImageURL, aRequestId, aRequestDate, this, allCategories);
   }
 
   public boolean addRequest(GameRequest aRequest)
@@ -313,12 +283,6 @@ public class EmployeeAccount extends StaffAccount
       logs.remove(aLog);
     }
     
-    GameShop placeholderGameShop = gameShop;
-    this.gameShop = null;
-    if(placeholderGameShop != null)
-    {
-      placeholderGameShop.removeEmployeeAccount(this);
-    }
     for(int i=requests.size(); i > 0; i--)
     {
       GameRequest aRequest = requests.get(i - 1);
@@ -332,7 +296,6 @@ public class EmployeeAccount extends StaffAccount
   {
     return super.toString() + "["+
             "employeeId" + ":" + getEmployeeId()+ "," +
-            "isActive" + ":" + getIsActive()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
+            "isActive" + ":" + getIsActive()+ "]";
   }
 }

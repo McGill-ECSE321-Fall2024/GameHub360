@@ -3,8 +3,8 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 
-// line 18 "../../../../../../model.ump"
-// line 157 "../../../../../../model.ump"
+// line 4 "../../../../../../model.ump"
+// line 143 "../../../../../../model.ump"
 public abstract class Account
 {
 

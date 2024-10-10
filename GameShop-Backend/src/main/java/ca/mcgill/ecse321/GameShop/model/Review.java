@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 122 "../../../../../../model.ump"
-// line 227 "../../../../../../model.ump"
+// line 108 "../../../../../../model.ump"
+// line 213 "../../../../../../model.ump"
 public class Review
 {
 
@@ -28,7 +28,6 @@ public class Review
 
   //Review Associations
   private List<Reply> reviewReplies;
-  private GameShop gameShop;
   private CustomerAccount reviewAuthor;
   private Order reviewedOrder;
 
@@ -36,17 +35,12 @@ public class Review
   // CONSTRUCTOR
   //------------------------
 
-  public Review(int aReviewId, Date aReviewDate, GameShop aGameShop, CustomerAccount aReviewAuthor, Order aReviewedOrder)
+  public Review(int aReviewId, Date aReviewDate, CustomerAccount aReviewAuthor, Order aReviewedOrder)
   {
     reviewId = aReviewId;
     comment = null;
     reviewDate = aReviewDate;
     reviewReplies = new ArrayList<Reply>();
-    boolean didAddGameShop = setGameShop(aGameShop);
-    if (!didAddGameShop)
-    {
-      throw new RuntimeException("Unable to create review due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
     boolean didAddReviewAuthor = setReviewAuthor(aReviewAuthor);
     if (!didAddReviewAuthor)
     {
@@ -59,23 +53,18 @@ public class Review
     reviewedOrder = aReviewedOrder;
   }
 
-  public Review(int aReviewId, Date aReviewDate, GameShop aGameShop, CustomerAccount aReviewAuthor, int aOrderIdForReviewedOrder, Date aOrderDateForReviewedOrder, GameShop aGameShopForReviewedOrder, CustomerAccount aOrderedByForReviewedOrder, PaymentDetails aPaymentInformationForReviewedOrder, Game... allGamesForReviewedOrder)
+  public Review(int aReviewId, Date aReviewDate, CustomerAccount aReviewAuthor, int aOrderIdForReviewedOrder, Date aOrderDateForReviewedOrder, CustomerAccount aOrderedByForReviewedOrder, PaymentDetails aPaymentInformationForReviewedOrder, Game... allGamesForReviewedOrder)
   {
     reviewId = aReviewId;
     comment = null;
     reviewDate = aReviewDate;
     reviewReplies = new ArrayList<Reply>();
-    boolean didAddGameShop = setGameShop(aGameShop);
-    if (!didAddGameShop)
-    {
-      throw new RuntimeException("Unable to create review due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
     boolean didAddReviewAuthor = setReviewAuthor(aReviewAuthor);
     if (!didAddReviewAuthor)
     {
       throw new RuntimeException("Unable to create review due to reviewAuthor. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    reviewedOrder = new Order(aOrderIdForReviewedOrder, aOrderDateForReviewedOrder, aGameShopForReviewedOrder, this, aOrderedByForReviewedOrder, aPaymentInformationForReviewedOrder, allGamesForReviewedOrder);
+    reviewedOrder = new Order(aOrderIdForReviewedOrder, aOrderDateForReviewedOrder, this, aOrderedByForReviewedOrder, aPaymentInformationForReviewedOrder, allGamesForReviewedOrder);
   }
 
   //------------------------
@@ -164,11 +153,6 @@ public class Review
     return index;
   }
   /* Code from template association_GetOne */
-  public GameShop getGameShop()
-  {
-    return gameShop;
-  }
-  /* Code from template association_GetOne */
   public CustomerAccount getReviewAuthor()
   {
     return reviewAuthor;
@@ -251,25 +235,6 @@ public class Review
     return wasAdded;
   }
   /* Code from template association_SetOneToMany */
-  public boolean setGameShop(GameShop aGameShop)
-  {
-    boolean wasSet = false;
-    if (aGameShop == null)
-    {
-      return wasSet;
-    }
-
-    GameShop existingGameShop = gameShop;
-    gameShop = aGameShop;
-    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
-    {
-      existingGameShop.removeReview(this);
-    }
-    gameShop.addReview(this);
-    wasSet = true;
-    return wasSet;
-  }
-  /* Code from template association_SetOneToMany */
   public boolean setReviewAuthor(CustomerAccount aReviewAuthor)
   {
     boolean wasSet = false;
@@ -298,12 +263,6 @@ public class Review
       reviewReplies.remove(aReviewReply);
     }
     
-    GameShop placeholderGameShop = gameShop;
-    this.gameShop = null;
-    if(placeholderGameShop != null)
-    {
-      placeholderGameShop.removeReview(this);
-    }
     CustomerAccount placeholderReviewAuthor = reviewAuthor;
     this.reviewAuthor = null;
     if(placeholderReviewAuthor != null)
@@ -326,7 +285,6 @@ public class Review
             "comment" + ":" + getComment()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "rating" + "=" + (getRating() != null ? !getRating().equals(this)  ? getRating().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "reviewDate" + "=" + (getReviewDate() != null ? !getReviewDate().equals(this)  ? getReviewDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "reviewAuthor = "+(getReviewAuthor()!=null?Integer.toHexString(System.identityHashCode(getReviewAuthor())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "reviewedOrder = "+(getReviewedOrder()!=null?Integer.toHexString(System.identityHashCode(getReviewedOrder())):"null");
   }

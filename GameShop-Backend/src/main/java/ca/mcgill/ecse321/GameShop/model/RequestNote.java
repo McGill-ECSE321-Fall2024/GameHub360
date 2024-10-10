@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 
-// line 54 "../../../../../../model.ump"
-// line 189 "../../../../../../model.ump"
+// line 40 "../../../../../../model.ump"
+// line 175 "../../../../../../model.ump"
 public class RequestNote
 {
 
@@ -26,7 +26,7 @@ public class RequestNote
   // CONSTRUCTOR
   //------------------------
 
-  public RequestNote(int aNoteId, String aContent, Date aNoteDate, GameRequest aGameRequest)
+  public RequestNote(int aNoteId, String aContent, Date aNoteDate, GameRequest aGameRequest, StaffAccount aNotesWriter)
   {
     noteId = aNoteId;
     content = aContent;
@@ -35,6 +35,11 @@ public class RequestNote
     if (!didAddGameRequest)
     {
       throw new RuntimeException("Unable to create associatedNote due to gameRequest. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    boolean didAddNotesWriter = setNotesWriter(aNotesWriter);
+    if (!didAddNotesWriter)
+    {
+      throw new RuntimeException("Unable to create writtenNote due to notesWriter. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -90,12 +95,6 @@ public class RequestNote
   {
     return notesWriter;
   }
-
-  public boolean hasNotesWriter()
-  {
-    boolean has = notesWriter != null;
-    return has;
-  }
   /* Code from template association_SetOneToMany */
   public boolean setGameRequest(GameRequest aGameRequest)
   {
@@ -115,57 +114,26 @@ public class RequestNote
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetOptionalOneToMandatoryMany */
+  /* Code from template association_SetOneToMany */
   public boolean setNotesWriter(StaffAccount aNotesWriter)
   {
-    //
-    // This source of this source generation is association_SetOptionalOneToMandatoryMany.jet
-    // This set file assumes the generation of a maximumNumberOfXXX method does not exist because 
-    // it's not required (No upper bound)
-    //   
     boolean wasSet = false;
-    StaffAccount existingNotesWriter = notesWriter;
+    if (aNotesWriter == null)
+    {
+      return wasSet;
+    }
 
-    if (existingNotesWriter == null)
+    StaffAccount existingNotesWriter = notesWriter;
+    notesWriter = aNotesWriter;
+    if (existingNotesWriter != null && !existingNotesWriter.equals(aNotesWriter))
     {
-      if (aNotesWriter != null)
-      {
-        if (aNotesWriter.addWrittenNote(this))
-        {
-          existingNotesWriter = aNotesWriter;
-          wasSet = true;
-        }
-      }
-    } 
-    else if (existingNotesWriter != null)
-    {
-      if (aNotesWriter == null)
-      {
-        if (existingNotesWriter.minimumNumberOfWrittenNotes() < existingNotesWriter.numberOfWrittenNotes())
-        {
-          existingNotesWriter.removeWrittenNote(this);
-          existingNotesWriter = aNotesWriter;  // aNotesWriter == null
-          wasSet = true;
-        }
-      } 
-      else
-      {
-        if (existingNotesWriter.minimumNumberOfWrittenNotes() < existingNotesWriter.numberOfWrittenNotes())
-        {
-          existingNotesWriter.removeWrittenNote(this);
-          aNotesWriter.addWrittenNote(this);
-          existingNotesWriter = aNotesWriter;
-          wasSet = true;
-        }
-      }
+      existingNotesWriter.removeWrittenNote(this);
     }
-    if (wasSet)
-    {
-      notesWriter = existingNotesWriter;
-    }
+    notesWriter.addWrittenNote(this);
+    wasSet = true;
     return wasSet;
   }
-  
+
   public void delete()
   {
     GameRequest placeholderGameRequest = gameRequest;
@@ -174,18 +142,11 @@ public class RequestNote
     {
       placeholderGameRequest.removeAssociatedNote(this);
     }
-    if (notesWriter != null)
+    StaffAccount placeholderNotesWriter = notesWriter;
+    this.notesWriter = null;
+    if(placeholderNotesWriter != null)
     {
-      if (notesWriter.numberOfWrittenNotes() <= 1)
-      {
-        notesWriter.delete();
-      }
-      else
-      {
-        StaffAccount placeholderNotesWriter = notesWriter;
-        this.notesWriter = null;
-        placeholderNotesWriter.removeWrittenNote(this);
-      }
+      placeholderNotesWriter.removeWrittenNote(this);
     }
   }
 

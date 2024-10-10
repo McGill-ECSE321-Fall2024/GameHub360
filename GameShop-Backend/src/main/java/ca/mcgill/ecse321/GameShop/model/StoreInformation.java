@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 116 "../../../../../../model.ump"
-// line 220 "../../../../../../model.ump"
+// line 102 "../../../../../../model.ump"
+// line 206 "../../../../../../model.ump"
 public class StoreInformation
 {
 
@@ -19,30 +19,16 @@ public class StoreInformation
 
   //StoreInformation Associations
   private List<Promotion> currentPromotions;
-  private GameShop gameShop;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public StoreInformation(int aStoreInfoId, GameShop aGameShop)
+  public StoreInformation(int aStoreInfoId)
   {
     storeInfoId = aStoreInfoId;
     storePolicy = null;
     currentPromotions = new ArrayList<Promotion>();
-    if (aGameShop == null || aGameShop.getStoreInformation() != null)
-    {
-      throw new RuntimeException("Unable to create StoreInformation due to aGameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    gameShop = aGameShop;
-  }
-
-  public StoreInformation(int aStoreInfoId, int aGameShopIdForGameShop, ManagerAccount aManagerAccountForGameShop)
-  {
-    storeInfoId = aStoreInfoId;
-    storePolicy = null;
-    currentPromotions = new ArrayList<Promotion>();
-    gameShop = new GameShop(aGameShopIdForGameShop, aManagerAccountForGameShop, this);
   }
 
   //------------------------
@@ -103,11 +89,6 @@ public class StoreInformation
   {
     int index = currentPromotions.indexOf(aCurrentPromotion);
     return index;
-  }
-  /* Code from template association_GetOne */
-  public GameShop getGameShop()
-  {
-    return gameShop;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfCurrentPromotions()
@@ -191,12 +172,6 @@ public class StoreInformation
       currentPromotions.remove(aCurrentPromotion);
     }
     
-    GameShop existingGameShop = gameShop;
-    gameShop = null;
-    if (existingGameShop != null)
-    {
-      existingGameShop.delete();
-    }
   }
 
 
@@ -204,7 +179,6 @@ public class StoreInformation
   {
     return super.toString() + "["+
             "storeInfoId" + ":" + getStoreInfoId()+ "," +
-            "storePolicy" + ":" + getStorePolicy()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null");
+            "storePolicy" + ":" + getStorePolicy()+ "]";
   }
 }

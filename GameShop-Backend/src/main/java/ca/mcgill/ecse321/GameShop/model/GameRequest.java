@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 84 "../../../../../../model.ump"
-// line 204 "../../../../../../model.ump"
+// line 70 "../../../../../../model.ump"
+// line 190 "../../../../../../model.ump"
 public class GameRequest extends GameEntity
 {
 
@@ -27,24 +27,18 @@ public class GameRequest extends GameEntity
 
   //GameRequest Associations
   private List<RequestNote> associatedNotes;
-  private GameShop gameShop;
   private EmployeeAccount requestPlacer;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public GameRequest(String aName, String aDescription, String aImageURL, int aRequestId, Date aRequestDate, GameShop aGameShop, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
+  public GameRequest(String aName, String aDescription, String aImageURL, int aRequestId, Date aRequestDate, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
   {
     super(aName, aDescription, aImageURL, allCategories);
     requestId = aRequestId;
     requestDate = aRequestDate;
     associatedNotes = new ArrayList<RequestNote>();
-    boolean didAddGameShop = setGameShop(aGameShop);
-    if (!didAddGameShop)
-    {
-      throw new RuntimeException("Unable to create gameRequest due to gameShop. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
     boolean didAddRequestPlacer = setRequestPlacer(aRequestPlacer);
     if (!didAddRequestPlacer)
     {
@@ -125,11 +119,6 @@ public class GameRequest extends GameEntity
     return index;
   }
   /* Code from template association_GetOne */
-  public GameShop getGameShop()
-  {
-    return gameShop;
-  }
-  /* Code from template association_GetOne */
   public EmployeeAccount getRequestPlacer()
   {
     return requestPlacer;
@@ -140,9 +129,9 @@ public class GameRequest extends GameEntity
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public RequestNote addAssociatedNote(int aNoteId, String aContent, Date aNoteDate)
+  public RequestNote addAssociatedNote(int aNoteId, String aContent, Date aNoteDate, StaffAccount aNotesWriter)
   {
-    return new RequestNote(aNoteId, aContent, aNoteDate, this);
+    return new RequestNote(aNoteId, aContent, aNoteDate, this, aNotesWriter);
   }
 
   public boolean addAssociatedNote(RequestNote aAssociatedNote)
@@ -207,25 +196,6 @@ public class GameRequest extends GameEntity
     return wasAdded;
   }
   /* Code from template association_SetOneToMany */
-  public boolean setGameShop(GameShop aGameShop)
-  {
-    boolean wasSet = false;
-    if (aGameShop == null)
-    {
-      return wasSet;
-    }
-
-    GameShop existingGameShop = gameShop;
-    gameShop = aGameShop;
-    if (existingGameShop != null && !existingGameShop.equals(aGameShop))
-    {
-      existingGameShop.removeGameRequest(this);
-    }
-    gameShop.addGameRequest(this);
-    wasSet = true;
-    return wasSet;
-  }
-  /* Code from template association_SetOneToMany */
   public boolean setRequestPlacer(EmployeeAccount aRequestPlacer)
   {
     boolean wasSet = false;
@@ -254,12 +224,6 @@ public class GameRequest extends GameEntity
       associatedNotes.remove(aAssociatedNote);
     }
     
-    GameShop placeholderGameShop = gameShop;
-    this.gameShop = null;
-    if(placeholderGameShop != null)
-    {
-      placeholderGameShop.removeGameRequest(this);
-    }
     EmployeeAccount placeholderRequestPlacer = requestPlacer;
     this.requestPlacer = null;
     if(placeholderRequestPlacer != null)
@@ -276,7 +240,6 @@ public class GameRequest extends GameEntity
             "requestId" + ":" + getRequestId()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "requestStatus" + "=" + (getRequestStatus() != null ? !getRequestStatus().equals(this)  ? getRequestStatus().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "requestDate" + "=" + (getRequestDate() != null ? !getRequestDate().equals(this)  ? getRequestDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "gameShop = "+(getGameShop()!=null?Integer.toHexString(System.identityHashCode(getGameShop())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "requestPlacer = "+(getRequestPlacer()!=null?Integer.toHexString(System.identityHashCode(getRequestPlacer())):"null");
   }
 }

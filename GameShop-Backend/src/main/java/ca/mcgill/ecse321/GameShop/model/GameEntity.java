@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 94 "../../../../../../model.ump"
-// line 252 "../../../../../../model.ump"
+// line 80 "../../../../../../model.ump"
+// line 223 "../../../../../../model.ump"
 public abstract class GameEntity
 {
 

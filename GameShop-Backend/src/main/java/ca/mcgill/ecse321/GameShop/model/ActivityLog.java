@@ -3,8 +3,8 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 
-// line 49 "../../../../../../model.ump"
-// line 184 "../../../../../../model.ump"
+// line 35 "../../../../../../model.ump"
+// line 170 "../../../../../../model.ump"
 public class ActivityLog
 {
 

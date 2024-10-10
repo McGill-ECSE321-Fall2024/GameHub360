@@ -1,19 +1,5 @@
 namespace ca.mcgill.ecse321.GameShop.model;
 
-class GameShop
-{
-  Integer gameShopId;
-  1 <@>- * CustomerAccount customerAccounts;
-  1 <@>- * EmployeeAccount employeeAccounts;
-  1 <@>- 1 ManagerAccount managerAccount; 
-  1 <@>- * GameCategory gameCategories;
-  1 <@>- * Game games;
-  1 <@>- * GameRequest gameRequests;
-  1 <@>- * Order orders;
-  1 <@>- 1 StoreInformation storeInformation;
-  1 <@>- * Review reviews; 
-}
-
 class Account {
   abstract;
   immutable String email; 
@@ -146,5 +132,5 @@ association {
   * GameEntity games -- 1..* GameCategory categories;
   1 EmployeeAccount requestPlacer -- * GameRequest requests; 
   1 ManagerAccount reviewer -- * Reply reviewReplies; 
-  0..1 StaffAccount notesWriter -- 1..* RequestNote writtenNotes; 
+  1 StaffAccount notesWriter -- * RequestNote writtenNotes; 
 }
