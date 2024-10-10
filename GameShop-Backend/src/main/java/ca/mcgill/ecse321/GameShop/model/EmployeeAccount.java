@@ -30,7 +30,6 @@ public class EmployeeAccount extends StaffAccount
   @OneToMany(mappedBy = "requestPlacer", cascade = CascadeType.ALL)
   private List<GameRequest> requests;
 
-
   //------------------------
   // CONSTRUCTOR
   //------------------------
