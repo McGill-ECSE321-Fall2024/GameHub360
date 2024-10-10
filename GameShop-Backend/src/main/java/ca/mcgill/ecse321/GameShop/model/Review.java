@@ -5,7 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 113 "../../../../../GameShop.ump"
+// line 108 "../../../../../../model.ump"
+// line 213 "../../../../../../model.ump"
 public class Review
 {
 
@@ -20,47 +21,63 @@ public class Review
   //------------------------
 
   //Review Attributes
+  private int reviewId;
   private GameReviewRating rating;
   private String comment;
-  private Date date;
+  private Date reviewDate;
 
   //Review Associations
-  private CustomerAccount customerAccount;
-  private Order order;
-  private List<ReviewReply> replies;
-
-  //Helper Variables
-  private int cachedHashCode;
-  private boolean canSetCustomerAccount;
-  private boolean canSetOrder;
+  private List<Reply> reviewReplies;
+  private CustomerAccount reviewAuthor;
+  private Order reviewedOrder;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Review(Date aDate, CustomerAccount aCustomerAccount, Order aOrder)
+  public Review(int aReviewId, Date aReviewDate, CustomerAccount aReviewAuthor, Order aReviewedOrder)
   {
-    cachedHashCode = -1;
-    canSetCustomerAccount = true;
-    canSetOrder = true;
+    reviewId = aReviewId;
     comment = null;
-    date = aDate;
-    boolean didAddCustomerAccount = setCustomerAccount(aCustomerAccount);
-    if (!didAddCustomerAccount)
+    reviewDate = aReviewDate;
+    reviewReplies = new ArrayList<Reply>();
+    boolean didAddReviewAuthor = setReviewAuthor(aReviewAuthor);
+    if (!didAddReviewAuthor)
     {
-      throw new RuntimeException("Unable to create review due to customerAccount. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create review due to reviewAuthor. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    boolean didAddOrder = setOrder(aOrder);
-    if (!didAddOrder)
+    if (aReviewedOrder == null || aReviewedOrder.getOrderReview() != null)
     {
-      throw new RuntimeException("Unable to create review due to order. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create Review due to aReviewedOrder. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    replies = new ArrayList<ReviewReply>();
+    reviewedOrder = aReviewedOrder;
+  }
+
+  public Review(int aReviewId, Date aReviewDate, CustomerAccount aReviewAuthor, int aOrderIdForReviewedOrder, Date aOrderDateForReviewedOrder, CustomerAccount aOrderedByForReviewedOrder, PaymentDetails aPaymentInformationForReviewedOrder, Game... allGamesForReviewedOrder)
+  {
+    reviewId = aReviewId;
+    comment = null;
+    reviewDate = aReviewDate;
+    reviewReplies = new ArrayList<Reply>();
+    boolean didAddReviewAuthor = setReviewAuthor(aReviewAuthor);
+    if (!didAddReviewAuthor)
+    {
+      throw new RuntimeException("Unable to create review due to reviewAuthor. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    reviewedOrder = new Order(aOrderIdForReviewedOrder, aOrderDateForReviewedOrder, this, aOrderedByForReviewedOrder, aPaymentInformationForReviewedOrder, allGamesForReviewedOrder);
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setReviewId(int aReviewId)
+  {
+    boolean wasSet = false;
+    reviewId = aReviewId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setRating(GameReviewRating aRating)
   {
@@ -78,12 +95,17 @@ public class Review
     return wasSet;
   }
 
-  public boolean setDate(Date aDate)
+  public boolean setReviewDate(Date aReviewDate)
   {
     boolean wasSet = false;
-    date = aDate;
+    reviewDate = aReviewDate;
     wasSet = true;
     return wasSet;
+  }
+
+  public int getReviewId()
+  {
+    return reviewId;
   }
 
   public GameReviewRating getRating()
@@ -96,269 +118,174 @@ public class Review
     return comment;
   }
 
-  public Date getDate()
+  public Date getReviewDate()
   {
-    return date;
-  }
-  /* Code from template association_GetOne */
-  public CustomerAccount getCustomerAccount()
-  {
-    return customerAccount;
-  }
-  /* Code from template association_GetOne */
-  public Order getOrder()
-  {
-    return order;
+    return reviewDate;
   }
   /* Code from template association_GetMany */
-  public ReviewReply getReply(int index)
+  public Reply getReviewReply(int index)
   {
-    ReviewReply aReply = replies.get(index);
-    return aReply;
+    Reply aReviewReply = reviewReplies.get(index);
+    return aReviewReply;
   }
 
-  public List<ReviewReply> getReplies()
+  public List<Reply> getReviewReplies()
   {
-    List<ReviewReply> newReplies = Collections.unmodifiableList(replies);
-    return newReplies;
+    List<Reply> newReviewReplies = Collections.unmodifiableList(reviewReplies);
+    return newReviewReplies;
   }
 
-  public int numberOfReplies()
+  public int numberOfReviewReplies()
   {
-    int number = replies.size();
+    int number = reviewReplies.size();
     return number;
   }
 
-  public boolean hasReplies()
+  public boolean hasReviewReplies()
   {
-    boolean has = replies.size() > 0;
+    boolean has = reviewReplies.size() > 0;
     return has;
   }
 
-  public int indexOfReply(ReviewReply aReply)
+  public int indexOfReviewReply(Reply aReviewReply)
   {
-    int index = replies.indexOf(aReply);
+    int index = reviewReplies.indexOf(aReviewReply);
     return index;
   }
-  /* Code from template association_SetOneToOptionalOne */
-  public boolean setCustomerAccount(CustomerAccount aNewCustomerAccount)
+  /* Code from template association_GetOne */
+  public CustomerAccount getReviewAuthor()
   {
-    boolean wasSet = false;
-    if (!canSetCustomerAccount) { return false; }
-    if (aNewCustomerAccount == null)
-    {
-      //Unable to setCustomerAccount to null, as review must always be associated to a customerAccount
-      return wasSet;
-    }
-    
-    Review existingReview = aNewCustomerAccount.getReview();
-    if (existingReview != null && !equals(existingReview))
-    {
-      //Unable to setCustomerAccount, the current customerAccount already has a review, which would be orphaned if it were re-assigned
-      return wasSet;
-    }
-    
-    CustomerAccount anOldCustomerAccount = customerAccount;
-    customerAccount = aNewCustomerAccount;
-    customerAccount.setReview(this);
-
-    if (anOldCustomerAccount != null)
-    {
-      anOldCustomerAccount.setReview(null);
-    }
-    wasSet = true;
-    return wasSet;
+    return reviewAuthor;
   }
-  /* Code from template association_SetOneToOptionalOne */
-  public boolean setOrder(Order aNewOrder)
+  /* Code from template association_GetOne */
+  public Order getReviewedOrder()
   {
-    boolean wasSet = false;
-    if (!canSetOrder) { return false; }
-    if (aNewOrder == null)
-    {
-      //Unable to setOrder to null, as review must always be associated to a order
-      return wasSet;
-    }
-    
-    Review existingReview = aNewOrder.getReview();
-    if (existingReview != null && !equals(existingReview))
-    {
-      //Unable to setOrder, the current order already has a review, which would be orphaned if it were re-assigned
-      return wasSet;
-    }
-    
-    Order anOldOrder = order;
-    order = aNewOrder;
-    order.setReview(this);
-
-    if (anOldOrder != null)
-    {
-      anOldOrder.setReview(null);
-    }
-    wasSet = true;
-    return wasSet;
+    return reviewedOrder;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfReplies()
+  public static int minimumNumberOfReviewReplies()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ReviewReply addReply(String aContent, Date aDate, ManagerAccount aReviewr)
+  public Reply addReviewReply(int aReplyId, String aContent, Date aReplyDate, ManagerAccount aReviewer)
   {
-    return new ReviewReply(aContent, aDate, this, aReviewr);
+    return new Reply(aReplyId, aContent, aReplyDate, this, aReviewer);
   }
 
-  public boolean addReply(ReviewReply aReply)
+  public boolean addReviewReply(Reply aReviewReply)
   {
     boolean wasAdded = false;
-    if (replies.contains(aReply)) { return false; }
-    Review existingReview = aReply.getReview();
-    boolean isNewReview = existingReview != null && !this.equals(existingReview);
-    if (isNewReview)
+    if (reviewReplies.contains(aReviewReply)) { return false; }
+    Review existingReviewRecord = aReviewReply.getReviewRecord();
+    boolean isNewReviewRecord = existingReviewRecord != null && !this.equals(existingReviewRecord);
+    if (isNewReviewRecord)
     {
-      aReply.setReview(this);
+      aReviewReply.setReviewRecord(this);
     }
     else
     {
-      replies.add(aReply);
+      reviewReplies.add(aReviewReply);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeReply(ReviewReply aReply)
+  public boolean removeReviewReply(Reply aReviewReply)
   {
     boolean wasRemoved = false;
-    //Unable to remove aReply, as it must always have a review
-    if (!this.equals(aReply.getReview()))
+    //Unable to remove aReviewReply, as it must always have a reviewRecord
+    if (!this.equals(aReviewReply.getReviewRecord()))
     {
-      replies.remove(aReply);
+      reviewReplies.remove(aReviewReply);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addReplyAt(ReviewReply aReply, int index)
+  public boolean addReviewReplyAt(Reply aReviewReply, int index)
   {  
     boolean wasAdded = false;
-    if(addReply(aReply))
+    if(addReviewReply(aReviewReply))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfReplies()) { index = numberOfReplies() - 1; }
-      replies.remove(aReply);
-      replies.add(index, aReply);
+      if(index > numberOfReviewReplies()) { index = numberOfReviewReplies() - 1; }
+      reviewReplies.remove(aReviewReply);
+      reviewReplies.add(index, aReviewReply);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveReplyAt(ReviewReply aReply, int index)
+  public boolean addOrMoveReviewReplyAt(Reply aReviewReply, int index)
   {
     boolean wasAdded = false;
-    if(replies.contains(aReply))
+    if(reviewReplies.contains(aReviewReply))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfReplies()) { index = numberOfReplies() - 1; }
-      replies.remove(aReply);
-      replies.add(index, aReply);
+      if(index > numberOfReviewReplies()) { index = numberOfReviewReplies() - 1; }
+      reviewReplies.remove(aReviewReply);
+      reviewReplies.add(index, aReviewReply);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addReplyAt(aReply, index);
+      wasAdded = addReviewReplyAt(aReviewReply, index);
     }
     return wasAdded;
   }
-
-  public boolean equals(Object obj)
+  /* Code from template association_SetOneToMany */
+  public boolean setReviewAuthor(CustomerAccount aReviewAuthor)
   {
-    if (obj == null) { return false; }
-    if (!getClass().equals(obj.getClass())) { return false; }
-
-    Review compareTo = (Review)obj;
-  
-    if (getCustomerAccount() == null && compareTo.getCustomerAccount() != null)
+    boolean wasSet = false;
+    if (aReviewAuthor == null)
     {
-      return false;
-    }
-    else if (getCustomerAccount() != null && !getCustomerAccount().equals(compareTo.getCustomerAccount()))
-    {
-      return false;
+      return wasSet;
     }
 
-    if (getOrder() == null && compareTo.getOrder() != null)
+    CustomerAccount existingReviewAuthor = reviewAuthor;
+    reviewAuthor = aReviewAuthor;
+    if (existingReviewAuthor != null && !existingReviewAuthor.equals(aReviewAuthor))
     {
-      return false;
+      existingReviewAuthor.removeReview(this);
     }
-    else if (getOrder() != null && !getOrder().equals(compareTo.getOrder()))
-    {
-      return false;
-    }
-
-    return true;
-  }
-
-  public int hashCode()
-  {
-    if (cachedHashCode != -1)
-    {
-      return cachedHashCode;
-    }
-    cachedHashCode = 17;
-    if (getCustomerAccount() != null)
-    {
-      cachedHashCode = cachedHashCode * 23 + getCustomerAccount().hashCode();
-    }
-    else
-    {
-      cachedHashCode = cachedHashCode * 23;
-    }
-    if (getOrder() != null)
-    {
-      cachedHashCode = cachedHashCode * 23 + getOrder().hashCode();
-    }
-    else
-    {
-      cachedHashCode = cachedHashCode * 23;
-    }
-
-    canSetCustomerAccount = false;
-    canSetOrder = false;
-    return cachedHashCode;
+    reviewAuthor.addReview(this);
+    wasSet = true;
+    return wasSet;
   }
 
   public void delete()
   {
-    CustomerAccount existingCustomerAccount = customerAccount;
-    customerAccount = null;
-    if (existingCustomerAccount != null)
+    while (reviewReplies.size() > 0)
     {
-      existingCustomerAccount.setReview(null);
-    }
-    Order existingOrder = order;
-    order = null;
-    if (existingOrder != null)
-    {
-      existingOrder.setReview(null);
-    }
-    while (replies.size() > 0)
-    {
-      ReviewReply aReply = replies.get(replies.size() - 1);
-      aReply.delete();
-      replies.remove(aReply);
+      Reply aReviewReply = reviewReplies.get(reviewReplies.size() - 1);
+      aReviewReply.delete();
+      reviewReplies.remove(aReviewReply);
     }
     
+    CustomerAccount placeholderReviewAuthor = reviewAuthor;
+    this.reviewAuthor = null;
+    if(placeholderReviewAuthor != null)
+    {
+      placeholderReviewAuthor.removeReview(this);
+    }
+    Order existingReviewedOrder = reviewedOrder;
+    reviewedOrder = null;
+    if (existingReviewedOrder != null)
+    {
+      existingReviewedOrder.delete();
+    }
   }
 
 
   public String toString()
   {
     return super.toString() + "["+
+            "reviewId" + ":" + getReviewId()+ "," +
             "comment" + ":" + getComment()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "rating" + "=" + (getRating() != null ? !getRating().equals(this)  ? getRating().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "customerAccount = "+(getCustomerAccount()!=null?Integer.toHexString(System.identityHashCode(getCustomerAccount())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "order = "+(getOrder()!=null?Integer.toHexString(System.identityHashCode(getOrder())):"null");
+            "  " + "reviewDate" + "=" + (getReviewDate() != null ? !getReviewDate().equals(this)  ? getReviewDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "reviewAuthor = "+(getReviewAuthor()!=null?Integer.toHexString(System.identityHashCode(getReviewAuthor())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "reviewedOrder = "+(getReviewedOrder()!=null?Integer.toHexString(System.identityHashCode(getReviewedOrder())):"null");
   }
 }

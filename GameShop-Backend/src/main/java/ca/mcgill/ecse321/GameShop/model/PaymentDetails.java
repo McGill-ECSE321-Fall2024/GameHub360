@@ -5,31 +5,34 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 import java.sql.Date;
 
-// line 56 "../../../../../../GameShop.ump"
-public class PaymentInformation
+// line 46 "../../../../../../model.ump"
+// line 218 "../../../../../../model.ump"
+public class PaymentDetails
 {
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
-  //PaymentInformation Attributes
+  //PaymentDetails Attributes
+  private int paymentDetailsId;
   private String cardName;
   private String postalCode;
   private int cardNumber;
   private int expMonth;
   private int expYear;
 
-  //PaymentInformation Associations
+  //PaymentDetails Associations
   private CustomerAccount cardOwner;
-  private List<Order> orderPayedWith;
+  private List<Order> paidOrders;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public PaymentInformation(String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear, CustomerAccount aCardOwner)
+  public PaymentDetails(int aPaymentDetailsId, String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear, CustomerAccount aCardOwner)
   {
+    paymentDetailsId = aPaymentDetailsId;
     cardName = aCardName;
     postalCode = aPostalCode;
     cardNumber = aCardNumber;
@@ -40,12 +43,20 @@ public class PaymentInformation
     {
       throw new RuntimeException("Unable to create paymentCard due to cardOwner. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    orderPayedWith = new ArrayList<Order>();
+    paidOrders = new ArrayList<Order>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setPaymentDetailsId(int aPaymentDetailsId)
+  {
+    boolean wasSet = false;
+    paymentDetailsId = aPaymentDetailsId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setCardName(String aCardName)
   {
@@ -87,6 +98,11 @@ public class PaymentInformation
     return wasSet;
   }
 
+  public int getPaymentDetailsId()
+  {
+    return paymentDetailsId;
+  }
+
   public String getCardName()
   {
     return cardName;
@@ -117,33 +133,33 @@ public class PaymentInformation
     return cardOwner;
   }
   /* Code from template association_GetMany */
-  public Order getOrderPayedWith(int index)
+  public Order getPaidOrder(int index)
   {
-    Order aOrderPayedWith = orderPayedWith.get(index);
-    return aOrderPayedWith;
+    Order aPaidOrder = paidOrders.get(index);
+    return aPaidOrder;
   }
 
-  public List<Order> getOrderPayedWith()
+  public List<Order> getPaidOrders()
   {
-    List<Order> newOrderPayedWith = Collections.unmodifiableList(orderPayedWith);
-    return newOrderPayedWith;
+    List<Order> newPaidOrders = Collections.unmodifiableList(paidOrders);
+    return newPaidOrders;
   }
 
-  public int numberOfOrderPayedWith()
+  public int numberOfPaidOrders()
   {
-    int number = orderPayedWith.size();
+    int number = paidOrders.size();
     return number;
   }
 
-  public boolean hasOrderPayedWith()
+  public boolean hasPaidOrders()
   {
-    boolean has = orderPayedWith.size() > 0;
+    boolean has = paidOrders.size() > 0;
     return has;
   }
 
-  public int indexOfOrderPayedWith(Order aOrderPayedWith)
+  public int indexOfPaidOrder(Order aPaidOrder)
   {
-    int index = orderPayedWith.indexOf(aOrderPayedWith);
+    int index = paidOrders.indexOf(aPaidOrder);
     return index;
   }
   /* Code from template association_SetOneToMany */
@@ -166,74 +182,74 @@ public class PaymentInformation
     return wasSet;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfOrderPayedWith()
+  public static int minimumNumberOfPaidOrders()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addOrderPayedWith(Date aDate, CustomerAccount aOrderedBy, Game... allGame)
+  public Order addPaidOrder(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, Game... allGames)
   {
-    return new Order(aDate, aOrderedBy, this, allGame);
+    return new Order(aOrderId, aOrderDate, aOrderReview, aOrderedBy, this, allGames);
   }
 
-  public boolean addOrderPayedWith(Order aOrderPayedWith)
+  public boolean addPaidOrder(Order aPaidOrder)
   {
     boolean wasAdded = false;
-    if (orderPayedWith.contains(aOrderPayedWith)) { return false; }
-    PaymentInformation existingPaymentInformation = aOrderPayedWith.getPaymentInformation();
+    if (paidOrders.contains(aPaidOrder)) { return false; }
+    PaymentDetails existingPaymentInformation = aPaidOrder.getPaymentInformation();
     boolean isNewPaymentInformation = existingPaymentInformation != null && !this.equals(existingPaymentInformation);
     if (isNewPaymentInformation)
     {
-      aOrderPayedWith.setPaymentInformation(this);
+      aPaidOrder.setPaymentInformation(this);
     }
     else
     {
-      orderPayedWith.add(aOrderPayedWith);
+      paidOrders.add(aPaidOrder);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeOrderPayedWith(Order aOrderPayedWith)
+  public boolean removePaidOrder(Order aPaidOrder)
   {
     boolean wasRemoved = false;
-    //Unable to remove aOrderPayedWith, as it must always have a paymentInformation
-    if (!this.equals(aOrderPayedWith.getPaymentInformation()))
+    //Unable to remove aPaidOrder, as it must always have a paymentInformation
+    if (!this.equals(aPaidOrder.getPaymentInformation()))
     {
-      orderPayedWith.remove(aOrderPayedWith);
+      paidOrders.remove(aPaidOrder);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addOrderPayedWithAt(Order aOrderPayedWith, int index)
+  public boolean addPaidOrderAt(Order aPaidOrder, int index)
   {  
     boolean wasAdded = false;
-    if(addOrderPayedWith(aOrderPayedWith))
+    if(addPaidOrder(aPaidOrder))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfOrderPayedWith()) { index = numberOfOrderPayedWith() - 1; }
-      orderPayedWith.remove(aOrderPayedWith);
-      orderPayedWith.add(index, aOrderPayedWith);
+      if(index > numberOfPaidOrders()) { index = numberOfPaidOrders() - 1; }
+      paidOrders.remove(aPaidOrder);
+      paidOrders.add(index, aPaidOrder);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveOrderPayedWithAt(Order aOrderPayedWith, int index)
+  public boolean addOrMovePaidOrderAt(Order aPaidOrder, int index)
   {
     boolean wasAdded = false;
-    if(orderPayedWith.contains(aOrderPayedWith))
+    if(paidOrders.contains(aPaidOrder))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfOrderPayedWith()) { index = numberOfOrderPayedWith() - 1; }
-      orderPayedWith.remove(aOrderPayedWith);
-      orderPayedWith.add(index, aOrderPayedWith);
+      if(index > numberOfPaidOrders()) { index = numberOfPaidOrders() - 1; }
+      paidOrders.remove(aPaidOrder);
+      paidOrders.add(index, aPaidOrder);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addOrderPayedWithAt(aOrderPayedWith, index);
+      wasAdded = addPaidOrderAt(aPaidOrder, index);
     }
     return wasAdded;
   }
@@ -246,10 +262,10 @@ public class PaymentInformation
     {
       placeholderCardOwner.removePaymentCard(this);
     }
-    for(int i=orderPayedWith.size(); i > 0; i--)
+    for(int i=paidOrders.size(); i > 0; i--)
     {
-      Order aOrderPayedWith = orderPayedWith.get(i - 1);
-      aOrderPayedWith.delete();
+      Order aPaidOrder = paidOrders.get(i - 1);
+      aPaidOrder.delete();
     }
   }
 
@@ -257,6 +273,7 @@ public class PaymentInformation
   public String toString()
   {
     return super.toString() + "["+
+            "paymentDetailsId" + ":" + getPaymentDetailsId()+ "," +
             "cardName" + ":" + getCardName()+ "," +
             "postalCode" + ":" + getPostalCode()+ "," +
             "cardNumber" + ":" + getCardNumber()+ "," +

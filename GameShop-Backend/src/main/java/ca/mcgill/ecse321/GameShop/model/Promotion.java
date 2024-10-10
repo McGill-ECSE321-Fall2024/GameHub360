@@ -4,7 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 101 "../../../../../../GameShop.ump"
+// line 95 "../../../../../../model.ump"
+// line 201 "../../../../../../model.ump"
 public class Promotion
 {
 
@@ -19,6 +20,7 @@ public class Promotion
   //------------------------
 
   //Promotion Attributes
+  private int promotionId;
   private PromotionType promotionType;
   private double discountPercentageValue;
 
@@ -31,13 +33,14 @@ public class Promotion
   // CONSTRUCTOR
   //------------------------
 
-  public Promotion(double aDiscountPercentageValue, StoreInformation aInfo)
+  public Promotion(int aPromotionId, double aDiscountPercentageValue, StoreInformation aInfo)
   {
+    promotionId = aPromotionId;
     discountPercentageValue = aDiscountPercentageValue;
     boolean didAddInfo = setInfo(aInfo);
     if (!didAddInfo)
     {
-      throw new RuntimeException("Unable to create promotion due to info. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create currentPromotion due to info. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     promotedGames = new ArrayList<Game>();
     promotedCategories = new ArrayList<GameCategory>();
@@ -46,6 +49,14 @@ public class Promotion
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setPromotionId(int aPromotionId)
+  {
+    boolean wasSet = false;
+    promotionId = aPromotionId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setPromotionType(PromotionType aPromotionType)
   {
@@ -61,6 +72,11 @@ public class Promotion
     discountPercentageValue = aDiscountPercentageValue;
     wasSet = true;
     return wasSet;
+  }
+
+  public int getPromotionId()
+  {
+    return promotionId;
   }
 
   public PromotionType getPromotionType()
@@ -150,9 +166,9 @@ public class Promotion
     info = aInfo;
     if (existingInfo != null && !existingInfo.equals(aInfo))
     {
-      existingInfo.removePromotion(this);
+      existingInfo.removeCurrentPromotion(this);
     }
-    info.addPromotion(this);
+    info.addCurrentPromotion(this);
     wasSet = true;
     return wasSet;
   }
@@ -327,7 +343,7 @@ public class Promotion
     this.info = null;
     if(placeholderInfo != null)
     {
-      placeholderInfo.removePromotion(this);
+      placeholderInfo.removeCurrentPromotion(this);
     }
     ArrayList<Game> copyOfPromotedGames = new ArrayList<Game>(promotedGames);
     promotedGames.clear();
@@ -347,6 +363,7 @@ public class Promotion
   public String toString()
   {
     return super.toString() + "["+
+            "promotionId" + ":" + getPromotionId()+ "," +
             "discountPercentageValue" + ":" + getDiscountPercentageValue()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "promotionType" + "=" + (getPromotionType() != null ? !getPromotionType().equals(this)  ? getPromotionType().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "info = "+(getInfo()!=null?Integer.toHexString(System.identityHashCode(getInfo())):"null");

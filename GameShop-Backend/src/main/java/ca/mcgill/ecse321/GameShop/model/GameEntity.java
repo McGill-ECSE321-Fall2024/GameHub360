@@ -4,38 +4,37 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 86 "../../../../../../GameShop.ump"
-public abstract class GameInformation
+// line 80 "../../../../../../model.ump"
+// line 223 "../../../../../../model.ump"
+public abstract class GameEntity
 {
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
-  //GameInformation Attributes
+  //GameEntity Attributes
   private String name;
   private String description;
   private String imageURL;
-  private String nameOfX;
 
-  //GameInformation Associations
+  //GameEntity Associations
   private List<GameCategory> categories;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public GameInformation(String aName, String aDescription, String aImageURL, String aNameOfX, GameCategory... allCategories)
+  public GameEntity(String aName, String aDescription, String aImageURL, GameCategory... allCategories)
   {
     name = aName;
     description = aDescription;
     imageURL = aImageURL;
-    nameOfX = aNameOfX;
     categories = new ArrayList<GameCategory>();
     boolean didAddCategories = setCategories(allCategories);
     if (!didAddCategories)
     {
-      throw new RuntimeException("Unable to create GameInformation, must have at least 1 categories. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create GameEntity, must have at least 1 categories. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -67,14 +66,6 @@ public abstract class GameInformation
     return wasSet;
   }
 
-  public boolean setNameOfX(String aNameOfX)
-  {
-    boolean wasSet = false;
-    nameOfX = aNameOfX;
-    wasSet = true;
-    return wasSet;
-  }
-
   public String getName()
   {
     return name;
@@ -88,14 +79,6 @@ public abstract class GameInformation
   public String getImageURL()
   {
     return imageURL;
-  }
-
-  /**
-   * Duplicate attribute in the DM, I added OfX
-   */
-  public String getNameOfX()
-  {
-    return nameOfX;
   }
   /* Code from template association_GetMany */
   public GameCategory getCategory(int index)
@@ -278,7 +261,6 @@ public abstract class GameInformation
     return super.toString() + "["+
             "name" + ":" + getName()+ "," +
             "description" + ":" + getDescription()+ "," +
-            "imageURL" + ":" + getImageURL()+ "," +
-            "nameOfX" + ":" + getNameOfX()+ "]";
+            "imageURL" + ":" + getImageURL()+ "]";
   }
 }

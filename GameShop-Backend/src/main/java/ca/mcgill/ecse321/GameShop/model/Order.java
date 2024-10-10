@@ -5,7 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 64 "../../../../../../GameShop.ump"
+// line 55 "../../../../../../model.ump"
+// line 180 "../../../../../../model.ump"
 public class Order
 {
 
@@ -20,22 +21,29 @@ public class Order
   //------------------------
 
   //Order Attributes
+  private int orderId;
   private OrderStatus orderStatus;
-  private Date date;
+  private Date orderDate;
 
   //Order Associations
-  private Review review;
+  private Review orderReview;
   private CustomerAccount orderedBy;
-  private PaymentInformation paymentInformation;
-  private List<Game> game;
+  private PaymentDetails paymentInformation;
+  private List<Game> games;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Order(Date aDate, CustomerAccount aOrderedBy, PaymentInformation aPaymentInformation, Game... allGame)
+  public Order(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
   {
-    date = aDate;
+    orderId = aOrderId;
+    orderDate = aOrderDate;
+    if (aOrderReview == null || aOrderReview.getReviewedOrder() != null)
+    {
+      throw new RuntimeException("Unable to create Order due to aOrderReview. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    orderReview = aOrderReview;
     boolean didAddOrderedBy = setOrderedBy(aOrderedBy);
     if (!didAddOrderedBy)
     {
@@ -44,19 +52,50 @@ public class Order
     boolean didAddPaymentInformation = setPaymentInformation(aPaymentInformation);
     if (!didAddPaymentInformation)
     {
-      throw new RuntimeException("Unable to create orderPayedWith due to paymentInformation. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create paidOrder due to paymentInformation. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    game = new ArrayList<Game>();
-    boolean didAddGame = setGame(allGame);
-    if (!didAddGame)
+    games = new ArrayList<Game>();
+    boolean didAddGames = setGames(allGames);
+    if (!didAddGames)
     {
-      throw new RuntimeException("Unable to create Order, must have at least 1 game. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create Order, must have at least 1 games. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+  }
+
+  public Order(int aOrderId, Date aOrderDate, int aReviewIdForOrderReview, Date aReviewDateForOrderReview, CustomerAccount aReviewAuthorForOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
+  {
+    orderId = aOrderId;
+    orderDate = aOrderDate;
+    orderReview = new Review(aReviewIdForOrderReview, aReviewDateForOrderReview, aReviewAuthorForOrderReview, this);
+    boolean didAddOrderedBy = setOrderedBy(aOrderedBy);
+    if (!didAddOrderedBy)
+    {
+      throw new RuntimeException("Unable to create orderHistory due to orderedBy. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    boolean didAddPaymentInformation = setPaymentInformation(aPaymentInformation);
+    if (!didAddPaymentInformation)
+    {
+      throw new RuntimeException("Unable to create paidOrder due to paymentInformation. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    games = new ArrayList<Game>();
+    boolean didAddGames = setGames(allGames);
+    if (!didAddGames)
+    {
+      throw new RuntimeException("Unable to create Order, must have at least 1 games. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setOrderId(int aOrderId)
+  {
+    boolean wasSet = false;
+    orderId = aOrderId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setOrderStatus(OrderStatus aOrderStatus)
   {
@@ -66,12 +105,17 @@ public class Order
     return wasSet;
   }
 
-  public boolean setDate(Date aDate)
+  public boolean setOrderDate(Date aOrderDate)
   {
     boolean wasSet = false;
-    date = aDate;
+    orderDate = aOrderDate;
     wasSet = true;
     return wasSet;
+  }
+
+  public int getOrderId()
+  {
+    return orderId;
   }
 
   public OrderStatus getOrderStatus()
@@ -79,20 +123,14 @@ public class Order
     return orderStatus;
   }
 
-  public Date getDate()
+  public Date getOrderDate()
   {
-    return date;
+    return orderDate;
   }
   /* Code from template association_GetOne */
-  public Review getReview()
+  public Review getOrderReview()
   {
-    return review;
-  }
-
-  public boolean hasReview()
-  {
-    boolean has = review != null;
-    return has;
+    return orderReview;
   }
   /* Code from template association_GetOne */
   public CustomerAccount getOrderedBy()
@@ -100,66 +138,39 @@ public class Order
     return orderedBy;
   }
   /* Code from template association_GetOne */
-  public PaymentInformation getPaymentInformation()
+  public PaymentDetails getPaymentInformation()
   {
     return paymentInformation;
   }
   /* Code from template association_GetMany */
   public Game getGame(int index)
   {
-    Game aGame = game.get(index);
+    Game aGame = games.get(index);
     return aGame;
   }
 
-  public List<Game> getGame()
+  public List<Game> getGames()
   {
-    List<Game> newGame = Collections.unmodifiableList(game);
-    return newGame;
+    List<Game> newGames = Collections.unmodifiableList(games);
+    return newGames;
   }
 
-  public int numberOfGame()
+  public int numberOfGames()
   {
-    int number = game.size();
+    int number = games.size();
     return number;
   }
 
-  public boolean hasGame()
+  public boolean hasGames()
   {
-    boolean has = game.size() > 0;
+    boolean has = games.size() > 0;
     return has;
   }
 
   public int indexOfGame(Game aGame)
   {
-    int index = game.indexOf(aGame);
+    int index = games.indexOf(aGame);
     return index;
-  }
-  /* Code from template association_SetOptionalOneToOne */
-  public boolean setReview(Review aNewReview)
-  {
-    boolean wasSet = false;
-    if (review != null && !review.equals(aNewReview) && equals(review.getOrder()))
-    {
-      //Unable to setReview, as existing review would become an orphan
-      return wasSet;
-    }
-
-    review = aNewReview;
-    Order anOldOrder = aNewReview != null ? aNewReview.getOrder() : null;
-
-    if (!this.equals(anOldOrder))
-    {
-      if (anOldOrder != null)
-      {
-        anOldOrder.review = null;
-      }
-      if (review != null)
-      {
-        review.setOrder(this);
-      }
-    }
-    wasSet = true;
-    return wasSet;
   }
   /* Code from template association_SetOneToMany */
   public boolean setOrderedBy(CustomerAccount aOrderedBy)
@@ -181,7 +192,7 @@ public class Order
     return wasSet;
   }
   /* Code from template association_SetOneToMany */
-  public boolean setPaymentInformation(PaymentInformation aPaymentInformation)
+  public boolean setPaymentInformation(PaymentDetails aPaymentInformation)
   {
     boolean wasSet = false;
     if (aPaymentInformation == null)
@@ -189,24 +200,24 @@ public class Order
       return wasSet;
     }
 
-    PaymentInformation existingPaymentInformation = paymentInformation;
+    PaymentDetails existingPaymentInformation = paymentInformation;
     paymentInformation = aPaymentInformation;
     if (existingPaymentInformation != null && !existingPaymentInformation.equals(aPaymentInformation))
     {
-      existingPaymentInformation.removeOrderPayedWith(this);
+      existingPaymentInformation.removePaidOrder(this);
     }
-    paymentInformation.addOrderPayedWith(this);
+    paymentInformation.addPaidOrder(this);
     wasSet = true;
     return wasSet;
   }
   /* Code from template association_IsNumberOfValidMethod */
-  public boolean isNumberOfGameValid()
+  public boolean isNumberOfGamesValid()
   {
-    boolean isValid = numberOfGame() >= minimumNumberOfGame();
+    boolean isValid = numberOfGames() >= minimumNumberOfGames();
     return isValid;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfGame()
+  public static int minimumNumberOfGames()
   {
     return 1;
   }
@@ -214,8 +225,8 @@ public class Order
   public boolean addGame(Game aGame)
   {
     boolean wasAdded = false;
-    if (game.contains(aGame)) { return false; }
-    game.add(aGame);
+    if (games.contains(aGame)) { return false; }
+    games.add(aGame);
     if (aGame.indexOfOrder(this) != -1)
     {
       wasAdded = true;
@@ -225,7 +236,7 @@ public class Order
       wasAdded = aGame.addOrder(this);
       if (!wasAdded)
       {
-        game.remove(aGame);
+        games.remove(aGame);
       }
     }
     return wasAdded;
@@ -234,18 +245,18 @@ public class Order
   public boolean removeGame(Game aGame)
   {
     boolean wasRemoved = false;
-    if (!game.contains(aGame))
+    if (!games.contains(aGame))
     {
       return wasRemoved;
     }
 
-    if (numberOfGame() <= minimumNumberOfGame())
+    if (numberOfGames() <= minimumNumberOfGames())
     {
       return wasRemoved;
     }
 
-    int oldIndex = game.indexOf(aGame);
-    game.remove(oldIndex);
+    int oldIndex = games.indexOf(aGame);
+    games.remove(oldIndex);
     if (aGame.indexOfOrder(this) == -1)
     {
       wasRemoved = true;
@@ -255,38 +266,38 @@ public class Order
       wasRemoved = aGame.removeOrder(this);
       if (!wasRemoved)
       {
-        game.add(oldIndex,aGame);
+        games.add(oldIndex,aGame);
       }
     }
     return wasRemoved;
   }
   /* Code from template association_SetMStarToMany */
-  public boolean setGame(Game... newGame)
+  public boolean setGames(Game... newGames)
   {
     boolean wasSet = false;
-    ArrayList<Game> verifiedGame = new ArrayList<Game>();
-    for (Game aGame : newGame)
+    ArrayList<Game> verifiedGames = new ArrayList<Game>();
+    for (Game aGame : newGames)
     {
-      if (verifiedGame.contains(aGame))
+      if (verifiedGames.contains(aGame))
       {
         continue;
       }
-      verifiedGame.add(aGame);
+      verifiedGames.add(aGame);
     }
 
-    if (verifiedGame.size() != newGame.length || verifiedGame.size() < minimumNumberOfGame())
+    if (verifiedGames.size() != newGames.length || verifiedGames.size() < minimumNumberOfGames())
     {
       return wasSet;
     }
 
-    ArrayList<Game> oldGame = new ArrayList<Game>(game);
-    game.clear();
-    for (Game aNewGame : verifiedGame)
+    ArrayList<Game> oldGames = new ArrayList<Game>(games);
+    games.clear();
+    for (Game aNewGame : verifiedGames)
     {
-      game.add(aNewGame);
-      if (oldGame.contains(aNewGame))
+      games.add(aNewGame);
+      if (oldGames.contains(aNewGame))
       {
-        oldGame.remove(aNewGame);
+        oldGames.remove(aNewGame);
       }
       else
       {
@@ -294,7 +305,7 @@ public class Order
       }
     }
 
-    for (Game anOldGame : oldGame)
+    for (Game anOldGame : oldGames)
     {
       anOldGame.removeOrder(this);
     }
@@ -308,9 +319,9 @@ public class Order
     if(addGame(aGame))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfGame()) { index = numberOfGame() - 1; }
-      game.remove(aGame);
-      game.add(index, aGame);
+      if(index > numberOfGames()) { index = numberOfGames() - 1; }
+      games.remove(aGame);
+      games.add(index, aGame);
       wasAdded = true;
     }
     return wasAdded;
@@ -319,12 +330,12 @@ public class Order
   public boolean addOrMoveGameAt(Game aGame, int index)
   {
     boolean wasAdded = false;
-    if(game.contains(aGame))
+    if(games.contains(aGame))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfGame()) { index = numberOfGame() - 1; }
-      game.remove(aGame);
-      game.add(index, aGame);
+      if(index > numberOfGames()) { index = numberOfGames() - 1; }
+      games.remove(aGame);
+      games.add(index, aGame);
       wasAdded = true;
     } 
     else 
@@ -336,11 +347,11 @@ public class Order
 
   public void delete()
   {
-    Review existingReview = review;
-    review = null;
-    if (existingReview != null)
+    Review existingOrderReview = orderReview;
+    orderReview = null;
+    if (existingOrderReview != null)
     {
-      existingReview.delete();
+      existingOrderReview.delete();
     }
     CustomerAccount placeholderOrderedBy = orderedBy;
     this.orderedBy = null;
@@ -348,15 +359,15 @@ public class Order
     {
       placeholderOrderedBy.removeOrderHistory(this);
     }
-    PaymentInformation placeholderPaymentInformation = paymentInformation;
+    PaymentDetails placeholderPaymentInformation = paymentInformation;
     this.paymentInformation = null;
     if(placeholderPaymentInformation != null)
     {
-      placeholderPaymentInformation.removeOrderPayedWith(this);
+      placeholderPaymentInformation.removePaidOrder(this);
     }
-    ArrayList<Game> copyOfGame = new ArrayList<Game>(game);
-    game.clear();
-    for(Game aGame : copyOfGame)
+    ArrayList<Game> copyOfGames = new ArrayList<Game>(games);
+    games.clear();
+    for(Game aGame : copyOfGames)
     {
       aGame.removeOrder(this);
     }
@@ -365,10 +376,11 @@ public class Order
 
   public String toString()
   {
-    return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
+    return super.toString() + "["+
+            "orderId" + ":" + getOrderId()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "orderStatus" + "=" + (getOrderStatus() != null ? !getOrderStatus().equals(this)  ? getOrderStatus().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "date" + "=" + (getDate() != null ? !getDate().equals(this)  ? getDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "review = "+(getReview()!=null?Integer.toHexString(System.identityHashCode(getReview())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "orderDate" + "=" + (getOrderDate() != null ? !getOrderDate().equals(this)  ? getOrderDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "orderReview = "+(getOrderReview()!=null?Integer.toHexString(System.identityHashCode(getOrderReview())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "orderedBy = "+(getOrderedBy()!=null?Integer.toHexString(System.identityHashCode(getOrderedBy())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "paymentInformation = "+(getPaymentInformation()!=null?Integer.toHexString(System.identityHashCode(getPaymentInformation())):"null");
   }

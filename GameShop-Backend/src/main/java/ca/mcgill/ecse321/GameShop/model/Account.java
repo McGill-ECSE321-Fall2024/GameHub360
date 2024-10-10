@@ -3,23 +3,8 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 
-/**
- * Since we are only developing one game shop system, the root class is unnecessary. Solution: remove the root class (as per the tutorial.)
- * class GameShop
- * {
- * 1 <@>- * CustomerAccount customerAccount;
- * 1 <@>- * EmployeeAccount employeeAccount;
- * <@>- 1 ManagerAccount managerAccount; //(if singleton attribute is added) If I remove the 0..1, there will be a warning related to they keyword singleton;
- * 1 <@>- * GameCategory gameCategory;
- * 1 <@>- * Game game;
- * 1 <@>- * GameRequest gameRequest;
- * 1 <@>- * Order order;
- * <@>- 1 StoreInformation storeInformation;// (if singleton attribute is added) If I remove the 0..1, there will be a warning related to they keyword singleton;
- * 1 <@>- * Review review; //TBC: it's an association class so there should not be multiplicity, but let's try.
- * }
- * // I have removed Boolean + singleton attrs as they were causing many errors.
- */
-// line 19 "../../../../../../GameShop.ump"
+// line 4 "../../../../../../model.ump"
+// line 143 "../../../../../../model.ump"
 public abstract class Account
 {
 
@@ -73,9 +58,6 @@ public abstract class Account
     return wasSet;
   }
 
-  /**
-   * Apparently I am unable to to add two properties here if I add String and unique...
-   */
   public String getEmail()
   {
     return email;

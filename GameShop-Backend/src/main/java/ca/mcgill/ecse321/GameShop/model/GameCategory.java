@@ -4,7 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 94 "../../../../../../GameShop.ump"
+// line 87 "../../../../../../model.ump"
+// line 196 "../../../../../../model.ump"
 public class GameCategory
 {
 
@@ -19,29 +20,39 @@ public class GameCategory
   //------------------------
 
   //GameCategory Attributes
+  private int categoryId;
   private CategoryType categoryType;
-  private String isAvailable;
+  private boolean isAvailable;
   private String name;
 
   //GameCategory Associations
   private List<Promotion> promotions;
-  private List<GameInformation> games;
+  private List<GameEntity> games;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public GameCategory(String aIsAvailable, String aName)
+  public GameCategory(int aCategoryId, boolean aIsAvailable, String aName)
   {
+    categoryId = aCategoryId;
     isAvailable = aIsAvailable;
     name = aName;
     promotions = new ArrayList<Promotion>();
-    games = new ArrayList<GameInformation>();
+    games = new ArrayList<GameEntity>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setCategoryId(int aCategoryId)
+  {
+    boolean wasSet = false;
+    categoryId = aCategoryId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setCategoryType(CategoryType aCategoryType)
   {
@@ -51,7 +62,7 @@ public class GameCategory
     return wasSet;
   }
 
-  public boolean setIsAvailable(String aIsAvailable)
+  public boolean setIsAvailable(boolean aIsAvailable)
   {
     boolean wasSet = false;
     isAvailable = aIsAvailable;
@@ -67,12 +78,17 @@ public class GameCategory
     return wasSet;
   }
 
+  public int getCategoryId()
+  {
+    return categoryId;
+  }
+
   public CategoryType getCategoryType()
   {
     return categoryType;
   }
 
-  public String getIsAvailable()
+  public boolean getIsAvailable()
   {
     return isAvailable;
   }
@@ -80,6 +96,11 @@ public class GameCategory
   public String getName()
   {
     return name;
+  }
+  /* Code from template attribute_IsBoolean */
+  public boolean isIsAvailable()
+  {
+    return isAvailable;
   }
   /* Code from template association_GetMany */
   public Promotion getPromotion(int index)
@@ -112,15 +133,15 @@ public class GameCategory
     return index;
   }
   /* Code from template association_GetMany */
-  public GameInformation getGame(int index)
+  public GameEntity getGame(int index)
   {
-    GameInformation aGame = games.get(index);
+    GameEntity aGame = games.get(index);
     return aGame;
   }
 
-  public List<GameInformation> getGames()
+  public List<GameEntity> getGames()
   {
-    List<GameInformation> newGames = Collections.unmodifiableList(games);
+    List<GameEntity> newGames = Collections.unmodifiableList(games);
     return newGames;
   }
 
@@ -136,7 +157,7 @@ public class GameCategory
     return has;
   }
 
-  public int indexOfGame(GameInformation aGame)
+  public int indexOfGame(GameEntity aGame)
   {
     int index = games.indexOf(aGame);
     return index;
@@ -229,7 +250,7 @@ public class GameCategory
     return 0;
   }
   /* Code from template association_AddManyToManyMethod */
-  public boolean addGame(GameInformation aGame)
+  public boolean addGame(GameEntity aGame)
   {
     boolean wasAdded = false;
     if (games.contains(aGame)) { return false; }
@@ -249,7 +270,7 @@ public class GameCategory
     return wasAdded;
   }
   /* Code from template association_RemoveMany */
-  public boolean removeGame(GameInformation aGame)
+  public boolean removeGame(GameEntity aGame)
   {
     boolean wasRemoved = false;
     if (!games.contains(aGame))
@@ -274,7 +295,7 @@ public class GameCategory
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addGameAt(GameInformation aGame, int index)
+  public boolean addGameAt(GameEntity aGame, int index)
   {  
     boolean wasAdded = false;
     if(addGame(aGame))
@@ -288,7 +309,7 @@ public class GameCategory
     return wasAdded;
   }
 
-  public boolean addOrMoveGameAt(GameInformation aGame, int index)
+  public boolean addOrMoveGameAt(GameEntity aGame, int index)
   {
     boolean wasAdded = false;
     if(games.contains(aGame))
@@ -314,11 +335,11 @@ public class GameCategory
     {
       aPromotion.removePromotedCategory(this);
     }
-    ArrayList<GameInformation> copyOfGames = new ArrayList<GameInformation>(games);
+    ArrayList<GameEntity> copyOfGames = new ArrayList<GameEntity>(games);
     games.clear();
-    for(GameInformation aGame : copyOfGames)
+    for(GameEntity aGame : copyOfGames)
     {
-      if (aGame.numberOfCategories() <= GameInformation.minimumNumberOfCategories())
+      if (aGame.numberOfCategories() <= GameEntity.minimumNumberOfCategories())
       {
         aGame.delete();
       }
@@ -333,6 +354,7 @@ public class GameCategory
   public String toString()
   {
     return super.toString() + "["+
+            "categoryId" + ":" + getCategoryId()+ "," +
             "isAvailable" + ":" + getIsAvailable()+ "," +
             "name" + ":" + getName()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "categoryType" + "=" + (getCategoryType() != null ? !getCategoryType().equals(this)  ? getCategoryType().toString().replaceAll("  ","    ") : "this" : "null");
