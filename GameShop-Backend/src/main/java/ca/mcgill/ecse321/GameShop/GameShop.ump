@@ -17,18 +17,17 @@ class CustomerAccount {
 class StaffAccount {
   abstract;
   isA Account;
+  Integer staffId;
 }
 
 class EmployeeAccount {
   isA StaffAccount;
-  Integer employeeId;
   1 employee <@>- * ActivityLog logs;
   Boolean isActive;
 }
 
 class ManagerAccount {
   isA StaffAccount;
-  Integer managerId;
 }
 
 class ActivityLog {
@@ -51,7 +50,7 @@ class PaymentDetails {
   Integer expYear;
 }
 
-class Order {
+class CustomerOrder {
   Integer orderId;
   enum OrderStatus { SHIPPING, DELIVERED, RETURNED }
   lazy OrderStatus orderStatus;
@@ -60,7 +59,6 @@ class Order {
 
 class Game {
   isA GameEntity; 
-  Integer gameId;
   Integer quantityInStock;
   Boolean isAvailable;
   Double price; 
@@ -68,7 +66,6 @@ class Game {
 
 class GameRequest {
   isA GameEntity; 
-  Integer requestId;
   1 gameRequest <@>- * RequestNote associatedNotes;
   
   enum RequestStatus { SUBMITTED, APPROVED, REFUSED }
@@ -78,6 +75,7 @@ class GameRequest {
 
 class GameEntity {
   abstract;
+  Integer gameEntityId;
   String name;
   String description;
   String imageURL;
@@ -122,11 +120,11 @@ class Reply {
 
 association {
   1 CustomerAccount reviewAuthor -- * Review reviews;
-  1 Order reviewedOrder -- 1 Review orderReview;
-  1 CustomerAccount orderedBy -- * Order orderHistory;
+  1 CustomerOrder reviewedOrder -- 1 Review orderReview;
+  1 CustomerAccount orderedBy -- * CustomerOrder orderHistory;
   * CustomerAccount wishLists -- * Game wishListedGames;
-  1 PaymentDetails paymentInformation -- * Order paidOrders;
-  * Order orders -- 1..* Game games;
+  1 PaymentDetails paymentInformation -- * CustomerOrder paidOrders;
+  * CustomerOrder orders -- 1..* Game games;
   * Promotion promotions -- * Game promotedGames;
   * Promotion promotions -- * GameCategory promotedCategories;
   * GameEntity games -- 1..* GameCategory categories;

@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 
-// line 118 "../../../../../../model.ump"
-// line 228 "../../../../../../model.ump"
+// line 116 "../../../../../../model.ump"
+// line 221 "../../../../../../model.ump"
 public class Reply
 {
 

@@ -5,9 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 55 "../../../../../../model.ump"
-// line 180 "../../../../../../model.ump"
-public class Order
+// line 54 "../../../../../../model.ump"
+public class CustomerOrder
 {
 
   //------------------------
@@ -20,12 +19,12 @@ public class Order
   // MEMBER VARIABLES
   //------------------------
 
-  //Order Attributes
+  //CustomerOrder Attributes
   private int orderId;
   private OrderStatus orderStatus;
   private Date orderDate;
 
-  //Order Associations
+  //CustomerOrder Associations
   private Review orderReview;
   private CustomerAccount orderedBy;
   private PaymentDetails paymentInformation;
@@ -35,13 +34,13 @@ public class Order
   // CONSTRUCTOR
   //------------------------
 
-  public Order(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
+  public CustomerOrder(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
   {
     orderId = aOrderId;
     orderDate = aOrderDate;
     if (aOrderReview == null || aOrderReview.getReviewedOrder() != null)
     {
-      throw new RuntimeException("Unable to create Order due to aOrderReview. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create CustomerOrder due to aOrderReview. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     orderReview = aOrderReview;
     boolean didAddOrderedBy = setOrderedBy(aOrderedBy);
@@ -58,11 +57,11 @@ public class Order
     boolean didAddGames = setGames(allGames);
     if (!didAddGames)
     {
-      throw new RuntimeException("Unable to create Order, must have at least 1 games. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create CustomerOrder, must have at least 1 games. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
-  public Order(int aOrderId, Date aOrderDate, int aReviewIdForOrderReview, Date aReviewDateForOrderReview, CustomerAccount aReviewAuthorForOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
+  public CustomerOrder(int aOrderId, Date aOrderDate, int aReviewIdForOrderReview, Date aReviewDateForOrderReview, CustomerAccount aReviewAuthorForOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
   {
     orderId = aOrderId;
     orderDate = aOrderDate;
@@ -81,7 +80,7 @@ public class Order
     boolean didAddGames = setGames(allGames);
     if (!didAddGames)
     {
-      throw new RuntimeException("Unable to create Order, must have at least 1 games. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create CustomerOrder, must have at least 1 games. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 

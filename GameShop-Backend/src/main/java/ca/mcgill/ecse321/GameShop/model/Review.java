@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 108 "../../../../../../model.ump"
-// line 213 "../../../../../../model.ump"
+// line 106 "../../../../../../model.ump"
+// line 206 "../../../../../../model.ump"
 public class Review
 {
 
@@ -29,13 +29,13 @@ public class Review
   //Review Associations
   private List<Reply> reviewReplies;
   private CustomerAccount reviewAuthor;
-  private Order reviewedOrder;
+  private CustomerOrder reviewedOrder;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Review(int aReviewId, Date aReviewDate, CustomerAccount aReviewAuthor, Order aReviewedOrder)
+  public Review(int aReviewId, Date aReviewDate, CustomerAccount aReviewAuthor, CustomerOrder aReviewedOrder)
   {
     reviewId = aReviewId;
     comment = null;
@@ -64,7 +64,7 @@ public class Review
     {
       throw new RuntimeException("Unable to create review due to reviewAuthor. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    reviewedOrder = new Order(aOrderIdForReviewedOrder, aOrderDateForReviewedOrder, this, aOrderedByForReviewedOrder, aPaymentInformationForReviewedOrder, allGamesForReviewedOrder);
+    reviewedOrder = new CustomerOrder(aOrderIdForReviewedOrder, aOrderDateForReviewedOrder, this, aOrderedByForReviewedOrder, aPaymentInformationForReviewedOrder, allGamesForReviewedOrder);
   }
 
   //------------------------
@@ -158,7 +158,7 @@ public class Review
     return reviewAuthor;
   }
   /* Code from template association_GetOne */
-  public Order getReviewedOrder()
+  public CustomerOrder getReviewedOrder()
   {
     return reviewedOrder;
   }
@@ -269,7 +269,7 @@ public class Review
     {
       placeholderReviewAuthor.removeReview(this);
     }
-    Order existingReviewedOrder = reviewedOrder;
+    CustomerOrder existingReviewedOrder = reviewedOrder;
     reviewedOrder = null;
     if (existingReviewedOrder != null)
     {

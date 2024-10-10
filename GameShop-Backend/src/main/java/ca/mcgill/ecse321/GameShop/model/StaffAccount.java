@@ -6,13 +6,16 @@ import java.util.*;
 import java.sql.Date;
 
 // line 18 "../../../../../../model.ump"
-// line 155 "../../../../../../model.ump"
+// line 153 "../../../../../../model.ump"
 public abstract class StaffAccount extends Account
 {
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
+
+  //StaffAccount Attributes
+  private int staffId;
 
   //StaffAccount Associations
   private List<RequestNote> writtenNotes;
@@ -21,15 +24,29 @@ public abstract class StaffAccount extends Account
   // CONSTRUCTOR
   //------------------------
 
-  public StaffAccount(String aEmail, String aPassword)
+  public StaffAccount(String aEmail, String aPassword, int aStaffId)
   {
     super(aEmail, aPassword);
+    staffId = aStaffId;
     writtenNotes = new ArrayList<RequestNote>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setStaffId(int aStaffId)
+  {
+    boolean wasSet = false;
+    staffId = aStaffId;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getStaffId()
+  {
+    return staffId;
+  }
   /* Code from template association_GetMany */
   public RequestNote getWrittenNote(int index)
   {
@@ -143,4 +160,10 @@ public abstract class StaffAccount extends Account
     super.delete();
   }
 
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "staffId" + ":" + getStaffId()+ "]";
+  }
 }

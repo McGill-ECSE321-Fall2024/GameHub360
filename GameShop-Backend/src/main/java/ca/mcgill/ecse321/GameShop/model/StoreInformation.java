@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 102 "../../../../../../model.ump"
-// line 206 "../../../../../../model.ump"
+// line 100 "../../../../../../model.ump"
+// line 199 "../../../../../../model.ump"
 public class StoreInformation
 {
 

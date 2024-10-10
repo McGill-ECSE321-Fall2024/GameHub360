@@ -4,8 +4,8 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-// line 80 "../../../../../../model.ump"
-// line 223 "../../../../../../model.ump"
+// line 77 "../../../../../../model.ump"
+// line 216 "../../../../../../model.ump"
 public abstract class GameEntity
 {
 
@@ -14,6 +14,7 @@ public abstract class GameEntity
   //------------------------
 
   //GameEntity Attributes
+  private int gameEntityId;
   private String name;
   private String description;
   private String imageURL;
@@ -25,8 +26,9 @@ public abstract class GameEntity
   // CONSTRUCTOR
   //------------------------
 
-  public GameEntity(String aName, String aDescription, String aImageURL, GameCategory... allCategories)
+  public GameEntity(int aGameEntityId, String aName, String aDescription, String aImageURL, GameCategory... allCategories)
   {
+    gameEntityId = aGameEntityId;
     name = aName;
     description = aDescription;
     imageURL = aImageURL;
@@ -41,6 +43,14 @@ public abstract class GameEntity
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setGameEntityId(int aGameEntityId)
+  {
+    boolean wasSet = false;
+    gameEntityId = aGameEntityId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setName(String aName)
   {
@@ -64,6 +74,11 @@ public abstract class GameEntity
     imageURL = aImageURL;
     wasSet = true;
     return wasSet;
+  }
+
+  public int getGameEntityId()
+  {
+    return gameEntityId;
   }
 
   public String getName()
@@ -259,6 +274,7 @@ public abstract class GameEntity
   public String toString()
   {
     return super.toString() + "["+
+            "gameEntityId" + ":" + getGameEntityId()+ "," +
             "name" + ":" + getName()+ "," +
             "description" + ":" + getDescription()+ "," +
             "imageURL" + ":" + getImageURL()+ "]";

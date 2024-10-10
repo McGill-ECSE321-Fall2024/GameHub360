@@ -5,8 +5,8 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-// line 70 "../../../../../../model.ump"
-// line 190 "../../../../../../model.ump"
+// line 68 "../../../../../../model.ump"
+// line 183 "../../../../../../model.ump"
 public class GameRequest extends GameEntity
 {
 
@@ -21,7 +21,6 @@ public class GameRequest extends GameEntity
   //------------------------
 
   //GameRequest Attributes
-  private int requestId;
   private RequestStatus requestStatus;
   private Date requestDate;
 
@@ -33,10 +32,9 @@ public class GameRequest extends GameEntity
   // CONSTRUCTOR
   //------------------------
 
-  public GameRequest(String aName, String aDescription, String aImageURL, int aRequestId, Date aRequestDate, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
+  public GameRequest(int aGameEntityId, String aName, String aDescription, String aImageURL, Date aRequestDate, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
   {
-    super(aName, aDescription, aImageURL, allCategories);
-    requestId = aRequestId;
+    super(aGameEntityId, aName, aDescription, aImageURL, allCategories);
     requestDate = aRequestDate;
     associatedNotes = new ArrayList<RequestNote>();
     boolean didAddRequestPlacer = setRequestPlacer(aRequestPlacer);
@@ -49,14 +47,6 @@ public class GameRequest extends GameEntity
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setRequestId(int aRequestId)
-  {
-    boolean wasSet = false;
-    requestId = aRequestId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setRequestStatus(RequestStatus aRequestStatus)
   {
@@ -72,11 +62,6 @@ public class GameRequest extends GameEntity
     requestDate = aRequestDate;
     wasSet = true;
     return wasSet;
-  }
-
-  public int getRequestId()
-  {
-    return requestId;
   }
 
   public RequestStatus getRequestStatus()
@@ -236,8 +221,7 @@ public class GameRequest extends GameEntity
 
   public String toString()
   {
-    return super.toString() + "["+
-            "requestId" + ":" + getRequestId()+ "]" + System.getProperties().getProperty("line.separator") +
+    return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "requestStatus" + "=" + (getRequestStatus() != null ? !getRequestStatus().equals(this)  ? getRequestStatus().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "requestDate" + "=" + (getRequestDate() != null ? !getRequestDate().equals(this)  ? getRequestDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "requestPlacer = "+(getRequestPlacer()!=null?Integer.toHexString(System.identityHashCode(getRequestPlacer())):"null");

@@ -4,7 +4,7 @@
 package ca.mcgill.ecse321.GameShop.model;
 
 // line 4 "../../../../../../model.ump"
-// line 143 "../../../../../../model.ump"
+// line 141 "../../../../../../model.ump"
 public abstract class Account
 {
 
