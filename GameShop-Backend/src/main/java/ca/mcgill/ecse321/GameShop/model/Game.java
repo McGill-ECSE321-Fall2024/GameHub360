@@ -4,8 +4,17 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+
 // line 62 "../../../../../../model.ump"
 // line 185 "../../../../../../model.ump"
+@Entity
 public class Game extends GameEntity
 {
 
@@ -14,14 +23,27 @@ public class Game extends GameEntity
   //------------------------
 
   //Game Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int gameId;
+
   private int quantityInStock;
   private boolean isAvailable;
   private double price;
 
   //Game Associations
+ @ManyToMany(mappedBy = "wishListedGames")
   private List<CustomerAccount> wishLists;
+
+  @ManyToMany
+  @JoinTable(
+      name = "order_games",
+      joinColumns = @JoinColumn(name = "game_id"),
+      inverseJoinColumns = @JoinColumn(name = "order_id")
+  )
   private List<Order> orders;
+
+  @ManyToMany(mappedBy = "promotedGames")
   private List<Promotion> promotions;
 
   //------------------------

@@ -4,8 +4,16 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
 // line 102 "../../../../../../model.ump"
 // line 206 "../../../../../../model.ump"
+@Entity
 public class StoreInformation
 {
 
@@ -14,10 +22,14 @@ public class StoreInformation
   //------------------------
 
   //StoreInformation Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int storeInfoId;
+
   private String storePolicy;
 
   //StoreInformation Associations
+  @OneToMany(mappedBy = "info", cascade = CascadeType.ALL)
   private List<Promotion> currentPromotions;
 
   //------------------------

@@ -3,8 +3,16 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 // line 35 "../../../../../../model.ump"
 // line 170 "../../../../../../model.ump"
+@Entity
 public class ActivityLog
 {
 
@@ -13,10 +21,14 @@ public class ActivityLog
   //------------------------
 
   //ActivityLog Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int logId;
   private String content;
 
   //ActivityLog Associations
+  @ManyToOne
+  @JoinColumn(name = "employee_id")
   private EmployeeAccount employee;
 
   //------------------------

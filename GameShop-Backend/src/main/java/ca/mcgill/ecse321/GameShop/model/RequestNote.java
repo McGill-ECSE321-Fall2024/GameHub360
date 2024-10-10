@@ -4,8 +4,16 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 // line 40 "../../../../../../model.ump"
 // line 175 "../../../../../../model.ump"
+@Entity
 public class RequestNote
 {
 
@@ -14,12 +22,20 @@ public class RequestNote
   //------------------------
 
   //RequestNote Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int noteId;
+
   private String content;
   private Date noteDate;
 
   //RequestNote Associations
+  @ManyToOne
+  @JoinColumn(name = "game_request_id")
   private GameRequest gameRequest;
+
+  @ManyToOne
+  @JoinColumn(name = "staff_account_id")
   private StaffAccount notesWriter;
 
   //------------------------

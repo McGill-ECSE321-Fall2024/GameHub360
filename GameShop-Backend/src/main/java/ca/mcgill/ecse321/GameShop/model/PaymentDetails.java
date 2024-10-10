@@ -3,10 +3,21 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
 import java.sql.Date;
 
 // line 46 "../../../../../../model.ump"
 // line 218 "../../../../../../model.ump"
+@Entity
 public class PaymentDetails
 {
 
@@ -15,7 +26,10 @@ public class PaymentDetails
   //------------------------
 
   //PaymentDetails Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int paymentDetailsId;
+
   private String cardName;
   private String postalCode;
   private int cardNumber;
@@ -23,7 +37,11 @@ public class PaymentDetails
   private int expYear;
 
   //PaymentDetails Associations
+  @ManyToOne
+  @JoinColumn(name = "customer_id")
   private CustomerAccount cardOwner;
+
+  @OneToMany(mappedBy = "paymentInformation", cascade = CascadeType.ALL)
   private List<Order> paidOrders;
 
   //------------------------

@@ -3,10 +3,19 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
 import java.sql.Date;
 
 // line 23 "../../../../../../model.ump"
 // line 160 "../../../../../../model.ump"
+@Entity
 public class EmployeeAccount extends StaffAccount
 {
 
@@ -15,12 +24,19 @@ public class EmployeeAccount extends StaffAccount
   //------------------------
 
   //EmployeeAccount Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int employeeId;
+  
   private boolean isActive;
 
   //EmployeeAccount Associations
+  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
   private List<ActivityLog> logs;
+
+  @OneToMany(mappedBy = "requestPlacer", cascade = CascadeType.ALL)
   private List<GameRequest> requests;
+
 
   //------------------------
   // CONSTRUCTOR

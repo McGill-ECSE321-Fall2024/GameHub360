@@ -3,10 +3,16 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToMany;
+
 import java.sql.Date;
 
 // line 18 "../../../../../../model.ump"
 // line 155 "../../../../../../model.ump"
+@MappedSuperclass
 public abstract class StaffAccount extends Account
 {
 
@@ -15,6 +21,7 @@ public abstract class StaffAccount extends Account
   //------------------------
 
   //StaffAccount Associations
+  @OneToMany(mappedBy = "notesWriter", cascade = CascadeType.ALL)
   private List<RequestNote> writtenNotes;
 
   //------------------------

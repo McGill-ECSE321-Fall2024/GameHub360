@@ -4,8 +4,12 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MappedSuperclass;
+
 // line 80 "../../../../../../model.ump"
 // line 223 "../../../../../../model.ump"
+@MappedSuperclass
 public abstract class GameEntity
 {
 
@@ -19,6 +23,7 @@ public abstract class GameEntity
   private String imageURL;
 
   //GameEntity Associations
+  @ManyToMany(mappedBy = "games")
   private List<GameCategory> categories;
 
   //------------------------
