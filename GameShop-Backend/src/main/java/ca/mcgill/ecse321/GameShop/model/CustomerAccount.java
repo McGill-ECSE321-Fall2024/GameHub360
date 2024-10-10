@@ -4,7 +4,6 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-import ca.mcgill.ecse321.GameShop.model.Order.CustomerOrder;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

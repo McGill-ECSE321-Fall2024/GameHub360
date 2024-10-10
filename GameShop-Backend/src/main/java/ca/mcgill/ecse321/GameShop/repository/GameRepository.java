@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 import ca.mcgill.ecse321.GameShop.model.Game;
 
 public interface GameRepository extends CrudRepository<Game, Integer> {
-    public Game findGameByGameId(Integer gameId);
+    public Game findGameByGameEntityId(Integer gameEntityId);
 }
