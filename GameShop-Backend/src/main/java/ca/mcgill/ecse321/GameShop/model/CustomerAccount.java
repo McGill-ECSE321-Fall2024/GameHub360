@@ -4,6 +4,7 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
+import ca.mcgill.ecse321.GameShop.model.Order.CustomerOrder;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +18,7 @@ import jakarta.persistence.OneToMany;
 import java.sql.Date;
 
 // line 12 "../../../../../../model.ump"
-// line 148 "../../../../../../model.ump"
+// line 146 "../../../../../../model.ump"
 @Entity
 public class CustomerAccount extends Account
 {
@@ -39,13 +40,13 @@ public class CustomerAccount extends Account
   private List<Review> reviews;
 
   @OneToMany(mappedBy = "orderedBy", cascade = CascadeType.ALL)
-  private List<Order> orderHistory;
+  private List<CustomerOrder> orderHistory;
 
   @ManyToMany
   @JoinTable(
       name = "wishlist",
       joinColumns = @JoinColumn(name = "customer_id"),
-      inverseJoinColumns = @JoinColumn(name = "game_id")
+      inverseJoinColumns = @JoinColumn(name = "game_entity_id")
   )
   private List<Game> wishListedGames;
 
@@ -59,7 +60,7 @@ public class CustomerAccount extends Account
     customerId = aCustomerId;
     paymentCards = new ArrayList<PaymentDetails>();
     reviews = new ArrayList<Review>();
-    orderHistory = new ArrayList<Order>();
+    orderHistory = new ArrayList<CustomerOrder>();
     wishListedGames = new ArrayList<Game>();
   }
 
@@ -140,15 +141,15 @@ public class CustomerAccount extends Account
     return index;
   }
   /* Code from template association_GetMany */
-  public Order getOrderHistory(int index)
+  public CustomerOrder getOrderHistory(int index)
   {
-    Order aOrderHistory = orderHistory.get(index);
+    CustomerOrder aOrderHistory = orderHistory.get(index);
     return aOrderHistory;
   }
 
-  public List<Order> getOrderHistory()
+  public List<CustomerOrder> getOrderHistory()
   {
-    List<Order> newOrderHistory = Collections.unmodifiableList(orderHistory);
+    List<CustomerOrder> newOrderHistory = Collections.unmodifiableList(orderHistory);
     return newOrderHistory;
   }
 
@@ -164,7 +165,7 @@ public class CustomerAccount extends Account
     return has;
   }
 
-  public int indexOfOrderHistory(Order aOrderHistory)
+  public int indexOfOrderHistory(CustomerOrder aOrderHistory)
   {
     int index = orderHistory.indexOf(aOrderHistory);
     return index;
@@ -277,7 +278,7 @@ public class CustomerAccount extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Review addReview(int aReviewId, Date aReviewDate, Order aReviewedOrder)
+  public Review addReview(int aReviewId, Date aReviewDate, CustomerOrder aReviewedOrder)
   {
     return new Review(aReviewId, aReviewDate, this, aReviewedOrder);
   }
@@ -349,12 +350,12 @@ public class CustomerAccount extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addOrderHistory(int aOrderId, Date aOrderDate, Review aOrderReview, PaymentDetails aPaymentInformation, Game... allGames)
+  public CustomerOrder addOrderHistory(int aOrderId, Date aOrderDate, Review aOrderReview, PaymentDetails aPaymentInformation, Game... allGames)
   {
-    return new Order(aOrderId, aOrderDate, aOrderReview, this, aPaymentInformation, allGames);
+    return new CustomerOrder(aOrderId, aOrderDate, aOrderReview, this, aPaymentInformation, allGames);
   }
 
-  public boolean addOrderHistory(Order aOrderHistory)
+  public boolean addOrderHistory(CustomerOrder aOrderHistory)
   {
     boolean wasAdded = false;
     if (orderHistory.contains(aOrderHistory)) { return false; }
@@ -372,7 +373,7 @@ public class CustomerAccount extends Account
     return wasAdded;
   }
 
-  public boolean removeOrderHistory(Order aOrderHistory)
+  public boolean removeOrderHistory(CustomerOrder aOrderHistory)
   {
     boolean wasRemoved = false;
     //Unable to remove aOrderHistory, as it must always have a orderedBy
@@ -384,7 +385,7 @@ public class CustomerAccount extends Account
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addOrderHistoryAt(Order aOrderHistory, int index)
+  public boolean addOrderHistoryAt(CustomerOrder aOrderHistory, int index)
   {  
     boolean wasAdded = false;
     if(addOrderHistory(aOrderHistory))
@@ -398,7 +399,7 @@ public class CustomerAccount extends Account
     return wasAdded;
   }
 
-  public boolean addOrMoveOrderHistoryAt(Order aOrderHistory, int index)
+  public boolean addOrMoveOrderHistoryAt(CustomerOrder aOrderHistory, int index)
   {
     boolean wasAdded = false;
     if(orderHistory.contains(aOrderHistory))
@@ -514,7 +515,7 @@ public class CustomerAccount extends Account
     }
     for(int i=orderHistory.size(); i > 0; i--)
     {
-      Order aOrderHistory = orderHistory.get(i - 1);
+      CustomerOrder aOrderHistory = orderHistory.get(i - 1);
       aOrderHistory.delete();
     }
     ArrayList<Game> copyOfWishListedGames = new ArrayList<Game>(wishListedGames);

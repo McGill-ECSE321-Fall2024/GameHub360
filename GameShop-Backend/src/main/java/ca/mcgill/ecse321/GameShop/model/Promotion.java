@@ -15,8 +15,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 
-// line 95 "../../../../../../model.ump"
-// line 201 "../../../../../../model.ump"
+// line 93 "../../../../../../model.ump"
+// line 194 "../../../../../../model.ump"
 @Entity
 public class Promotion
 {
@@ -50,7 +50,7 @@ public class Promotion
   @JoinTable(
       name = "promotion_games",
       joinColumns = @JoinColumn(name = "promotion_id"),
-      inverseJoinColumns = @JoinColumn(name = "game_id")
+      inverseJoinColumns = @JoinColumn(name = "game_entity_id")
   )
   private List<Game> promotedGames;
 

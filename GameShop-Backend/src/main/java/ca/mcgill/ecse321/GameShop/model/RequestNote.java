@@ -11,8 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-// line 40 "../../../../../../model.ump"
-// line 175 "../../../../../../model.ump"
+// line 39 "../../../../../../model.ump"
+// line 173 "../../../../../../model.ump"
 @Entity
 public class RequestNote
 {
@@ -31,11 +31,11 @@ public class RequestNote
 
   //RequestNote Associations
   @ManyToOne
-  @JoinColumn(name = "game_request_id")
+  @JoinColumn(name = "game_entity_id")
   private GameRequest gameRequest;
 
   @ManyToOne
-  @JoinColumn(name = "staff_account_id")
+  @JoinColumn(name = "staff_id")
   private StaffAccount notesWriter;
 
   //------------------------

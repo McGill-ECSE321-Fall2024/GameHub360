@@ -14,8 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 
-// line 87 "../../../../../../model.ump"
-// line 196 "../../../../../../model.ump"
+// line 85 "../../../../../../model.ump"
+// line 189 "../../../../../../model.ump"
 @Entity
 public class GameCategory
 {
@@ -47,7 +47,7 @@ public class GameCategory
 
   @ManyToMany
   @JoinTable(
-      name = "game_category",
+      name = "game_category_mapping", 
       joinColumns = @JoinColumn(name = "category_id"),
       inverseJoinColumns = @JoinColumn(name = "game_entity_id")
   )

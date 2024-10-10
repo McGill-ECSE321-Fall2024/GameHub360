@@ -12,8 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 
-// line 62 "../../../../../../model.ump"
-// line 185 "../../../../../../model.ump"
+// line 61 "../../../../../../model.ump"
+// line 178 "../../../../../../model.ump"
 @Entity
 public class Game extends GameEntity
 {
@@ -23,25 +23,21 @@ public class Game extends GameEntity
   //------------------------
 
   //Game Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int gameId;
-
   private int quantityInStock;
   private boolean isAvailable;
   private double price;
 
   //Game Associations
- @ManyToMany(mappedBy = "wishListedGames")
+  @ManyToMany(mappedBy = "wishListedGames")
   private List<CustomerAccount> wishLists;
 
   @ManyToMany
   @JoinTable(
       name = "order_games",
-      joinColumns = @JoinColumn(name = "game_id"),
+      joinColumns = @JoinColumn(name = "game_entity_id"),
       inverseJoinColumns = @JoinColumn(name = "order_id")
   )
-  private List<Order> orders;
+  private List<CustomerOrder> orders;
 
   @ManyToMany(mappedBy = "promotedGames")
   private List<Promotion> promotions;
@@ -50,29 +46,20 @@ public class Game extends GameEntity
   // CONSTRUCTOR
   //------------------------
 
-  public Game(String aName, String aDescription, String aImageURL, int aGameId, int aQuantityInStock, boolean aIsAvailable, double aPrice, GameCategory... allCategories)
+  public Game(int aGameEntityId, String aName, String aDescription, String aImageURL, int aQuantityInStock, boolean aIsAvailable, double aPrice, GameCategory... allCategories)
   {
-    super(aName, aDescription, aImageURL, allCategories);
-    gameId = aGameId;
+    super(aGameEntityId, aName, aDescription, aImageURL, allCategories);
     quantityInStock = aQuantityInStock;
     isAvailable = aIsAvailable;
     price = aPrice;
     wishLists = new ArrayList<CustomerAccount>();
-    orders = new ArrayList<Order>();
+    orders = new ArrayList<CustomerOrder>();
     promotions = new ArrayList<Promotion>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setGameId(int aGameId)
-  {
-    boolean wasSet = false;
-    gameId = aGameId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setQuantityInStock(int aQuantityInStock)
   {
@@ -96,11 +83,6 @@ public class Game extends GameEntity
     price = aPrice;
     wasSet = true;
     return wasSet;
-  }
-
-  public int getGameId()
-  {
-    return gameId;
   }
 
   public int getQuantityInStock()
@@ -153,15 +135,15 @@ public class Game extends GameEntity
     return index;
   }
   /* Code from template association_GetMany */
-  public Order getOrder(int index)
+  public CustomerOrder getOrder(int index)
   {
-    Order aOrder = orders.get(index);
+    CustomerOrder aOrder = orders.get(index);
     return aOrder;
   }
 
-  public List<Order> getOrders()
+  public List<CustomerOrder> getOrders()
   {
-    List<Order> newOrders = Collections.unmodifiableList(orders);
+    List<CustomerOrder> newOrders = Collections.unmodifiableList(orders);
     return newOrders;
   }
 
@@ -177,7 +159,7 @@ public class Game extends GameEntity
     return has;
   }
 
-  public int indexOfOrder(Order aOrder)
+  public int indexOfOrder(CustomerOrder aOrder)
   {
     int index = orders.indexOf(aOrder);
     return index;
@@ -300,7 +282,7 @@ public class Game extends GameEntity
     return 0;
   }
   /* Code from template association_AddManyToManyMethod */
-  public boolean addOrder(Order aOrder)
+  public boolean addOrder(CustomerOrder aOrder)
   {
     boolean wasAdded = false;
     if (orders.contains(aOrder)) { return false; }
@@ -320,7 +302,7 @@ public class Game extends GameEntity
     return wasAdded;
   }
   /* Code from template association_RemoveMany */
-  public boolean removeOrder(Order aOrder)
+  public boolean removeOrder(CustomerOrder aOrder)
   {
     boolean wasRemoved = false;
     if (!orders.contains(aOrder))
@@ -345,7 +327,7 @@ public class Game extends GameEntity
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addOrderAt(Order aOrder, int index)
+  public boolean addOrderAt(CustomerOrder aOrder, int index)
   {  
     boolean wasAdded = false;
     if(addOrder(aOrder))
@@ -359,7 +341,7 @@ public class Game extends GameEntity
     return wasAdded;
   }
 
-  public boolean addOrMoveOrderAt(Order aOrder, int index)
+  public boolean addOrMoveOrderAt(CustomerOrder aOrder, int index)
   {
     boolean wasAdded = false;
     if(orders.contains(aOrder))
@@ -467,11 +449,11 @@ public class Game extends GameEntity
     {
       aWishList.removeWishListedGame(this);
     }
-    ArrayList<Order> copyOfOrders = new ArrayList<Order>(orders);
+    ArrayList<CustomerOrder> copyOfOrders = new ArrayList<CustomerOrder>(orders);
     orders.clear();
-    for(Order aOrder : copyOfOrders)
+    for(CustomerOrder aOrder : copyOfOrders)
     {
-      if (aOrder.numberOfGames() <= Order.minimumNumberOfGames())
+      if (aOrder.numberOfGames() <= CustomerOrder.minimumNumberOfGames())
       {
         aOrder.delete();
       }
@@ -493,7 +475,6 @@ public class Game extends GameEntity
   public String toString()
   {
     return super.toString() + "["+
-            "gameId" + ":" + getGameId()+ "," +
             "quantityInStock" + ":" + getQuantityInStock()+ "," +
             "isAvailable" + ":" + getIsAvailable()+ "," +
             "price" + ":" + getPrice()+ "]";

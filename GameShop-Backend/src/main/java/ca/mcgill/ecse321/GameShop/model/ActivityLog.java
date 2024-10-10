@@ -10,8 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-// line 35 "../../../../../../model.ump"
-// line 170 "../../../../../../model.ump"
+// line 34 "../../../../../../model.ump"
+// line 168 "../../../../../../model.ump"
 @Entity
 public class ActivityLog
 {

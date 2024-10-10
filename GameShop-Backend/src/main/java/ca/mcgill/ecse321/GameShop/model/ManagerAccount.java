@@ -14,7 +14,7 @@ import jakarta.persistence.OneToMany;
 import java.sql.Date;
 
 // line 30 "../../../../../../model.ump"
-// line 165 "../../../../../../model.ump"
+// line 163 "../../../../../../model.ump"
 @Entity
 public class ManagerAccount extends StaffAccount
 {
@@ -22,11 +22,6 @@ public class ManagerAccount extends StaffAccount
   //------------------------
   // MEMBER VARIABLES
   //------------------------
-
-  //ManagerAccount Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int managerId;
 
   //ManagerAccount Associations
   @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL)
@@ -36,29 +31,15 @@ public class ManagerAccount extends StaffAccount
   // CONSTRUCTOR
   //------------------------
 
-  public ManagerAccount(String aEmail, String aPassword, int aManagerId)
+  public ManagerAccount(String aEmail, String aPassword, int aStaffId)
   {
-    super(aEmail, aPassword);
-    managerId = aManagerId;
+    super(aEmail, aPassword, aStaffId);
     reviewReplies = new ArrayList<Reply>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setManagerId(int aManagerId)
-  {
-    boolean wasSet = false;
-    managerId = aManagerId;
-    wasSet = true;
-    return wasSet;
-  }
-
-  public int getManagerId()
-  {
-    return managerId;
-  }
   /* Code from template association_GetMany */
   public Reply getReviewReply(int index)
   {
@@ -172,10 +153,4 @@ public class ManagerAccount extends StaffAccount
     super.delete();
   }
 
-
-  public String toString()
-  {
-    return super.toString() + "["+
-            "managerId" + ":" + getManagerId()+ "]";
-  }
 }

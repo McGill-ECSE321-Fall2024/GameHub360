@@ -7,7 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 
 // line 4 "../../../../../../model.ump"
-// line 143 "../../../../../../model.ump"
+// line 141 "../../../../../../model.ump"
 @MappedSuperclass
 public abstract class Account
 {

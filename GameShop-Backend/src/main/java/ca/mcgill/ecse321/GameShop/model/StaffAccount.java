@@ -5,20 +5,31 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
 
 import java.sql.Date;
 
 // line 18 "../../../../../../model.ump"
-// line 155 "../../../../../../model.ump"
-@MappedSuperclass
+// line 153 "../../../../../../model.ump"
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class StaffAccount extends Account
 {
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
+
+  //StaffAccount Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private int staffId;
 
   //StaffAccount Associations
   @OneToMany(mappedBy = "notesWriter", cascade = CascadeType.ALL)
@@ -28,15 +39,29 @@ public abstract class StaffAccount extends Account
   // CONSTRUCTOR
   //------------------------
 
-  public StaffAccount(String aEmail, String aPassword)
+  public StaffAccount(String aEmail, String aPassword, int aStaffId)
   {
     super(aEmail, aPassword);
+    staffId = aStaffId;
     writtenNotes = new ArrayList<RequestNote>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setStaffId(int aStaffId)
+  {
+    boolean wasSet = false;
+    staffId = aStaffId;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public int getStaffId()
+  {
+    return staffId;
+  }
   /* Code from template association_GetMany */
   public RequestNote getWrittenNote(int index)
   {
@@ -150,4 +175,10 @@ public abstract class StaffAccount extends Account
     super.delete();
   }
 
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "staffId" + ":" + getStaffId()+ "]";
+  }
 }

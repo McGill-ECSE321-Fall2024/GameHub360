@@ -11,8 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
-// line 102 "../../../../../../model.ump"
-// line 206 "../../../../../../model.ump"
+// line 100 "../../../../../../model.ump"
+// line 199 "../../../../../../model.ump"
 @Entity
 public class StoreInformation
 {

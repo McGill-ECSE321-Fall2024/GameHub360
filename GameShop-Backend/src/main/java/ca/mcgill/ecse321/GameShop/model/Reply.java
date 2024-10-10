@@ -11,8 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-// line 118 "../../../../../../model.ump"
-// line 228 "../../../../../../model.ump"
+// line 116 "../../../../../../model.ump"
+// line 221 "../../../../../../model.ump"
 @Entity
 public class Reply
 {
@@ -35,7 +35,7 @@ public class Reply
   private Review reviewRecord;
 
   @ManyToOne
-  @JoinColumn(name = "manager_id")
+  @JoinColumn(name = "staff_id")
   private ManagerAccount reviewer;
 
   //------------------------
