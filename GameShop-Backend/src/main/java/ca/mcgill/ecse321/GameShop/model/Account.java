@@ -3,8 +3,12 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+
 // line 4 "../../../../../../model.ump"
 // line 141 "../../../../../../model.ump"
+@MappedSuperclass
 public abstract class Account
 {
 
@@ -13,7 +17,9 @@ public abstract class Account
   //------------------------
 
   //Account Attributes
+  @Column(unique = true, nullable = false)
   private String email;
+
   private String password;
   private String name;
   private String phoneNumber;

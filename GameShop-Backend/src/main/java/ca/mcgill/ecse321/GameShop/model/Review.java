@@ -5,8 +5,21 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+
 // line 106 "../../../../../../model.ump"
 // line 206 "../../../../../../model.ump"
+@Entity
 public class Review
 {
 
@@ -21,14 +34,26 @@ public class Review
   //------------------------
 
   //Review Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int reviewId;
+
+  @Enumerated(EnumType.STRING)
   private GameReviewRating rating;
+
   private String comment;
   private Date reviewDate;
 
   //Review Associations
+  @OneToMany(mappedBy = "reviewRecord", cascade = CascadeType.ALL)
   private List<Reply> reviewReplies;
+
+  @ManyToOne
+  @JoinColumn(name = "customer_id")
   private CustomerAccount reviewAuthor;
+
+  @OneToOne
+  @JoinColumn(name = "order_id")
   private CustomerOrder reviewedOrder;
 
   //------------------------

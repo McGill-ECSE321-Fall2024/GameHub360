@@ -4,8 +4,19 @@
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+
 // line 85 "../../../../../../model.ump"
 // line 189 "../../../../../../model.ump"
+@Entity
 public class GameCategory
 {
 
@@ -20,13 +31,26 @@ public class GameCategory
   //------------------------
 
   //GameCategory Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int categoryId;
+
+  @Enumerated(EnumType.STRING)
   private CategoryType categoryType;
+
   private boolean isAvailable;
   private String name;
 
   //GameCategory Associations
+  @ManyToMany(mappedBy = "promotedCategories")
   private List<Promotion> promotions;
+
+  @ManyToMany
+  @JoinTable(
+      name = "game_category_mapping", 
+      joinColumns = @JoinColumn(name = "category_id"),
+      inverseJoinColumns = @JoinColumn(name = "game_entity_id")
+  )
   private List<GameEntity> games;
 
   //------------------------

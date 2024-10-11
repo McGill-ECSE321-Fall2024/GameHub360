@@ -3,10 +3,22 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+
 import java.sql.Date;
 
 // line 12 "../../../../../../model.ump"
 // line 146 "../../../../../../model.ump"
+@Entity
 public class CustomerAccount extends Account
 {
 
@@ -15,12 +27,26 @@ public class CustomerAccount extends Account
   //------------------------
 
   //CustomerAccount Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int customerId;
 
   //CustomerAccount Associations
+  @OneToMany(mappedBy = "cardOwner", cascade = CascadeType.ALL)
   private List<PaymentDetails> paymentCards;
+  
+  @OneToMany(mappedBy = "reviewAuthor", cascade = CascadeType.ALL)
   private List<Review> reviews;
+
+  @OneToMany(mappedBy = "orderedBy", cascade = CascadeType.ALL)
   private List<CustomerOrder> orderHistory;
+
+  @ManyToMany
+  @JoinTable(
+      name = "wishlist",
+      joinColumns = @JoinColumn(name = "customer_id"),
+      inverseJoinColumns = @JoinColumn(name = "game_entity_id")
+  )
   private List<Game> wishListedGames;
 
   //------------------------

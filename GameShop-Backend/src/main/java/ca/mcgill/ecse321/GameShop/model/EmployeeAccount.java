@@ -3,10 +3,16 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+
 import java.sql.Date;
 
 // line 24 "../../../../../../model.ump"
 // line 158 "../../../../../../model.ump"
+@Entity
 public class EmployeeAccount extends StaffAccount
 {
 
@@ -18,7 +24,10 @@ public class EmployeeAccount extends StaffAccount
   private boolean isActive;
 
   //EmployeeAccount Associations
+  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
   private List<ActivityLog> logs;
+
+  @OneToMany(mappedBy = "requestPlacer", cascade = CascadeType.ALL)
   private List<GameRequest> requests;
 
   //------------------------

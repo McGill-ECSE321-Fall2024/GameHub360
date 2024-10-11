@@ -3,10 +3,22 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
+
 import java.sql.Date;
 
 // line 18 "../../../../../../model.ump"
 // line 153 "../../../../../../model.ump"
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class StaffAccount extends Account
 {
 
@@ -15,9 +27,12 @@ public abstract class StaffAccount extends Account
   //------------------------
 
   //StaffAccount Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private int staffId;
 
   //StaffAccount Associations
+  @OneToMany(mappedBy = "notesWriter", cascade = CascadeType.ALL)
   private List<RequestNote> writtenNotes;
 
   //------------------------

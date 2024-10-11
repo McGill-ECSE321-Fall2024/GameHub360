@@ -5,8 +5,17 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
 // line 68 "../../../../../../model.ump"
 // line 183 "../../../../../../model.ump"
+@Entity
 public class GameRequest extends GameEntity
 {
 
@@ -21,12 +30,18 @@ public class GameRequest extends GameEntity
   //------------------------
 
   //GameRequest Attributes
+  @Enumerated(EnumType.STRING)
   private RequestStatus requestStatus;
+
   private Date requestDate;
 
   //GameRequest Associations
-  private List<RequestNote> associatedNotes;
+  @ManyToOne
+  @JoinColumn(name = "staff_id")
   private EmployeeAccount requestPlacer;
+
+  @OneToMany(mappedBy = "gameRequest", cascade = CascadeType.ALL)
+  private List<RequestNote> associatedNotes;
 
   //------------------------
   // CONSTRUCTOR

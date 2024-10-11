@@ -5,9 +5,22 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+
 // line 54 "../../../../../../model.ump"
-public class CustomerOrder
-{
+// line 180 "../../../../../../model.ump"
+@Entity
+public class CustomerOrder {
 
   //------------------------
   // ENUMERATIONS
@@ -20,14 +33,28 @@ public class CustomerOrder
   //------------------------
 
   //CustomerOrder Attributes
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int orderId;
+
+  @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
+
   private Date orderDate;
 
   //CustomerOrder Associations
+  @OneToOne(mappedBy = "reviewedOrder", cascade = CascadeType.ALL)
   private Review orderReview;
+
+  @ManyToOne
+  @JoinColumn(name = "customer_id")
   private CustomerAccount orderedBy;
+
+  @ManyToOne
+  @JoinColumn(name = "payment_id")
   private PaymentDetails paymentInformation;
+
+  @ManyToMany(mappedBy = "orders")
   private List<Game> games;
 
   //------------------------
