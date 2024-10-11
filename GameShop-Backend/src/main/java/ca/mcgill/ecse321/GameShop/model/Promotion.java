@@ -66,9 +66,8 @@ public class Promotion
   // CONSTRUCTOR
   //------------------------
 
-  public Promotion(int aPromotionId, double aDiscountPercentageValue, StoreInformation aInfo)
+  public Promotion(double aDiscountPercentageValue, StoreInformation aInfo)
   {
-    promotionId = aPromotionId;
     discountPercentageValue = aDiscountPercentageValue;
     boolean didAddInfo = setInfo(aInfo);
     if (!didAddInfo)
@@ -82,14 +81,6 @@ public class Promotion
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setPromotionId(int aPromotionId)
-  {
-    boolean wasSet = false;
-    promotionId = aPromotionId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setPromotionType(PromotionType aPromotionType)
   {

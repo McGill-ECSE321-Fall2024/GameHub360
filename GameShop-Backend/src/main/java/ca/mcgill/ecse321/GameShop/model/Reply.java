@@ -42,9 +42,8 @@ public class Reply
   // CONSTRUCTOR
   //------------------------
 
-  public Reply(int aReplyId, String aContent, Date aReplyDate, Review aReviewRecord, ManagerAccount aReviewer)
+  public Reply(String aContent, Date aReplyDate, Review aReviewRecord, ManagerAccount aReviewer)
   {
-    replyId = aReplyId;
     content = aContent;
     replyDate = aReplyDate;
     boolean didAddReviewRecord = setReviewRecord(aReviewRecord);
@@ -62,14 +61,6 @@ public class Reply
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setReplyId(int aReplyId)
-  {
-    boolean wasSet = false;
-    replyId = aReplyId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setContent(String aContent)
   {

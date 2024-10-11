@@ -40,9 +40,8 @@ public abstract class GameEntity
   // CONSTRUCTOR
   //------------------------
 
-  public GameEntity(int aGameEntityId, String aName, String aDescription, String aImageURL, GameCategory... allCategories)
+  public GameEntity(String aName, String aDescription, String aImageURL, GameCategory... allCategories)
   {
-    gameEntityId = aGameEntityId;
     name = aName;
     description = aDescription;
     imageURL = aImageURL;
@@ -57,14 +56,6 @@ public abstract class GameEntity
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setGameEntityId(int aGameEntityId)
-  {
-    boolean wasSet = false;
-    gameEntityId = aGameEntityId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setName(String aName)
   {

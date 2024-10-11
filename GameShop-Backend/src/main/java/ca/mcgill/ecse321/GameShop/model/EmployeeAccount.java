@@ -34,9 +34,9 @@ public class EmployeeAccount extends StaffAccount
   // CONSTRUCTOR
   //------------------------
 
-  public EmployeeAccount(String aEmail, String aPassword, int aStaffId, boolean aIsActive)
+  public EmployeeAccount(String aEmail, String aPassword, boolean aIsActive)
   {
-    super(aEmail, aPassword, aStaffId);
+    super(aEmail, aPassword);
     isActive = aIsActive;
     logs = new ArrayList<ActivityLog>();
     requests = new ArrayList<GameRequest>();
@@ -129,9 +129,9 @@ public class EmployeeAccount extends StaffAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ActivityLog addLog(int aLogId, String aContent)
+  public ActivityLog addLog(String aContent)
   {
-    return new ActivityLog(aLogId, aContent, this);
+    return new ActivityLog(aContent, this);
   }
 
   public boolean addLog(ActivityLog aLog)
@@ -201,9 +201,9 @@ public class EmployeeAccount extends StaffAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public GameRequest addRequest(int aGameEntityId, String aName, String aDescription, String aImageURL, Date aRequestDate, GameCategory... allCategories)
+  public GameRequest addRequest(String aName, String aDescription, String aImageURL, Date aRequestDate, GameCategory... allCategories)
   {
-    return new GameRequest(aGameEntityId, aName, aDescription, aImageURL, aRequestDate, this, allCategories);
+    return new GameRequest(aName, aDescription, aImageURL, aRequestDate, this, allCategories);
   }
 
   public boolean addRequest(GameRequest aRequest)

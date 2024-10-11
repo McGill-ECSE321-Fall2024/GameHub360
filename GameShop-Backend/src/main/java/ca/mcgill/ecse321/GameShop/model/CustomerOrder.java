@@ -61,9 +61,8 @@ public class CustomerOrder {
   // CONSTRUCTOR
   //------------------------
 
-  public CustomerOrder(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
+  public CustomerOrder(Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
   {
-    orderId = aOrderId;
     orderDate = aOrderDate;
     if (aOrderReview == null || aOrderReview.getReviewedOrder() != null)
     {
@@ -88,11 +87,10 @@ public class CustomerOrder {
     }
   }
 
-  public CustomerOrder(int aOrderId, Date aOrderDate, int aReviewIdForOrderReview, Date aReviewDateForOrderReview, CustomerAccount aReviewAuthorForOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
+  public CustomerOrder(Date aOrderDate, Date aReviewDateForOrderReview, CustomerAccount aReviewAuthorForOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
   {
-    orderId = aOrderId;
     orderDate = aOrderDate;
-    orderReview = new Review(aReviewIdForOrderReview, aReviewDateForOrderReview, aReviewAuthorForOrderReview, this);
+    orderReview = new Review(aReviewDateForOrderReview, aReviewAuthorForOrderReview, this);
     boolean didAddOrderedBy = setOrderedBy(aOrderedBy);
     if (!didAddOrderedBy)
     {
@@ -114,14 +112,6 @@ public class CustomerOrder {
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setOrderId(int aOrderId)
-  {
-    boolean wasSet = false;
-    orderId = aOrderId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setOrderStatus(OrderStatus aOrderStatus)
   {

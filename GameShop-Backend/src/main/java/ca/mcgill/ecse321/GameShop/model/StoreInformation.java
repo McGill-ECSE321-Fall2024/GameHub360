@@ -36,9 +36,8 @@ public class StoreInformation
   // CONSTRUCTOR
   //------------------------
 
-  public StoreInformation(int aStoreInfoId)
+  public StoreInformation()
   {
-    storeInfoId = aStoreInfoId;
     storePolicy = null;
     currentPromotions = new ArrayList<Promotion>();
   }
@@ -46,14 +45,6 @@ public class StoreInformation
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setStoreInfoId(int aStoreInfoId)
-  {
-    boolean wasSet = false;
-    storeInfoId = aStoreInfoId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setStorePolicy(String aStorePolicy)
   {
@@ -108,9 +99,9 @@ public class StoreInformation
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Promotion addCurrentPromotion(int aPromotionId, double aDiscountPercentageValue)
+  public Promotion addCurrentPromotion(double aDiscountPercentageValue)
   {
-    return new Promotion(aPromotionId, aDiscountPercentageValue, this);
+    return new Promotion(aDiscountPercentageValue, this);
   }
 
   public boolean addCurrentPromotion(Promotion aCurrentPromotion)

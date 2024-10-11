@@ -53,10 +53,9 @@ public class CustomerAccount extends Account
   // CONSTRUCTOR
   //------------------------
 
-  public CustomerAccount(String aEmail, String aPassword, int aCustomerId)
+  public CustomerAccount(String aEmail, String aPassword)
   {
     super(aEmail, aPassword);
-    customerId = aCustomerId;
     paymentCards = new ArrayList<PaymentDetails>();
     reviews = new ArrayList<Review>();
     orderHistory = new ArrayList<CustomerOrder>();
@@ -66,14 +65,6 @@ public class CustomerAccount extends Account
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setCustomerId(int aCustomerId)
-  {
-    boolean wasSet = false;
-    customerId = aCustomerId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public int getCustomerId()
   {
@@ -205,9 +196,9 @@ public class CustomerAccount extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public PaymentDetails addPaymentCard(int aPaymentDetailsId, String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear)
+  public PaymentDetails addPaymentCard(String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear)
   {
-    return new PaymentDetails(aPaymentDetailsId, aCardName, aPostalCode, aCardNumber, aExpMonth, aExpYear, this);
+    return new PaymentDetails(aCardName, aPostalCode, aCardNumber, aExpMonth, aExpYear, this);
   }
 
   public boolean addPaymentCard(PaymentDetails aPaymentCard)
@@ -277,9 +268,9 @@ public class CustomerAccount extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Review addReview(int aReviewId, Date aReviewDate, CustomerOrder aReviewedOrder)
+  public Review addReview(Date aReviewDate, CustomerOrder aReviewedOrder)
   {
-    return new Review(aReviewId, aReviewDate, this, aReviewedOrder);
+    return new Review(aReviewDate, this, aReviewedOrder);
   }
 
   public boolean addReview(Review aReview)
@@ -349,9 +340,9 @@ public class CustomerAccount extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public CustomerOrder addOrderHistory(int aOrderId, Date aOrderDate, Review aOrderReview, PaymentDetails aPaymentInformation, Game... allGames)
+  public CustomerOrder addOrderHistory(Date aOrderDate, Review aOrderReview, PaymentDetails aPaymentInformation, Game... allGames)
   {
-    return new CustomerOrder(aOrderId, aOrderDate, aOrderReview, this, aPaymentInformation, allGames);
+    return new CustomerOrder(aOrderDate, aOrderReview, this, aPaymentInformation, allGames);
   }
 
   public boolean addOrderHistory(CustomerOrder aOrderHistory)

@@ -39,24 +39,15 @@ public abstract class StaffAccount extends Account
   // CONSTRUCTOR
   //------------------------
 
-  public StaffAccount(String aEmail, String aPassword, int aStaffId)
+  public StaffAccount(String aEmail, String aPassword)
   {
     super(aEmail, aPassword);
-    staffId = aStaffId;
     writtenNotes = new ArrayList<RequestNote>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setStaffId(int aStaffId)
-  {
-    boolean wasSet = false;
-    staffId = aStaffId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public int getStaffId()
   {
@@ -98,9 +89,9 @@ public abstract class StaffAccount extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public RequestNote addWrittenNote(int aNoteId, String aContent, Date aNoteDate, GameRequest aGameRequest)
+  public RequestNote addWrittenNote(String aContent, Date aNoteDate, GameRequest aGameRequest)
   {
-    return new RequestNote(aNoteId, aContent, aNoteDate, aGameRequest, this);
+    return new RequestNote(aContent, aNoteDate, aGameRequest, this);
   }
 
   public boolean addWrittenNote(RequestNote aWrittenNote)

@@ -48,9 +48,8 @@ public class PaymentDetails
   // CONSTRUCTOR
   //------------------------
 
-  public PaymentDetails(int aPaymentDetailsId, String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear, CustomerAccount aCardOwner)
+  public PaymentDetails(String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear, CustomerAccount aCardOwner)
   {
-    paymentDetailsId = aPaymentDetailsId;
     cardName = aCardName;
     postalCode = aPostalCode;
     cardNumber = aCardNumber;
@@ -67,14 +66,6 @@ public class PaymentDetails
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setPaymentDetailsId(int aPaymentDetailsId)
-  {
-    boolean wasSet = false;
-    paymentDetailsId = aPaymentDetailsId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setCardName(String aCardName)
   {
@@ -205,9 +196,9 @@ public class PaymentDetails
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public CustomerOrder addPaidOrder(int aOrderId, Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, Game... allGames)
+  public CustomerOrder addPaidOrder(Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, Game... allGames)
   {
-    return new CustomerOrder(aOrderId, aOrderDate, aOrderReview, aOrderedBy, this, allGames);
+    return new CustomerOrder(aOrderDate, aOrderReview, aOrderedBy, this, allGames);
   }
 
   public boolean addPaidOrder(CustomerOrder aPaidOrder)
