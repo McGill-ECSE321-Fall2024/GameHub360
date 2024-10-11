@@ -42,9 +42,8 @@ public class RequestNote
   // CONSTRUCTOR
   //------------------------
 
-  public RequestNote(int aNoteId, String aContent, Date aNoteDate, GameRequest aGameRequest, StaffAccount aNotesWriter)
+  public RequestNote(String aContent, Date aNoteDate, GameRequest aGameRequest, StaffAccount aNotesWriter)
   {
-    noteId = aNoteId;
     content = aContent;
     noteDate = aNoteDate;
     boolean didAddGameRequest = setGameRequest(aGameRequest);
@@ -62,14 +61,6 @@ public class RequestNote
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setNoteId(int aNoteId)
-  {
-    boolean wasSet = false;
-    noteId = aNoteId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setContent(String aContent)
   {

@@ -57,9 +57,8 @@ public class GameCategory
   // CONSTRUCTOR
   //------------------------
 
-  public GameCategory(int aCategoryId, boolean aIsAvailable, String aName)
+  public GameCategory(boolean aIsAvailable, String aName)
   {
-    categoryId = aCategoryId;
     isAvailable = aIsAvailable;
     name = aName;
     promotions = new ArrayList<Promotion>();
@@ -69,14 +68,6 @@ public class GameCategory
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setCategoryId(int aCategoryId)
-  {
-    boolean wasSet = false;
-    categoryId = aCategoryId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setCategoryType(CategoryType aCategoryType)
   {

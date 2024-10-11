@@ -5,9 +5,6 @@ package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -46,9 +43,9 @@ public class Game extends GameEntity
   // CONSTRUCTOR
   //------------------------
 
-  public Game(int aGameEntityId, String aName, String aDescription, String aImageURL, int aQuantityInStock, boolean aIsAvailable, double aPrice, GameCategory... allCategories)
+  public Game(String aName, String aDescription, String aImageURL, int aQuantityInStock, boolean aIsAvailable, double aPrice, GameCategory... allCategories)
   {
-    super(aGameEntityId, aName, aDescription, aImageURL, allCategories);
+    super(aName, aDescription, aImageURL, allCategories);
     quantityInStock = aQuantityInStock;
     isAvailable = aIsAvailable;
     price = aPrice;

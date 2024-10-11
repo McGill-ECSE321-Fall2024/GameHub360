@@ -47,9 +47,9 @@ public class GameRequest extends GameEntity
   // CONSTRUCTOR
   //------------------------
 
-  public GameRequest(int aGameEntityId, String aName, String aDescription, String aImageURL, Date aRequestDate, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
+  public GameRequest(String aName, String aDescription, String aImageURL, Date aRequestDate, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
   {
-    super(aGameEntityId, aName, aDescription, aImageURL, allCategories);
+    super(aName, aDescription, aImageURL, allCategories);
     requestDate = aRequestDate;
     associatedNotes = new ArrayList<RequestNote>();
     boolean didAddRequestPlacer = setRequestPlacer(aRequestPlacer);
@@ -129,9 +129,9 @@ public class GameRequest extends GameEntity
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public RequestNote addAssociatedNote(int aNoteId, String aContent, Date aNoteDate, StaffAccount aNotesWriter)
+  public RequestNote addAssociatedNote(String aContent, Date aNoteDate, StaffAccount aNotesWriter)
   {
-    return new RequestNote(aNoteId, aContent, aNoteDate, this, aNotesWriter);
+    return new RequestNote(aContent, aNoteDate, this, aNotesWriter);
   }
 
   public boolean addAssociatedNote(RequestNote aAssociatedNote)

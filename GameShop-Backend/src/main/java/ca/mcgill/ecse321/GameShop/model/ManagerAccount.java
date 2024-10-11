@@ -28,9 +28,9 @@ public class ManagerAccount extends StaffAccount
   // CONSTRUCTOR
   //------------------------
 
-  public ManagerAccount(String aEmail, String aPassword, int aStaffId)
+  public ManagerAccount(String aEmail, String aPassword)
   {
-    super(aEmail, aPassword, aStaffId);
+    super(aEmail, aPassword);
     reviewReplies = new ArrayList<Reply>();
   }
 
@@ -73,9 +73,9 @@ public class ManagerAccount extends StaffAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Reply addReviewReply(int aReplyId, String aContent, Date aReplyDate, Review aReviewRecord)
+  public Reply addReviewReply(String aContent, Date aReplyDate, Review aReviewRecord)
   {
-    return new Reply(aReplyId, aContent, aReplyDate, aReviewRecord, this);
+    return new Reply(aContent, aReplyDate, aReviewRecord, this);
   }
 
   public boolean addReviewReply(Reply aReviewReply)

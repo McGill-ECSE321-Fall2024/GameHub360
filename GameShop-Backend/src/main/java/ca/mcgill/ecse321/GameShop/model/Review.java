@@ -60,9 +60,8 @@ public class Review
   // CONSTRUCTOR
   //------------------------
 
-  public Review(int aReviewId, Date aReviewDate, CustomerAccount aReviewAuthor, CustomerOrder aReviewedOrder)
+  public Review(Date aReviewDate, CustomerAccount aReviewAuthor, CustomerOrder aReviewedOrder)
   {
-    reviewId = aReviewId;
     comment = null;
     reviewDate = aReviewDate;
     reviewReplies = new ArrayList<Reply>();
@@ -78,9 +77,8 @@ public class Review
     reviewedOrder = aReviewedOrder;
   }
 
-  public Review(int aReviewId, Date aReviewDate, CustomerAccount aReviewAuthor, int aOrderIdForReviewedOrder, Date aOrderDateForReviewedOrder, CustomerAccount aOrderedByForReviewedOrder, PaymentDetails aPaymentInformationForReviewedOrder, Game... allGamesForReviewedOrder)
+  public Review(Date aReviewDate, CustomerAccount aReviewAuthor, Date aOrderDateForReviewedOrder, CustomerAccount aOrderedByForReviewedOrder, PaymentDetails aPaymentInformationForReviewedOrder, Game... allGamesForReviewedOrder)
   {
-    reviewId = aReviewId;
     comment = null;
     reviewDate = aReviewDate;
     reviewReplies = new ArrayList<Reply>();
@@ -89,20 +87,12 @@ public class Review
     {
       throw new RuntimeException("Unable to create review due to reviewAuthor. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    reviewedOrder = new CustomerOrder(aOrderIdForReviewedOrder, aOrderDateForReviewedOrder, this, aOrderedByForReviewedOrder, aPaymentInformationForReviewedOrder, allGamesForReviewedOrder);
+    reviewedOrder = new CustomerOrder(aOrderDateForReviewedOrder, this, aOrderedByForReviewedOrder, aPaymentInformationForReviewedOrder, allGamesForReviewedOrder);
   }
 
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setReviewId(int aReviewId)
-  {
-    boolean wasSet = false;
-    reviewId = aReviewId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setRating(GameReviewRating aRating)
   {
@@ -193,9 +183,9 @@ public class Review
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Reply addReviewReply(int aReplyId, String aContent, Date aReplyDate, ManagerAccount aReviewer)
+  public Reply addReviewReply(String aContent, Date aReplyDate, ManagerAccount aReviewer)
   {
-    return new Reply(aReplyId, aContent, aReplyDate, this, aReviewer);
+    return new Reply(aContent, aReplyDate, this, aReviewer);
   }
 
   public boolean addReviewReply(Reply aReviewReply)

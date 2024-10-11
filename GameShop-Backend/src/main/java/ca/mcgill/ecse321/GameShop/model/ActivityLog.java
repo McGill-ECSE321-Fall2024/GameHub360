@@ -35,9 +35,8 @@ public class ActivityLog
   // CONSTRUCTOR
   //------------------------
 
-  public ActivityLog(int aLogId, String aContent, EmployeeAccount aEmployee)
+  public ActivityLog(String aContent, EmployeeAccount aEmployee)
   {
-    logId = aLogId;
     content = aContent;
     boolean didAddEmployee = setEmployee(aEmployee);
     if (!didAddEmployee)
@@ -49,14 +48,6 @@ public class ActivityLog
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setLogId(int aLogId)
-  {
-    boolean wasSet = false;
-    logId = aLogId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setContent(String aContent)
   {
