@@ -1,4 +1,4 @@
-# Welcome to team 9's Game Shop Management System's wiki! 🎮
+# Welcome to team 9's Game Shop Management System! 🎮
 The goal of this project is to create a software system that could be used by customers, employees, and the manager to service an Online Game Shop. 
 Our Game Shop Management System offers a seamless way to manage inventory, customer orders, and reviews for an independent game shop 🕹️
 
@@ -25,7 +25,7 @@ Our Game Shop Management System offers a seamless way to manage inventory, custo
 
 # Deliverable 1
 ## Links
-* [Wiki Home Page]
+* [Wiki Home Page](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki)
 * [Meeting Minutes D1]
 * [Requirements](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Requirements)
 * [Use Case Diagrams and Specifications](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Use-Cases-and-Specifications)
