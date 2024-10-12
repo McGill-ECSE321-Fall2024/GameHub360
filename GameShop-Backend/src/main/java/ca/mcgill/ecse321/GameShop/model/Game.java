@@ -48,6 +48,12 @@ public class Game extends GameEntity
     promotions = new ArrayList<Promotion>();
   }
 
+  public Game() {
+    wishLists = new ArrayList<CustomerAccount>();
+    orders = new ArrayList<OrderGame>();
+    promotions = new ArrayList<Promotion>();
+  }
+
   //------------------------
   // INTERFACE
   //------------------------
