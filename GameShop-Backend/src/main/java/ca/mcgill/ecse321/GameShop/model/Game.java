@@ -1,16 +1,15 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 
 // line 61 "../../../../../../model.ump"
-// line 178 "../../../../../../model.ump"
+// line 192 "../../../../../../model.ump"
 @Entity
 public class Game extends GameEntity
 {
@@ -24,17 +23,12 @@ public class Game extends GameEntity
   private boolean isAvailable;
   private double price;
 
-  //Game Associations
+  //Game Associations  
   @ManyToMany(mappedBy = "wishListedGames")
   private List<CustomerAccount> wishLists;
 
-  @ManyToMany
-  @JoinTable(
-      name = "order_games",
-      joinColumns = @JoinColumn(name = "game_entity_id"),
-      inverseJoinColumns = @JoinColumn(name = "order_id")
-  )
-  private List<CustomerOrder> orders;
+  @OneToMany(mappedBy = "game")
+  private List<OrderGame> orders;
 
   @ManyToMany(mappedBy = "promotedGames")
   private List<Promotion> promotions;
@@ -49,8 +43,8 @@ public class Game extends GameEntity
     quantityInStock = aQuantityInStock;
     isAvailable = aIsAvailable;
     price = aPrice;
+    orders = new ArrayList<OrderGame>();
     wishLists = new ArrayList<CustomerAccount>();
-    orders = new ArrayList<CustomerOrder>();
     promotions = new ArrayList<Promotion>();
   }
 
@@ -108,6 +102,36 @@ public class Game extends GameEntity
     return isAvailable;
   }
   /* Code from template association_GetMany */
+  public OrderGame getOrder(int index)
+  {
+    OrderGame aOrder = orders.get(index);
+    return aOrder;
+  }
+
+  public List<OrderGame> getOrders()
+  {
+    List<OrderGame> newOrders = Collections.unmodifiableList(orders);
+    return newOrders;
+  }
+
+  public int numberOfOrders()
+  {
+    int number = orders.size();
+    return number;
+  }
+
+  public boolean hasOrders()
+  {
+    boolean has = orders.size() > 0;
+    return has;
+  }
+
+  public int indexOfOrder(OrderGame aOrder)
+  {
+    int index = orders.indexOf(aOrder);
+    return index;
+  }
+  /* Code from template association_GetMany */
   public CustomerAccount getWishList(int index)
   {
     CustomerAccount aWishList = wishLists.get(index);
@@ -135,36 +159,6 @@ public class Game extends GameEntity
   public int indexOfWishList(CustomerAccount aWishList)
   {
     int index = wishLists.indexOf(aWishList);
-    return index;
-  }
-  /* Code from template association_GetMany */
-  public CustomerOrder getOrder(int index)
-  {
-    CustomerOrder aOrder = orders.get(index);
-    return aOrder;
-  }
-
-  public List<CustomerOrder> getOrders()
-  {
-    List<CustomerOrder> newOrders = Collections.unmodifiableList(orders);
-    return newOrders;
-  }
-
-  public int numberOfOrders()
-  {
-    int number = orders.size();
-    return number;
-  }
-
-  public boolean hasOrders()
-  {
-    boolean has = orders.size() > 0;
-    return has;
-  }
-
-  public int indexOfOrder(CustomerOrder aOrder)
-  {
-    int index = orders.indexOf(aOrder);
     return index;
   }
   /* Code from template association_GetMany */
@@ -196,6 +190,78 @@ public class Game extends GameEntity
   {
     int index = promotions.indexOf(aPromotion);
     return index;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfOrders()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public OrderGame addOrder(CustomerOrder aCustomerOrder)
+  {
+    return new OrderGame(aCustomerOrder, this);
+  }
+
+  public boolean addOrder(OrderGame aOrder)
+  {
+    boolean wasAdded = false;
+    if (orders.contains(aOrder)) { return false; }
+    Game existingGame = aOrder.getGame();
+    boolean isNewGame = existingGame != null && !this.equals(existingGame);
+    if (isNewGame)
+    {
+      aOrder.setGame(this);
+    }
+    else
+    {
+      orders.add(aOrder);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeOrder(OrderGame aOrder)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aOrder, as it must always have a game
+    if (!this.equals(aOrder.getGame()))
+    {
+      orders.remove(aOrder);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addOrderAt(OrderGame aOrder, int index)
+  {  
+    boolean wasAdded = false;
+    if(addOrder(aOrder))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
+      orders.remove(aOrder);
+      orders.add(index, aOrder);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveOrderAt(OrderGame aOrder, int index)
+  {
+    boolean wasAdded = false;
+    if(orders.contains(aOrder))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
+      orders.remove(aOrder);
+      orders.add(index, aOrder);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addOrderAt(aOrder, index);
+    }
+    return wasAdded;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfWishLists()
@@ -276,88 +342,6 @@ public class Game extends GameEntity
     else 
     {
       wasAdded = addWishListAt(aWishList, index);
-    }
-    return wasAdded;
-  }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfOrders()
-  {
-    return 0;
-  }
-  /* Code from template association_AddManyToManyMethod */
-  public boolean addOrder(CustomerOrder aOrder)
-  {
-    boolean wasAdded = false;
-    if (orders.contains(aOrder)) { return false; }
-    orders.add(aOrder);
-    if (aOrder.indexOfGame(this) != -1)
-    {
-      wasAdded = true;
-    }
-    else
-    {
-      wasAdded = aOrder.addGame(this);
-      if (!wasAdded)
-      {
-        orders.remove(aOrder);
-      }
-    }
-    return wasAdded;
-  }
-  /* Code from template association_RemoveMany */
-  public boolean removeOrder(CustomerOrder aOrder)
-  {
-    boolean wasRemoved = false;
-    if (!orders.contains(aOrder))
-    {
-      return wasRemoved;
-    }
-
-    int oldIndex = orders.indexOf(aOrder);
-    orders.remove(oldIndex);
-    if (aOrder.indexOfGame(this) == -1)
-    {
-      wasRemoved = true;
-    }
-    else
-    {
-      wasRemoved = aOrder.removeGame(this);
-      if (!wasRemoved)
-      {
-        orders.add(oldIndex,aOrder);
-      }
-    }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addOrderAt(CustomerOrder aOrder, int index)
-  {  
-    boolean wasAdded = false;
-    if(addOrder(aOrder))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
-      orders.remove(aOrder);
-      orders.add(index, aOrder);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveOrderAt(CustomerOrder aOrder, int index)
-  {
-    boolean wasAdded = false;
-    if(orders.contains(aOrder))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
-      orders.remove(aOrder);
-      orders.add(index, aOrder);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addOrderAt(aOrder, index);
     }
     return wasAdded;
   }
@@ -446,24 +430,16 @@ public class Game extends GameEntity
 
   public void delete()
   {
+    for(int i=orders.size(); i > 0; i--)
+    {
+      OrderGame aOrder = orders.get(i - 1);
+      aOrder.delete();
+    }
     ArrayList<CustomerAccount> copyOfWishLists = new ArrayList<CustomerAccount>(wishLists);
     wishLists.clear();
     for(CustomerAccount aWishList : copyOfWishLists)
     {
       aWishList.removeWishListedGame(this);
-    }
-    ArrayList<CustomerOrder> copyOfOrders = new ArrayList<CustomerOrder>(orders);
-    orders.clear();
-    for(CustomerOrder aOrder : copyOfOrders)
-    {
-      if (aOrder.numberOfGames() <= CustomerOrder.minimumNumberOfGames())
-      {
-        aOrder.delete();
-      }
-      else
-      {
-        aOrder.removeGame(this);
-      }
     }
     ArrayList<Promotion> copyOfPromotions = new ArrayList<Promotion>(promotions);
     promotions.clear();
