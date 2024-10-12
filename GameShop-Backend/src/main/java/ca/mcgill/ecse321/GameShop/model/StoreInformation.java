@@ -1,19 +1,11 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-
 // line 100 "../../../../../../model.ump"
-// line 199 "../../../../../../model.ump"
-@Entity
+// line 217 "../../../../../../model.ump"
 public class StoreInformation
 {
 
@@ -22,22 +14,19 @@ public class StoreInformation
   //------------------------
 
   //StoreInformation Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int storeInfoId;
-
   private String storePolicy;
 
   //StoreInformation Associations
-  @OneToMany(mappedBy = "info", cascade = CascadeType.ALL)
   private List<Promotion> currentPromotions;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public StoreInformation()
+  public StoreInformation(int aStoreInfoId)
   {
+    storeInfoId = aStoreInfoId;
     storePolicy = null;
     currentPromotions = new ArrayList<Promotion>();
   }
@@ -45,6 +34,14 @@ public class StoreInformation
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setStoreInfoId(int aStoreInfoId)
+  {
+    boolean wasSet = false;
+    storeInfoId = aStoreInfoId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setStorePolicy(String aStorePolicy)
   {
@@ -99,9 +96,9 @@ public class StoreInformation
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Promotion addCurrentPromotion(double aDiscountPercentageValue)
+  public Promotion addCurrentPromotion(int aPromotionId, double aDiscountPercentageValue)
   {
-    return new Promotion(aDiscountPercentageValue, this);
+    return new Promotion(aPromotionId, aDiscountPercentageValue, this);
   }
 
   public boolean addCurrentPromotion(Promotion aCurrentPromotion)

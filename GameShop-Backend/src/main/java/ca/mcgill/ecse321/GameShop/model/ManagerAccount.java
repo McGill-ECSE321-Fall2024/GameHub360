@@ -1,18 +1,12 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-
 import java.sql.Date;
 
 // line 30 "../../../../../../model.ump"
-// line 163 "../../../../../../model.ump"
-@Entity
+// line 167 "../../../../../../model.ump"
 public class ManagerAccount extends StaffAccount
 {
 
@@ -21,16 +15,15 @@ public class ManagerAccount extends StaffAccount
   //------------------------
 
   //ManagerAccount Associations
-  @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL)
   private List<Reply> reviewReplies;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ManagerAccount(String aEmail, String aPassword)
+  public ManagerAccount(String aEmail, String aPassword, int aStaffId)
   {
-    super(aEmail, aPassword);
+    super(aEmail, aPassword, aStaffId);
     reviewReplies = new ArrayList<Reply>();
   }
 
@@ -73,9 +66,9 @@ public class ManagerAccount extends StaffAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Reply addReviewReply(String aContent, Date aReplyDate, Review aReviewRecord)
+  public Reply addReviewReply(int aReplyId, String aContent, Date aReplyDate, Review aReviewRecord)
   {
-    return new Reply(aContent, aReplyDate, aReviewRecord, this);
+    return new Reply(aReplyId, aContent, aReplyDate, aReviewRecord, this);
   }
 
   public boolean addReviewReply(Reply aReviewReply)

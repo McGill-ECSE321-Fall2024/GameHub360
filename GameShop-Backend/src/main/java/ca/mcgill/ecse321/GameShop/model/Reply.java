@@ -1,19 +1,11 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
 // line 116 "../../../../../../model.ump"
-// line 221 "../../../../../../model.ump"
-@Entity
+// line 227 "../../../../../../model.ump"
 public class Reply
 {
 
@@ -22,28 +14,21 @@ public class Reply
   //------------------------
 
   //Reply Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int replyId;
-
   private String content;
   private Date replyDate;
-  
-  //Reply Associations
-  @ManyToOne
-  @JoinColumn(name = "review_id")
-  private Review reviewRecord;
 
-  @ManyToOne
-  @JoinColumn(name = "staff_id")
+  //Reply Associations
+  private Review reviewRecord;
   private ManagerAccount reviewer;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Reply(String aContent, Date aReplyDate, Review aReviewRecord, ManagerAccount aReviewer)
+  public Reply(int aReplyId, String aContent, Date aReplyDate, Review aReviewRecord, ManagerAccount aReviewer)
   {
+    replyId = aReplyId;
     content = aContent;
     replyDate = aReplyDate;
     boolean didAddReviewRecord = setReviewRecord(aReviewRecord);
@@ -61,6 +46,14 @@ public class Reply
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setReplyId(int aReplyId)
+  {
+    boolean wasSet = false;
+    replyId = aReplyId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setContent(String aContent)
   {

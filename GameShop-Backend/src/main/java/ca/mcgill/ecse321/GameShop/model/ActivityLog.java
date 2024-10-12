@@ -1,18 +1,10 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
 // line 34 "../../../../../../model.ump"
-// line 168 "../../../../../../model.ump"
-@Entity
+// line 172 "../../../../../../model.ump"
 public class ActivityLog
 {
 
@@ -21,22 +13,19 @@ public class ActivityLog
   //------------------------
 
   //ActivityLog Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int logId;
   private String content;
 
   //ActivityLog Associations
-  @ManyToOne
-  @JoinColumn(name = "employee_id")
   private EmployeeAccount employee;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ActivityLog(String aContent, EmployeeAccount aEmployee)
+  public ActivityLog(int aLogId, String aContent, EmployeeAccount aEmployee)
   {
+    logId = aLogId;
     content = aContent;
     boolean didAddEmployee = setEmployee(aEmployee);
     if (!didAddEmployee)
@@ -48,6 +37,14 @@ public class ActivityLog
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setLogId(int aLogId)
+  {
+    boolean wasSet = false;
+    logId = aLogId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setContent(String aContent)
   {

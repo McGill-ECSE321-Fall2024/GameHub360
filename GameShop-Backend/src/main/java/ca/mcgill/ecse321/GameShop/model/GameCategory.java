@@ -1,22 +1,11 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-
 // line 85 "../../../../../../model.ump"
-// line 189 "../../../../../../model.ump"
-@Entity
+// line 207 "../../../../../../model.ump"
 public class GameCategory
 {
 
@@ -31,34 +20,22 @@ public class GameCategory
   //------------------------
 
   //GameCategory Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int categoryId;
-
-  @Enumerated(EnumType.STRING)
   private CategoryType categoryType;
-
   private boolean isAvailable;
   private String name;
 
   //GameCategory Associations
-  @ManyToMany(mappedBy = "promotedCategories")
   private List<Promotion> promotions;
-
-  @ManyToMany
-  @JoinTable(
-      name = "game_category_mapping", 
-      joinColumns = @JoinColumn(name = "category_id"),
-      inverseJoinColumns = @JoinColumn(name = "game_entity_id")
-  )
   private List<GameEntity> games;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public GameCategory(boolean aIsAvailable, String aName)
+  public GameCategory(int aCategoryId, boolean aIsAvailable, String aName)
   {
+    categoryId = aCategoryId;
     isAvailable = aIsAvailable;
     name = aName;
     promotions = new ArrayList<Promotion>();
@@ -68,6 +45,14 @@ public class GameCategory
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setCategoryId(int aCategoryId)
+  {
+    boolean wasSet = false;
+    categoryId = aCategoryId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setCategoryType(CategoryType aCategoryType)
   {

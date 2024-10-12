@@ -1,19 +1,11 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
 // line 39 "../../../../../../model.ump"
-// line 173 "../../../../../../model.ump"
-@Entity
+// line 177 "../../../../../../model.ump"
 public class RequestNote
 {
 
@@ -22,28 +14,21 @@ public class RequestNote
   //------------------------
 
   //RequestNote Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int noteId;
-
   private String content;
   private Date noteDate;
 
   //RequestNote Associations
-  @ManyToOne
-  @JoinColumn(name = "game_entity_id")
   private GameRequest gameRequest;
-
-  @ManyToOne
-  @JoinColumn(name = "staff_id")
   private StaffAccount notesWriter;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public RequestNote(String aContent, Date aNoteDate, GameRequest aGameRequest, StaffAccount aNotesWriter)
+  public RequestNote(int aNoteId, String aContent, Date aNoteDate, GameRequest aGameRequest, StaffAccount aNotesWriter)
   {
+    noteId = aNoteId;
     content = aContent;
     noteDate = aNoteDate;
     boolean didAddGameRequest = setGameRequest(aGameRequest);
@@ -61,6 +46,14 @@ public class RequestNote
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setNoteId(int aNoteId)
+  {
+    boolean wasSet = false;
+    noteId = aNoteId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setContent(String aContent)
   {

@@ -1,14 +1,10 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-
 // line 4 "../../../../../../model.ump"
-// line 141 "../../../../../../model.ump"
-@MappedSuperclass
+// line 147 "../../../../../../model.ump"
 public abstract class Account
 {
 
@@ -17,9 +13,7 @@ public abstract class Account
   //------------------------
 
   //Account Attributes
-  @Column(unique = true, nullable = false)
   private String email;
-
   private String password;
   private String name;
   private String phoneNumber;

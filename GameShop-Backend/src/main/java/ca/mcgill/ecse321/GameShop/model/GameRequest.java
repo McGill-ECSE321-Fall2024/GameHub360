@@ -1,21 +1,12 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
 import java.util.*;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-
 // line 68 "../../../../../../model.ump"
-// line 183 "../../../../../../model.ump"
-@Entity
+// line 197 "../../../../../../model.ump"
 public class GameRequest extends GameEntity
 {
 
@@ -30,26 +21,20 @@ public class GameRequest extends GameEntity
   //------------------------
 
   //GameRequest Attributes
-  @Enumerated(EnumType.STRING)
   private RequestStatus requestStatus;
-
   private Date requestDate;
 
   //GameRequest Associations
-  @ManyToOne
-  @JoinColumn(name = "staff_id")
-  private EmployeeAccount requestPlacer;
-
-  @OneToMany(mappedBy = "gameRequest", cascade = CascadeType.ALL)
   private List<RequestNote> associatedNotes;
+  private EmployeeAccount requestPlacer;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public GameRequest(String aName, String aDescription, String aImageURL, Date aRequestDate, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
+  public GameRequest(int aGameEntityId, String aName, String aDescription, String aImageURL, Date aRequestDate, EmployeeAccount aRequestPlacer, GameCategory... allCategories)
   {
-    super(aName, aDescription, aImageURL, allCategories);
+    super(aGameEntityId, aName, aDescription, aImageURL, allCategories);
     requestDate = aRequestDate;
     associatedNotes = new ArrayList<RequestNote>();
     boolean didAddRequestPlacer = setRequestPlacer(aRequestPlacer);
@@ -129,9 +114,9 @@ public class GameRequest extends GameEntity
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public RequestNote addAssociatedNote(String aContent, Date aNoteDate, StaffAccount aNotesWriter)
+  public RequestNote addAssociatedNote(int aNoteId, String aContent, Date aNoteDate, StaffAccount aNotesWriter)
   {
-    return new RequestNote(aContent, aNoteDate, this, aNotesWriter);
+    return new RequestNote(aNoteId, aContent, aNoteDate, this, aNotesWriter);
   }
 
   public boolean addAssociatedNote(RequestNote aAssociatedNote)

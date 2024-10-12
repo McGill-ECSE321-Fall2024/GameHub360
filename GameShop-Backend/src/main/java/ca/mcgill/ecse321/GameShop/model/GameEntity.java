@@ -1,21 +1,11 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToMany;
-
 // line 77 "../../../../../../model.ump"
-// line 216 "../../../../../../model.ump"
-@Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+// line 202 "../../../../../../model.ump"
 public abstract class GameEntity
 {
 
@@ -24,24 +14,21 @@ public abstract class GameEntity
   //------------------------
 
   //GameEntity Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
   private int gameEntityId;
-  
   private String name;
   private String description;
   private String imageURL;
 
   //GameEntity Associations
-  @ManyToMany(mappedBy = "games")
   private List<GameCategory> categories;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public GameEntity(String aName, String aDescription, String aImageURL, GameCategory... allCategories)
+  public GameEntity(int aGameEntityId, String aName, String aDescription, String aImageURL, GameCategory... allCategories)
   {
+    gameEntityId = aGameEntityId;
     name = aName;
     description = aDescription;
     imageURL = aImageURL;
@@ -56,6 +43,14 @@ public abstract class GameEntity
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setGameEntityId(int aGameEntityId)
+  {
+    boolean wasSet = false;
+    gameEntityId = aGameEntityId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public boolean setName(String aName)
   {

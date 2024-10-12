@@ -1,18 +1,12 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-
 import java.sql.Date;
 
 // line 24 "../../../../../../model.ump"
-// line 158 "../../../../../../model.ump"
-@Entity
+// line 162 "../../../../../../model.ump"
 public class EmployeeAccount extends StaffAccount
 {
 
@@ -24,19 +18,16 @@ public class EmployeeAccount extends StaffAccount
   private boolean isActive;
 
   //EmployeeAccount Associations
-  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
   private List<ActivityLog> logs;
-
-  @OneToMany(mappedBy = "requestPlacer", cascade = CascadeType.ALL)
   private List<GameRequest> requests;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public EmployeeAccount(String aEmail, String aPassword, boolean aIsActive)
+  public EmployeeAccount(String aEmail, String aPassword, int aStaffId, boolean aIsActive)
   {
-    super(aEmail, aPassword);
+    super(aEmail, aPassword, aStaffId);
     isActive = aIsActive;
     logs = new ArrayList<ActivityLog>();
     requests = new ArrayList<GameRequest>();
@@ -129,9 +120,9 @@ public class EmployeeAccount extends StaffAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ActivityLog addLog(String aContent)
+  public ActivityLog addLog(int aLogId, String aContent)
   {
-    return new ActivityLog(aContent, this);
+    return new ActivityLog(aLogId, aContent, this);
   }
 
   public boolean addLog(ActivityLog aLog)
@@ -201,9 +192,9 @@ public class EmployeeAccount extends StaffAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public GameRequest addRequest(String aName, String aDescription, String aImageURL, Date aRequestDate, GameCategory... allCategories)
+  public GameRequest addRequest(int aGameEntityId, String aName, String aDescription, String aImageURL, Date aRequestDate, GameCategory... allCategories)
   {
-    return new GameRequest(aName, aDescription, aImageURL, aRequestDate, this, allCategories);
+    return new GameRequest(aGameEntityId, aName, aDescription, aImageURL, aRequestDate, this, allCategories);
   }
 
   public boolean addRequest(GameRequest aRequest)

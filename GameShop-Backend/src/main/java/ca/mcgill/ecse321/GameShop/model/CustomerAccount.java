@@ -1,24 +1,12 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
+/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-
 import java.sql.Date;
 
 // line 12 "../../../../../../model.ump"
-// line 146 "../../../../../../model.ump"
-@Entity
+// line 152 "../../../../../../model.ump"
 public class CustomerAccount extends Account
 {
 
@@ -27,37 +15,22 @@ public class CustomerAccount extends Account
   //------------------------
 
   //CustomerAccount Attributes
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int customerId;
 
   //CustomerAccount Associations
-  @OneToMany(mappedBy = "cardOwner", cascade = CascadeType.ALL)
   private List<PaymentDetails> paymentCards;
-  
-  @OneToMany(mappedBy = "reviewAuthor", cascade = CascadeType.ALL)
-  private List<Review> reviews;
-
-  @OneToMany(mappedBy = "orderedBy", cascade = CascadeType.ALL)
   private List<CustomerOrder> orderHistory;
-
-  @ManyToMany
-  @JoinTable(
-      name = "wishlist",
-      joinColumns = @JoinColumn(name = "customer_id"),
-      inverseJoinColumns = @JoinColumn(name = "game_entity_id")
-  )
   private List<Game> wishListedGames;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public CustomerAccount(String aEmail, String aPassword)
+  public CustomerAccount(String aEmail, String aPassword, int aCustomerId)
   {
     super(aEmail, aPassword);
+    customerId = aCustomerId;
     paymentCards = new ArrayList<PaymentDetails>();
-    reviews = new ArrayList<Review>();
     orderHistory = new ArrayList<CustomerOrder>();
     wishListedGames = new ArrayList<Game>();
   }
@@ -65,6 +38,14 @@ public class CustomerAccount extends Account
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setCustomerId(int aCustomerId)
+  {
+    boolean wasSet = false;
+    customerId = aCustomerId;
+    wasSet = true;
+    return wasSet;
+  }
 
   public int getCustomerId()
   {
@@ -98,36 +79,6 @@ public class CustomerAccount extends Account
   public int indexOfPaymentCard(PaymentDetails aPaymentCard)
   {
     int index = paymentCards.indexOf(aPaymentCard);
-    return index;
-  }
-  /* Code from template association_GetMany */
-  public Review getReview(int index)
-  {
-    Review aReview = reviews.get(index);
-    return aReview;
-  }
-
-  public List<Review> getReviews()
-  {
-    List<Review> newReviews = Collections.unmodifiableList(reviews);
-    return newReviews;
-  }
-
-  public int numberOfReviews()
-  {
-    int number = reviews.size();
-    return number;
-  }
-
-  public boolean hasReviews()
-  {
-    boolean has = reviews.size() > 0;
-    return has;
-  }
-
-  public int indexOfReview(Review aReview)
-  {
-    int index = reviews.indexOf(aReview);
     return index;
   }
   /* Code from template association_GetMany */
@@ -196,9 +147,9 @@ public class CustomerAccount extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public PaymentDetails addPaymentCard(String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear)
+  public PaymentDetails addPaymentCard(int aPaymentDetailsId, String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear)
   {
-    return new PaymentDetails(aCardName, aPostalCode, aCardNumber, aExpMonth, aExpYear, this);
+    return new PaymentDetails(aPaymentDetailsId, aCardName, aPostalCode, aCardNumber, aExpMonth, aExpYear, this);
   }
 
   public boolean addPaymentCard(PaymentDetails aPaymentCard)
@@ -263,86 +214,14 @@ public class CustomerAccount extends Account
     return wasAdded;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfReviews()
-  {
-    return 0;
-  }
-  /* Code from template association_AddManyToOne */
-  public Review addReview(Date aReviewDate, CustomerOrder aReviewedOrder)
-  {
-    return new Review(aReviewDate, this, aReviewedOrder);
-  }
-
-  public boolean addReview(Review aReview)
-  {
-    boolean wasAdded = false;
-    if (reviews.contains(aReview)) { return false; }
-    CustomerAccount existingReviewAuthor = aReview.getReviewAuthor();
-    boolean isNewReviewAuthor = existingReviewAuthor != null && !this.equals(existingReviewAuthor);
-    if (isNewReviewAuthor)
-    {
-      aReview.setReviewAuthor(this);
-    }
-    else
-    {
-      reviews.add(aReview);
-    }
-    wasAdded = true;
-    return wasAdded;
-  }
-
-  public boolean removeReview(Review aReview)
-  {
-    boolean wasRemoved = false;
-    //Unable to remove aReview, as it must always have a reviewAuthor
-    if (!this.equals(aReview.getReviewAuthor()))
-    {
-      reviews.remove(aReview);
-      wasRemoved = true;
-    }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addReviewAt(Review aReview, int index)
-  {  
-    boolean wasAdded = false;
-    if(addReview(aReview))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfReviews()) { index = numberOfReviews() - 1; }
-      reviews.remove(aReview);
-      reviews.add(index, aReview);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveReviewAt(Review aReview, int index)
-  {
-    boolean wasAdded = false;
-    if(reviews.contains(aReview))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfReviews()) { index = numberOfReviews() - 1; }
-      reviews.remove(aReview);
-      reviews.add(index, aReview);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addReviewAt(aReview, index);
-    }
-    return wasAdded;
-  }
-  /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfOrderHistory()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public CustomerOrder addOrderHistory(Date aOrderDate, Review aOrderReview, PaymentDetails aPaymentInformation, Game... allGames)
+  public CustomerOrder addOrderHistory(int aOrderId, Date aOrderDate, PaymentDetails aPaymentInformation)
   {
-    return new CustomerOrder(aOrderDate, aOrderReview, this, aPaymentInformation, allGames);
+    return new CustomerOrder(aOrderId, aOrderDate, this, aPaymentInformation);
   }
 
   public boolean addOrderHistory(CustomerOrder aOrderHistory)
@@ -498,11 +377,6 @@ public class CustomerAccount extends Account
       paymentCards.remove(aPaymentCard);
     }
     
-    for(int i=reviews.size(); i > 0; i--)
-    {
-      Review aReview = reviews.get(i - 1);
-      aReview.delete();
-    }
     for(int i=orderHistory.size(); i > 0; i--)
     {
       CustomerOrder aOrderHistory = orderHistory.get(i - 1);
