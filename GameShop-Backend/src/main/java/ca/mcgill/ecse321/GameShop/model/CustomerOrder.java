@@ -109,6 +109,10 @@ public class CustomerOrder {
     }
   }
 
+  public CustomerOrder() {
+    games = new ArrayList<Game>();
+  }
+
   //------------------------
   // INTERFACE
   //------------------------
@@ -388,7 +392,6 @@ public class CustomerOrder {
       aGame.removeOrder(this);
     }
   }
-
 
   public String toString()
   {

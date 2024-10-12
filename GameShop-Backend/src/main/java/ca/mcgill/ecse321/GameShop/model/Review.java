@@ -90,6 +90,9 @@ public class Review
     reviewedOrder = new CustomerOrder(aOrderDateForReviewedOrder, this, aOrderedByForReviewedOrder, aPaymentInformationForReviewedOrder, allGamesForReviewedOrder);
   }
 
+  public Review() {
+  }
+
   //------------------------
   // INTERFACE
   //------------------------

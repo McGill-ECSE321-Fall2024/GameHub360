@@ -36,6 +36,9 @@ public abstract class Account
     phoneNumber = null;
   }
 
+  public Account() {
+  }
+
   //------------------------
   // INTERFACE
   //------------------------

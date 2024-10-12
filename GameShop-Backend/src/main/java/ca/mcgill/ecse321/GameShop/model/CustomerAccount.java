@@ -62,6 +62,14 @@ public class CustomerAccount extends Account
     wishListedGames = new ArrayList<Game>();
   }
 
+  public CustomerAccount() 
+  {
+    paymentCards = new ArrayList<PaymentDetails>();
+    reviews = new ArrayList<Review>();
+    orderHistory = new ArrayList<CustomerOrder>();
+    wishListedGames = new ArrayList<Game>();
+  }
+
   //------------------------
   // INTERFACE
   //------------------------
