@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -41,7 +43,12 @@ public class CustomerOrderRepositoryTests {
         customerOrderRepo.deleteAll();
     }
 
+    // The @Transactional annotation ensures that the database session is kept open 
+    // throughout the method's execution, allowing lazy-loaded relationships (like games) 
+    // to be fetched when they are accessed.
+
     @Test
+    @Transactional
     public void testCustomerOrder() {
         // 1. Create and save related entities
         
@@ -79,8 +86,15 @@ public class CustomerOrderRepositoryTests {
 
         assertNotNull(savedOrder);
         assertEquals(orderDate.toString(), savedOrder.getOrderDate().toString());
-        // assertEquals(customer, savedOrder.getOrderedBy());
-        // assertEquals(paymentInfo, savedOrder.getPaymentInformation());
+        
+        assertNotNull(savedOrder.getOrderedBy());
+        assertEquals(customer.getEmail(), savedOrder.getOrderedBy().getEmail());
+        assertEquals(customer.getPassword(), savedOrder.getOrderedBy().getPassword());
+        
+        assertNotNull(savedOrder.getPaymentInformation());
+        assertEquals(paymentInfo.getCardName(), savedOrder.getPaymentInformation().getCardName());
+        assertEquals(paymentInfo.getCardNumber(), savedOrder.getPaymentInformation().getCardNumber());
+
         assertEquals(2, savedOrder.getGames().size());
         assertTrue(savedOrder.getGames().contains(game1));
         assertTrue(savedOrder.getGames().contains(game2));
