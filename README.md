@@ -35,7 +35,7 @@ Our Game Shop Management System offers a seamless way to manage inventory, custo
 | Team Member | Time Spent (h) | Responsibilities | 
 | --- | --- | --- |
 | name | #hours | Work description |
-| Ismail Sentissi | X | requirements, use-case|
+| Ismail Sentissi | X | requirements, use-case, report|
 | Ahmed Mossa | X | generating UML diagram from Umple, requirements, Use-case |
 | Nicolas Bolouri | X | Minutes organizer and scribe, GitHub setup initialization, Creating/editing domain model |
 | Hamza Alfarrash | X | use-case diagram 1, requirements, wiki documentation |
