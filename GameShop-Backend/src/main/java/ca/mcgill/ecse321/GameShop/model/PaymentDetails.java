@@ -67,6 +67,14 @@ public class PaymentDetails
   // INTERFACE
   //------------------------
 
+  public boolean setPaymentDetailsId(int aPaymentDetailsId)
+  {
+    boolean wasSet = false;
+    paymentDetailsId = aPaymentDetailsId;
+    wasSet = true;
+    return wasSet;
+  }
+
   public boolean setCardName(String aCardName)
   {
     boolean wasSet = false;
@@ -196,9 +204,9 @@ public class PaymentDetails
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public CustomerOrder addPaidOrder(Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, Game... allGames)
+  public CustomerOrder addPaidOrder(Date aOrderDate, CustomerAccount aOrderedBy)
   {
-    return new CustomerOrder(aOrderDate, aOrderReview, aOrderedBy, this, allGames);
+    return new CustomerOrder( aOrderDate, aOrderedBy, this);
   }
 
   public boolean addPaidOrder(CustomerOrder aPaidOrder)
