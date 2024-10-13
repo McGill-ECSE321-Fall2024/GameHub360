@@ -58,7 +58,6 @@ public class OrderGame
   }
 
   public OrderGame(){
-    customerOrder = new CustomerOrder();
   }
 
   //------------------------
