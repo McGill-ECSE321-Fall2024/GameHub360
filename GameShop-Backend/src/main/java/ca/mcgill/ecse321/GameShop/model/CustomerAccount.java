@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
+/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
@@ -17,7 +17,7 @@ import jakarta.persistence.OneToMany;
 import java.sql.Date;
 
 // line 12 "../../../../../../model.ump"
-// line 152 "../../../../../../model.ump"
+// line 146 "../../../../../../model.ump"
 @Entity
 public class CustomerAccount extends Account
 {
@@ -35,6 +35,9 @@ public class CustomerAccount extends Account
   @OneToMany(mappedBy = "cardOwner", cascade = CascadeType.ALL)
   private List<PaymentDetails> paymentCards;
   
+  @OneToMany(mappedBy = "reviewAuthor", cascade = CascadeType.ALL)
+  private List<Review> reviews;
+
   @OneToMany(mappedBy = "orderedBy", cascade = CascadeType.ALL)
   private List<CustomerOrder> orderHistory;
 
@@ -54,6 +57,7 @@ public class CustomerAccount extends Account
   {
     super(aEmail, aPassword);
     paymentCards = new ArrayList<PaymentDetails>();
+    reviews = new ArrayList<Review>();
     orderHistory = new ArrayList<CustomerOrder>();
     wishListedGames = new ArrayList<Game>();
   }
@@ -94,6 +98,36 @@ public class CustomerAccount extends Account
   public int indexOfPaymentCard(PaymentDetails aPaymentCard)
   {
     int index = paymentCards.indexOf(aPaymentCard);
+    return index;
+  }
+  /* Code from template association_GetMany */
+  public Review getReview(int index)
+  {
+    Review aReview = reviews.get(index);
+    return aReview;
+  }
+
+  public List<Review> getReviews()
+  {
+    List<Review> newReviews = Collections.unmodifiableList(reviews);
+    return newReviews;
+  }
+
+  public int numberOfReviews()
+  {
+    int number = reviews.size();
+    return number;
+  }
+
+  public boolean hasReviews()
+  {
+    boolean has = reviews.size() > 0;
+    return has;
+  }
+
+  public int indexOfReview(Review aReview)
+  {
+    int index = reviews.indexOf(aReview);
     return index;
   }
   /* Code from template association_GetMany */
@@ -229,14 +263,86 @@ public class CustomerAccount extends Account
     return wasAdded;
   }
   /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfReviews()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public Review addReview(Date aReviewDate, CustomerOrder aReviewedOrder)
+  {
+    return new Review(aReviewDate, this, aReviewedOrder);
+  }
+
+  public boolean addReview(Review aReview)
+  {
+    boolean wasAdded = false;
+    if (reviews.contains(aReview)) { return false; }
+    CustomerAccount existingReviewAuthor = aReview.getReviewAuthor();
+    boolean isNewReviewAuthor = existingReviewAuthor != null && !this.equals(existingReviewAuthor);
+    if (isNewReviewAuthor)
+    {
+      aReview.setReviewAuthor(this);
+    }
+    else
+    {
+      reviews.add(aReview);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeReview(Review aReview)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aReview, as it must always have a reviewAuthor
+    if (!this.equals(aReview.getReviewAuthor()))
+    {
+      reviews.remove(aReview);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addReviewAt(Review aReview, int index)
+  {  
+    boolean wasAdded = false;
+    if(addReview(aReview))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfReviews()) { index = numberOfReviews() - 1; }
+      reviews.remove(aReview);
+      reviews.add(index, aReview);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveReviewAt(Review aReview, int index)
+  {
+    boolean wasAdded = false;
+    if(reviews.contains(aReview))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfReviews()) { index = numberOfReviews() - 1; }
+      reviews.remove(aReview);
+      reviews.add(index, aReview);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addReviewAt(aReview, index);
+    }
+    return wasAdded;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfOrderHistory()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public CustomerOrder addOrderHistory(Date aOrderDate, PaymentDetails aPaymentInformation)
+  public CustomerOrder addOrderHistory(Date aOrderDate, Review aOrderReview, PaymentDetails aPaymentInformation, Game... allGames)
   {
-    return new CustomerOrder(aOrderDate, this, aPaymentInformation);
+    return new CustomerOrder(aOrderDate, aOrderReview, this, aPaymentInformation, allGames);
   }
 
   public boolean addOrderHistory(CustomerOrder aOrderHistory)
@@ -392,6 +498,11 @@ public class CustomerAccount extends Account
       paymentCards.remove(aPaymentCard);
     }
     
+    for(int i=reviews.size(); i > 0; i--)
+    {
+      Review aReview = reviews.get(i - 1);
+      aReview.delete();
+    }
     for(int i=orderHistory.size(); i > 0; i--)
     {
       CustomerOrder aOrderHistory = orderHistory.get(i - 1);
