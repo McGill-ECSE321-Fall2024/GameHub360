@@ -118,13 +118,18 @@ class Reply {
   Date replyDate;
 }
 
+
+class OrderGame {
+
+}
+
 association {
-  1 CustomerAccount reviewAuthor -- * Review reviews;
-  1 CustomerOrder reviewedOrder -- 1 Review orderReview;
+  1 OrderGame reviewedGame -- 0..1 Review review;
+  1 CustomerOrder customerOrder -- 1..* OrderGame orderedGames;
+  * OrderGame orders -- 1 Game game;
   1 CustomerAccount orderedBy -- * CustomerOrder orderHistory;
   * CustomerAccount wishLists -- * Game wishListedGames;
   1 PaymentDetails paymentInformation -- * CustomerOrder paidOrders;
-  * CustomerOrder orders -- 1..* Game games;
   * Promotion promotions -- * Game promotedGames;
   * Promotion promotions -- * GameCategory promotedCategories;
   * GameEntity games -- 1..* GameCategory categories;
@@ -132,3 +137,4 @@ association {
   1 ManagerAccount reviewer -- * Reply reviewReplies; 
   1 StaffAccount notesWriter -- * RequestNote writtenNotes; 
 }
+
