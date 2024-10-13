@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
@@ -22,7 +21,6 @@ public class CustomerAccountRepositoryTests {
     }
 
     @Test
-    @Transactional
     public void testCreateAndRetrieveCustomerAccount() {
         // Arrange
         CustomerAccount account = new CustomerAccount("email@example.com", "password");
@@ -36,7 +34,6 @@ public class CustomerAccountRepositoryTests {
     }
 
     @Test
-    @Transactional
     public void testUpdateCustomerAccountDetails() {
         // Arrange
         CustomerAccount account = new CustomerAccount("email@example.com", "password");
