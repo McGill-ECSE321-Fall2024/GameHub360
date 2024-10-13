@@ -39,15 +39,8 @@ public class CustomerOrderRepositoryTests {
     @BeforeEach
     @AfterEach
     public void clearDatabase() {
-        // Remove associations to avoid constraint violation errors
-        orderGameRepo.findAll().forEach(orderGame -> {
-            orderGame.setCustomerOrder(null);
-            orderGameRepo.save(orderGame);
-        });
-
-        // Clear repositories in proper order
-        orderGameRepo.deleteAll();
         paymentDetailsRepo.deleteAll();
+        orderGameRepo.deleteAll();
         gameRepo.deleteAll();
         gameCategoryRepo.deleteAll();
         customerOrderRepo.deleteAll();
@@ -56,10 +49,13 @@ public class CustomerOrderRepositoryTests {
 
     @Test
     @Transactional
-    public void testCreateAndReadCustomerOrder() {
-        // Initialize test data
-        Date orderDate = new Date(System.currentTimeMillis());
-        
+    void testCreateAndReadCustomerOrder() {
+        // 1. Create and save related entities
+
+        // ---- Attributes
+        Date orderDate = new Date(System.currentTimeMillis()); // Current date for order
+
+        // ---- Associations
         CustomerAccount customer = new CustomerAccount("mohamed-amine@email.com", "MyPasswordTest");
         customer = customerAccountRepo.save(customer);
 
@@ -78,25 +74,32 @@ public class CustomerOrderRepositoryTests {
         Game game2 = new Game("Mario", "It's me Mario!", "https://www.mario.ca", 10, true, 25.99, category2);
         game2 = gameRepo.save(game2);
 
-        // Save CustomerOrder and associate OrderGames
+        // ---- Initialize and save CustomerOrder
         CustomerOrder order = new CustomerOrder(orderDate, customer, paymentInfo);
+        order = customerOrderRepo.save(order); // Save the CustomerOrder first to ensure it has an ID
+
+        // ---- Add Game Orders to the Customer Order with bidirectional relationship
+        OrderGame orderGame1 = new OrderGame(order, game1);
+        orderGame1.setCustomerOrder(order); // Explicitly set the CustomerOrder in OrderGame
+        orderGame1 = orderGameRepo.save(orderGame1);
+
+        OrderGame orderGame2 = new OrderGame(order, game2);
+        orderGame2.setCustomerOrder(order); // Explicitly set the CustomerOrder in OrderGame
+        orderGame2 = orderGameRepo.save(orderGame2);
+
+        order.addOrderedGame(orderGame1); // Also add it to the CustomerOrder
+        order.addOrderedGame(orderGame2);
+
+        // ---- Save Customer Order with Game Orders
         order = customerOrderRepo.save(order);
 
-        OrderGame orderGame1 = new OrderGame(order, game1);
-        OrderGame orderGame2 = new OrderGame(order, game2);
-
-        order.addOrderedGame(orderGame1);
-        order.addOrderedGame(orderGame2);
-        
-        // Save OrderGames
-        orderGameRepo.save(orderGame1);
-        orderGameRepo.save(orderGame2);
-
-        // Validate results
+        // 3. Read the object from the database using the repository
         CustomerOrder savedOrder = customerOrderRepo.findOrderByOrderId(order.getOrderId());
 
+        // 4. Assert that the object from the database has the correct attributes
         assertNotNull(savedOrder);
         assertEquals(orderDate.toString(), savedOrder.getOrderDate().toString());
+
         assertNotNull(savedOrder.getOrderedBy());
         assertEquals(customer.getEmail(), savedOrder.getOrderedBy().getEmail());
         assertEquals(customer.getPassword(), savedOrder.getOrderedBy().getPassword());

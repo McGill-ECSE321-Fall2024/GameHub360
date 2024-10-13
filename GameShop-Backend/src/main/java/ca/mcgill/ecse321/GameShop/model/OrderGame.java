@@ -3,6 +3,7 @@
 
 package ca.mcgill.ecse321.GameShop.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,16 +27,16 @@ public class OrderGame
   private int id;
 
   //OrderGame Associations
-  @OneToOne(optional = true)
+  @OneToOne
   @JoinColumn(name = "review_id")
   private Review review;
 
   @ManyToOne
-  @JoinColumn(name = "order_id", nullable = false)
+  @JoinColumn(name = "order_id")
   private CustomerOrder customerOrder;
 
   @ManyToOne
-  @JoinColumn(name = "game_entity_id", nullable = false)
+  @JoinColumn(name = "game_entity_id")
   private Game game;
 
   //------------------------
@@ -57,6 +58,7 @@ public class OrderGame
   }
 
   public OrderGame(){
+    customerOrder = new CustomerOrder();
   }
 
   //------------------------
