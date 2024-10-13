@@ -44,7 +44,7 @@ public class OrderGameRepositoryTests {
     @Transactional
     void testCreateAndReadOrderGame(){
 
-        // ARRANGE
+        // Arrange
         Date orderDate = new Date(System.currentTimeMillis());
 
         CustomerAccount orderedBy = new CustomerAccount("myemail@mail.com", "pwd");
@@ -60,18 +60,16 @@ public class OrderGameRepositoryTests {
         game = gameRepo.save(game);
 
         OrderGame orderGame = new OrderGame(customerOrder, game);
-
         orderGame = repo.save(orderGame);
 
-        // ACT
+        // Act
         OrderGame retrievedOrderGame = repo.findOrderGameById(orderGame.getOrderGameId());
 
-        // ASSERT
+        // Assert
         assertNotNull(retrievedOrderGame);
         assertNotNull(retrievedOrderGame.getOrderGameId());
         assertEquals(customerOrder.getOrderId(), retrievedOrderGame.getCustomerOrder().getOrderId());
         assertEquals(game.getGameEntityId(), retrievedOrderGame.getGame().getGameEntityId());
-
         assertEquals(customerOrder.getOrderDate().toString(), retrievedOrderGame.getCustomerOrder().getOrderDate().toString());
         assertEquals(game.getName(), retrievedOrderGame.getGame().getName());
     }

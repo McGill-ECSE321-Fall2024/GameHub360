@@ -94,15 +94,12 @@ public class CustomerOrderRepositoryTests {
         // Assert
         assertNotNull(savedOrder);
         assertEquals(orderDate.toString(), savedOrder.getOrderDate().toString());
-        
         assertNotNull(savedOrder.getOrderedBy());
         assertEquals(customer.getEmail(), savedOrder.getOrderedBy().getEmail());
         assertEquals(customer.getPassword(), savedOrder.getOrderedBy().getPassword());
-        
         assertNotNull(savedOrder.getPaymentInformation());
         assertEquals(paymentInfo.getCardName(), savedOrder.getPaymentInformation().getCardName());
         assertEquals(paymentInfo.getCardNumber(), savedOrder.getPaymentInformation().getCardNumber());
-
         assertEquals(2, savedOrder.getOrderedGames().size());
         assertTrue(savedOrder.getOrderedGames().contains(orderGame1));
         assertTrue(savedOrder.getOrderedGames().contains(orderGame2));

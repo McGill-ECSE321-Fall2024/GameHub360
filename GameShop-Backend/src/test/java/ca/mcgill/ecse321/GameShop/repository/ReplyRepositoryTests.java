@@ -59,7 +59,7 @@ public class ReplyRepositoryTests {
     @Test
     void testPersistAndLoadReply() {
 
-        // ARRANGE 
+        // Arrange 
 
         // Create ManagerAccount (dependent entity)
         ManagerAccount manager = new ManagerAccount("john.doe@email.com", "1234");
@@ -95,10 +95,10 @@ public class ReplyRepositoryTests {
         Reply reply = new Reply(replyContent, date, review, manager);
         repo.save(reply);
 
-        // ACT
+        // Act
         Reply retrievedReply = repo.findReplyByReplyId(reply.getReplyId());
 
-        // ASSERT
+        // Assert
         assertNotNull(retrievedReply);
         assertEquals(reply.getReplyId(), retrievedReply.getReplyId()); 
         assertEquals(replyContent, retrievedReply.getContent());
