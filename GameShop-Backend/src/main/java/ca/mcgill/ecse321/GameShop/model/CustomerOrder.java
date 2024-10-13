@@ -72,6 +72,11 @@ public class CustomerOrder {
       throw new RuntimeException("Unable to create paidOrder due to paymentInformation. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
+  
+  public CustomerOrder() {
+    orderedGames = new ArrayList<OrderGame>();
+  }
+
   //------------------------
   // INTERFACE
   //------------------------

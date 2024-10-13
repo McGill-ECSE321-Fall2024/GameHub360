@@ -45,6 +45,9 @@ public class ActivityLog
     }
   }
 
+  public ActivityLog() {
+  }
+
   //------------------------
   // INTERFACE
   //------------------------

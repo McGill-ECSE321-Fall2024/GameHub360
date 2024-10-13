@@ -65,6 +65,12 @@ public class GameCategory
     games = new ArrayList<GameEntity>();
   }
 
+  public GameCategory()
+  {
+    promotions = new ArrayList<Promotion>();
+    games = new ArrayList<GameEntity>();
+  }
+
   //------------------------
   // INTERFACE
   //------------------------
