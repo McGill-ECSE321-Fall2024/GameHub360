@@ -63,6 +63,10 @@ public class PaymentDetails
     paidOrders = new ArrayList<CustomerOrder>();
   }
 
+  public PaymentDetails() {
+    paidOrders = new ArrayList<CustomerOrder>();
+  }
+
   //------------------------
   // INTERFACE
   //------------------------

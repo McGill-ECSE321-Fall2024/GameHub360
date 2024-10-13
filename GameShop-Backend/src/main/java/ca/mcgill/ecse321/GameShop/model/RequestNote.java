@@ -58,6 +58,9 @@ public class RequestNote
     }
   }
 
+  public RequestNote() {
+  }
+
   //------------------------
   // INTERFACE
   //------------------------

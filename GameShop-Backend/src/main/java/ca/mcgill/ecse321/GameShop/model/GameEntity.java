@@ -53,6 +53,10 @@ public abstract class GameEntity
     }
   }
 
+  public GameEntity() {
+    categories = new ArrayList<GameCategory>();
+  }
+
   //------------------------
   // INTERFACE
   //------------------------
