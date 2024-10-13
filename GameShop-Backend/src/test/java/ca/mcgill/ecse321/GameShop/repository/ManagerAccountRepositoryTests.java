@@ -2,8 +2,13 @@ package ca.mcgill.ecse321.GameShop.repository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import static org.junit.jupiter.api.Assertions.*;
+
+import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 
 @SpringBootTest
 public class ManagerAccountRepositoryTests {
@@ -16,5 +21,32 @@ public class ManagerAccountRepositoryTests {
         repo.deleteAll();
     }
 
-    // tests go here --> annotate each test with @Test (see tutorial notes)
+    @Test
+    @Transactional
+    public void testCreateAndRetrieveManagerAccount() {
+        // Arrange
+        ManagerAccount manager = new ManagerAccount("email@manager.com", "password");
+
+        // Act
+        manager = repo.save(manager);
+
+        // Assert
+        assertNotNull(repo.findManagerAccountByStaffId(manager.getStaffId()));
+        assertEquals("email@manager.com", manager.getEmail());
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateManagerAccount() {
+        // Arrange
+        ManagerAccount manager = new ManagerAccount("email@manager.com", "password");
+        manager = repo.save(manager);
+        
+        // Act
+        manager.setPassword("newPassword");
+        manager = repo.save(manager);
+
+        // Assert
+        assertEquals("newPassword", repo.findManagerAccountByStaffId(manager.getStaffId()).getPassword());
+    }
 }
