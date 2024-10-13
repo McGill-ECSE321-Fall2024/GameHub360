@@ -31,36 +31,35 @@ public class CustomerOrderRepositoryTests {
     private PaymentDetailsRepository paymentDetailsRepo;
     @Autowired
     private GameCategoryRepository gameCategoryRepo;
-    @Autowired 
+    @Autowired
     private GameRepository gameRepo;
-    @Autowired 
+    @Autowired
     private OrderGameRepository orderGameRepo;
 
     @BeforeEach
     @AfterEach
     public void clearDatabase() {
-        paymentDetailsRepo.deleteAll();
+        // Remove associations to avoid constraint violation errors
+        orderGameRepo.findAll().forEach(orderGame -> {
+            orderGame.setCustomerOrder(null);
+            orderGameRepo.save(orderGame);
+        });
+
+        // Clear repositories in proper order
         orderGameRepo.deleteAll();
+        paymentDetailsRepo.deleteAll();
         gameRepo.deleteAll();
         gameCategoryRepo.deleteAll();
         customerOrderRepo.deleteAll();
         customerAccountRepo.deleteAll();
     }
 
-    // tests go here --> annotate each test with @Test (see tutorial notes)
-    // The @Transactional annotation ensures that the database session is kept open 
-    // throughout the method's execution, allowing lazy-loaded relationships (like games) 
-    // to be fetched when they are accessed.
-
     @Test
     @Transactional
     public void testCreateAndReadCustomerOrder() {
-        // 1. Create and save related entities
+        // Initialize test data
+        Date orderDate = new Date(System.currentTimeMillis());
         
-        // ---- Attributes
-        Date orderDate = new Date(System.currentTimeMillis()); // Current date for order
-        
-        // ---- Associations
         CustomerAccount customer = new CustomerAccount("mohamed-amine@email.com", "MyPasswordTest");
         customer = customerAccountRepo.save(customer);
 
@@ -79,35 +78,29 @@ public class CustomerOrderRepositoryTests {
         Game game2 = new Game("Mario", "It's me Mario!", "https://www.mario.ca", 10, true, 25.99, category2);
         game2 = gameRepo.save(game2);
 
-        // ---- Initialize and save CustomerOrder
+        // Save CustomerOrder and associate OrderGames
         CustomerOrder order = new CustomerOrder(orderDate, customer, paymentInfo);
-        order = customerOrderRepo.save(order);  // Save the CustomerOrder first to ensure it has an ID
+        order = customerOrderRepo.save(order);
 
-        // ---- ---- Add Game Orders to the Customer Order
         OrderGame orderGame1 = new OrderGame(order, game1);
-        orderGame1 = orderGameRepo.save(orderGame1);
-
         OrderGame orderGame2 = new OrderGame(order, game2);
-        orderGame2 = orderGameRepo.save(orderGame2);
 
         order.addOrderedGame(orderGame1);
         order.addOrderedGame(orderGame2);
         
-        // ---- ---- Save Customer Order
-        order = customerOrderRepo.save(order);
-        
-        // 3. Read the object from the database using the repository
-        CustomerOrder savedOrder = customerOrderRepo.findOrderByOrderId(order.getOrderId());
+        // Save OrderGames
+        orderGameRepo.save(orderGame1);
+        orderGameRepo.save(orderGame2);
 
-        // 4. Assert that the object from the database has the correct attributes
+        // Validate results
+        CustomerOrder savedOrder = customerOrderRepo.findOrderByOrderId(order.getOrderId());
 
         assertNotNull(savedOrder);
         assertEquals(orderDate.toString(), savedOrder.getOrderDate().toString());
-        
         assertNotNull(savedOrder.getOrderedBy());
         assertEquals(customer.getEmail(), savedOrder.getOrderedBy().getEmail());
         assertEquals(customer.getPassword(), savedOrder.getOrderedBy().getPassword());
-        
+
         assertNotNull(savedOrder.getPaymentInformation());
         assertEquals(paymentInfo.getCardName(), savedOrder.getPaymentInformation().getCardName());
         assertEquals(paymentInfo.getCardNumber(), savedOrder.getPaymentInformation().getCardNumber());

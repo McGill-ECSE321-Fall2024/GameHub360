@@ -42,15 +42,15 @@ public class CustomerOrder {
   private Date orderDate;
 
   //CustomerOrder Associations
-  @OneToMany(mappedBy = "customerOrder", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "customerOrder", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
   private List<OrderGame> orderedGames;
 
   @ManyToOne
-  @JoinColumn(name = "customer_id")
+  @JoinColumn(name = "customer_id", nullable = false)
   private CustomerAccount orderedBy;
-
+  
   @ManyToOne
-  @JoinColumn(name = "payment_id")
+  @JoinColumn(name = "payment_id", nullable = false)
   private PaymentDetails paymentInformation;
 
   //------------------------

@@ -26,7 +26,7 @@ public class OrderGame
   private int id;
 
   //OrderGame Associations
-  @OneToOne
+  @OneToOne(optional = true)
   @JoinColumn(name = "review_id")
   private Review review;
 
