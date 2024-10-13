@@ -45,10 +45,6 @@ public class ActivityLog
     }
   }
 
-  // Default constructor
-  public ActivityLog() {
-  }
-
   //------------------------
   // INTERFACE
   //------------------------

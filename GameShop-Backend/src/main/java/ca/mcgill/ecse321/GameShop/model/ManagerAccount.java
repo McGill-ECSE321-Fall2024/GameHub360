@@ -34,10 +34,6 @@ public class ManagerAccount extends StaffAccount
     reviewReplies = new ArrayList<Reply>();
   }
 
-  public ManagerAccount() {
-    reviewReplies = new ArrayList<Reply>();
-  }
-
   //------------------------
   // INTERFACE
   //------------------------

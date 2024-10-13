@@ -58,9 +58,6 @@ public class Reply
     }
   }
 
-  public Reply() {
-  }
-
   //------------------------
   // INTERFACE
   //------------------------

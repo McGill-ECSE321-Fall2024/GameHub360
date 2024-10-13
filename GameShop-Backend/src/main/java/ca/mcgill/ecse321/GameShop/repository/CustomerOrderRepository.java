@@ -7,4 +7,3 @@ import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
 public interface CustomerOrderRepository extends CrudRepository<CustomerOrder, Integer> {
     public CustomerOrder findOrderByOrderId(Integer orderId);
 }
-        

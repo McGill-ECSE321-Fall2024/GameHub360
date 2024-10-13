@@ -42,11 +42,6 @@ public class EmployeeAccount extends StaffAccount
     requests = new ArrayList<GameRequest>();
   }
 
-  public EmployeeAccount() {
-    logs = new ArrayList<ActivityLog>();
-    requests = new ArrayList<GameRequest>();
-  }
-
   //------------------------
   // INTERFACE
   //------------------------

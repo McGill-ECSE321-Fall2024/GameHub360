@@ -45,10 +45,6 @@ public abstract class StaffAccount extends Account
     writtenNotes = new ArrayList<RequestNote>();
   }
 
-  public StaffAccount() {
-    writtenNotes = new ArrayList<RequestNote>();
-  }
-
   //------------------------
   // INTERFACE
   //------------------------

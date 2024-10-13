@@ -59,10 +59,6 @@ public class GameRequest extends GameEntity
     }
   }
 
-  public GameRequest() {
-    associatedNotes = new ArrayList<RequestNote>();
-  }
-
   //------------------------
   // INTERFACE
   //------------------------
