@@ -39,28 +39,20 @@ public class CustomerOrderRepositoryTests {
     @BeforeEach
     @AfterEach
     public void clearDatabase() {
-        paymentDetailsRepo.deleteAll();
-        orderGameRepo.deleteAll();
-        gameRepo.deleteAll();
-        gameCategoryRepo.deleteAll();
-        customerOrderRepo.deleteAll();
+        orderGameRepo.deleteAll();  
+        customerOrderRepo.deleteAll();  
+        paymentDetailsRepo.deleteAll();  
+        gameRepo.deleteAll(); 
+        gameCategoryRepo.deleteAll();  
         customerAccountRepo.deleteAll();
     }
 
-    // tests go here --> annotate each test with @Test (see tutorial notes)
-    // The @Transactional annotation ensures that the database session is kept open 
-    // throughout the method's execution, allowing lazy-loaded relationships (like games) 
-    // to be fetched when they are accessed.
-
     @Test
     @Transactional
-    public void testCreateAndReadCustomerOrder() {
-        // 1. Create and save related entities
-        
-        // ---- Attributes
+    void testCreateAndReadCustomerOrder() {
+        // Arrange
         Date orderDate = new Date(System.currentTimeMillis()); // Current date for order
         
-        // ---- Associations
         CustomerAccount customer = new CustomerAccount("mohamed-amine@email.com", "MyPasswordTest");
         customer = customerAccountRepo.save(customer);
 
@@ -96,11 +88,10 @@ public class CustomerOrderRepositoryTests {
         // ---- ---- Save Customer Order
         order = customerOrderRepo.save(order);
         
-        // 3. Read the object from the database using the repository
+        // Act
         CustomerOrder savedOrder = customerOrderRepo.findOrderByOrderId(order.getOrderId());
 
-        // 4. Assert that the object from the database has the correct attributes
-
+        // Assert
         assertNotNull(savedOrder);
         assertEquals(orderDate.toString(), savedOrder.getOrderDate().toString());
         
