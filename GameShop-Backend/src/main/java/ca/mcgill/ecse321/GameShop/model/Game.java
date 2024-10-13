@@ -56,7 +56,7 @@ public class Game extends GameEntity
 
   public Game() {
     wishLists = new ArrayList<CustomerAccount>();
-    orders = new ArrayList<OrderGame>();
+    orders = new ArrayList<CustomerOrder>();
     promotions = new ArrayList<Promotion>();
   }
 
