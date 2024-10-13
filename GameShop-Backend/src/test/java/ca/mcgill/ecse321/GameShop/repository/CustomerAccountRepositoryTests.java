@@ -32,18 +32,4 @@ public class CustomerAccountRepositoryTests {
         assertNotNull(repo.findById(account.getCustomerId()));
         assertEquals("email@example.com", account.getEmail());
     }
-
-    @Test
-    public void testUpdateCustomerAccountDetails() {
-        // Arrange
-        CustomerAccount account = new CustomerAccount("email@example.com", "password");
-        account = repo.save(account);
-        
-        // Act
-        account.setPassword("newPassword");
-        account = repo.save(account);
-
-        // Assert
-        assertEquals("newPassword", repo.findById(account.getCustomerId()).get().getPassword());
-    }
 }

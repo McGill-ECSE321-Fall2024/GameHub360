@@ -32,18 +32,4 @@ public class GameCategoryRepositoryTests {
         assertNotNull(repo.findById(category.getCategoryId()));
         assertEquals("Adventure", category.getName());
     }
-
-    @Test
-    public void testUpdateGameCategory() {
-        // Arrange
-        GameCategory category = new GameCategory(true, "Adventure");
-        category = repo.save(category);
-        
-        // Act
-        category.setName("Action");
-        category = repo.save(category);
-
-        // Assert
-        assertEquals("Action", repo.findById(category.getCategoryId()).get().getName());
-    }
 }

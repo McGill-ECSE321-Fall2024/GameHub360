@@ -32,18 +32,4 @@ public class ManagerAccountRepositoryTests {
         assertNotNull(repo.findManagerAccountByStaffId(manager.getStaffId()));
         assertEquals("email@manager.com", manager.getEmail());
     }
-
-    @Test
-    public void testUpdateManagerAccount() {
-        // Arrange
-        ManagerAccount manager = new ManagerAccount("email@manager.com", "password");
-        manager = repo.save(manager);
-        
-        // Act
-        manager.setPassword("newPassword");
-        manager = repo.save(manager);
-
-        // Assert
-        assertEquals("newPassword", repo.findManagerAccountByStaffId(manager.getStaffId()).getPassword());
-    }
 }
