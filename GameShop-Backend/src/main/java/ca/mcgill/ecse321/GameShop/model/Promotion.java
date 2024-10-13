@@ -78,6 +78,11 @@ public class Promotion
     promotedCategories = new ArrayList<GameCategory>();
   }
 
+  public Promotion() {
+    promotedGames = new ArrayList<Game>();
+    promotedCategories = new ArrayList<GameCategory>();
+  }
+
   //------------------------
   // INTERFACE
   //------------------------

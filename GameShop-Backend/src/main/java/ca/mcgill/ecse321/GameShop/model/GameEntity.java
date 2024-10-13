@@ -40,6 +40,10 @@ public abstract class GameEntity
   // CONSTRUCTOR
   //------------------------
 
+  public GameEntity() {
+    categories = new ArrayList<GameCategory>();
+  }
+
   public GameEntity(String aName, String aDescription, String aImageURL, GameCategory... allCategories)
   {
     name = aName;

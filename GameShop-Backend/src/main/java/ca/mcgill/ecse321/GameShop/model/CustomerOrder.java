@@ -72,6 +72,33 @@ public class CustomerOrder {
       throw new RuntimeException("Unable to create paidOrder due to paymentInformation. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
+
+  public CustomerOrder(Date aOrderDate, Date aReviewDateForOrderReview, CustomerAccount aReviewAuthorForOrderReview, CustomerAccount aOrderedBy, PaymentDetails aPaymentInformation, Game... allGames)
+  {
+    orderDate = aOrderDate;
+    orderReview = new Review(aReviewDateForOrderReview, aReviewAuthorForOrderReview, this);
+    boolean didAddOrderedBy = setOrderedBy(aOrderedBy);
+    if (!didAddOrderedBy)
+    {
+      throw new RuntimeException("Unable to create orderHistory due to orderedBy. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    boolean didAddPaymentInformation = setPaymentInformation(aPaymentInformation);
+    if (!didAddPaymentInformation)
+    {
+      throw new RuntimeException("Unable to create paidOrder due to paymentInformation. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    games = new ArrayList<Game>();
+    boolean didAddGames = setGames(allGames);
+    if (!didAddGames)
+    {
+      throw new RuntimeException("Unable to create CustomerOrder, must have at least 1 games. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+  }
+
+  public CustomerOrder() {
+    games = new ArrayList<Game>();
+  }
+
   //------------------------
   // INTERFACE
   //------------------------
@@ -297,7 +324,6 @@ public class CustomerOrder {
       placeholderPaymentInformation.removePaidOrder(this);
     }
   }
-
 
   public String toString()
   {
