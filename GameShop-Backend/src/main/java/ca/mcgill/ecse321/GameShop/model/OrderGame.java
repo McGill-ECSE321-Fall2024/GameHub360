@@ -31,11 +31,11 @@ public class OrderGame
   private Review review;
 
   @ManyToOne
-  @JoinColumn(name = "order_id", nullable = false)
+  @JoinColumn(name = "order_id")
   private CustomerOrder customerOrder;
 
   @ManyToOne
-  @JoinColumn(name = "game_entity_id", nullable = false)
+  @JoinColumn(name = "game_entity_id")
   private Game game;
 
   //------------------------
