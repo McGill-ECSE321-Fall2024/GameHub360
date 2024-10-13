@@ -51,9 +51,8 @@ public class CustomerOrderRepositoryTests {
     @Transactional
     void testCreateAndReadCustomerOrder() {
         // 1. Create and save related entities
-
         // ---- Attributes
-        Date orderDate = new Date(System.currentTimeMillis()); // Current date for order
+        Date orderDate = new Date(System.currentTimeMillis()); 
 
         // ---- Associations
         CustomerAccount customer = new CustomerAccount("mohamed-amine@email.com", "MyPasswordTest");
@@ -76,18 +75,18 @@ public class CustomerOrderRepositoryTests {
 
         // ---- Initialize and save CustomerOrder
         CustomerOrder order = new CustomerOrder(orderDate, customer, paymentInfo);
-        order = customerOrderRepo.save(order); // Save the CustomerOrder first to ensure it has an ID
+        order = customerOrderRepo.save(order); 
 
-        // ---- Add Game Orders to the Customer Order with bidirectional relationship
+        // ---- Add Game Orders to the Customer Order
         OrderGame orderGame1 = new OrderGame(order, game1);
-        orderGame1.setCustomerOrder(order); // Explicitly set the CustomerOrder in OrderGame
+        orderGame1.setCustomerOrder(order);
         orderGame1 = orderGameRepo.save(orderGame1);
 
         OrderGame orderGame2 = new OrderGame(order, game2);
-        orderGame2.setCustomerOrder(order); // Explicitly set the CustomerOrder in OrderGame
+        orderGame2.setCustomerOrder(order); 
         orderGame2 = orderGameRepo.save(orderGame2);
 
-        order.addOrderedGame(orderGame1); // Also add it to the CustomerOrder
+        order.addOrderedGame(orderGame1); 
         order.addOrderedGame(orderGame2);
 
         // ---- Save Customer Order with Game Orders
