@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
+/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.util.*;
@@ -16,7 +16,7 @@ import jakarta.persistence.OneToMany;
 import java.sql.Date;
 
 // line 45 "../../../../../../model.ump"
-// line 182 "../../../../../../model.ump"
+// line 211 "../../../../../../model.ump"
 @Entity
 public class PaymentDetails
 {
@@ -70,14 +70,6 @@ public class PaymentDetails
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setPaymentDetailsId(int aPaymentDetailsId)
-  {
-    boolean wasSet = false;
-    paymentDetailsId = aPaymentDetailsId;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setCardName(String aCardName)
   {
@@ -208,9 +200,9 @@ public class PaymentDetails
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public CustomerOrder addPaidOrder(Date aOrderDate, CustomerAccount aOrderedBy)
+  public CustomerOrder addPaidOrder(Date aOrderDate, Review aOrderReview, CustomerAccount aOrderedBy, Game... allGames)
   {
-    return new CustomerOrder( aOrderDate, aOrderedBy, this);
+    return new CustomerOrder(aOrderDate, aOrderReview, aOrderedBy, this, allGames);
   }
 
   public boolean addPaidOrder(CustomerOrder aPaidOrder)

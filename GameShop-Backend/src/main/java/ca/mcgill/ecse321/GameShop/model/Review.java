@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
+/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 import java.sql.Date;
@@ -12,11 +12,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
 // line 106 "../../../../../../model.ump"
-// line 222 "../../../../../../model.ump"
+// line 206 "../../../../../../model.ump"
 @Entity
 public class Review
 {
@@ -46,23 +48,46 @@ public class Review
   @OneToMany(mappedBy = "reviewRecord", cascade = CascadeType.ALL)
   private List<Reply> reviewReplies;
 
-  @OneToOne(mappedBy = "review")
-  private OrderGame reviewedGame;
+  @ManyToOne
+  @JoinColumn(name = "customer_id")
+  private CustomerAccount reviewAuthor;
+
+  @OneToOne
+  @JoinColumn(name = "order_id")
+  private CustomerOrder reviewedOrder;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Review(Date aReviewDate, OrderGame aReviewedGame)
+  public Review(Date aReviewDate, CustomerAccount aReviewAuthor, CustomerOrder aReviewedOrder)
   {
     comment = null;
     reviewDate = aReviewDate;
     reviewReplies = new ArrayList<Reply>();
-    boolean didAddReviewedGame = setReviewedGame(aReviewedGame);
-    if (!didAddReviewedGame)
+    boolean didAddReviewAuthor = setReviewAuthor(aReviewAuthor);
+    if (!didAddReviewAuthor)
     {
-      throw new RuntimeException("Unable to create review due to reviewedGame. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create review due to reviewAuthor. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
+    if (aReviewedOrder == null || aReviewedOrder.getOrderReview() != null)
+    {
+      throw new RuntimeException("Unable to create Review due to aReviewedOrder. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    reviewedOrder = aReviewedOrder;
+  }
+
+  public Review(Date aReviewDate, CustomerAccount aReviewAuthor, Date aOrderDateForReviewedOrder, CustomerAccount aOrderedByForReviewedOrder, PaymentDetails aPaymentInformationForReviewedOrder, Game... allGamesForReviewedOrder)
+  {
+    comment = null;
+    reviewDate = aReviewDate;
+    reviewReplies = new ArrayList<Reply>();
+    boolean didAddReviewAuthor = setReviewAuthor(aReviewAuthor);
+    if (!didAddReviewAuthor)
+    {
+      throw new RuntimeException("Unable to create review due to reviewAuthor. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    reviewedOrder = new CustomerOrder(aOrderDateForReviewedOrder, this, aOrderedByForReviewedOrder, aPaymentInformationForReviewedOrder, allGamesForReviewedOrder);
   }
 
   public Review() {
@@ -146,9 +171,14 @@ public class Review
     return index;
   }
   /* Code from template association_GetOne */
-  public OrderGame getReviewedGame()
+  public CustomerAccount getReviewAuthor()
   {
-    return reviewedGame;
+    return reviewAuthor;
+  }
+  /* Code from template association_GetOne */
+  public CustomerOrder getReviewedOrder()
+  {
+    return reviewedOrder;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfReviewReplies()
@@ -222,31 +252,22 @@ public class Review
     }
     return wasAdded;
   }
-  /* Code from template association_SetOneToOptionalOne */
-  public boolean setReviewedGame(OrderGame aNewReviewedGame)
+  /* Code from template association_SetOneToMany */
+  public boolean setReviewAuthor(CustomerAccount aReviewAuthor)
   {
     boolean wasSet = false;
-    if (aNewReviewedGame == null)
+    if (aReviewAuthor == null)
     {
-      //Unable to setReviewedGame to null, as review must always be associated to a reviewedGame
       return wasSet;
     }
-    
-    Review existingReview = aNewReviewedGame.getReview();
-    if (existingReview != null && !equals(existingReview))
-    {
-      //Unable to setReviewedGame, the current reviewedGame already has a review, which would be orphaned if it were re-assigned
-      return wasSet;
-    }
-    
-    OrderGame anOldReviewedGame = reviewedGame;
-    reviewedGame = aNewReviewedGame;
-    reviewedGame.setReview(this);
 
-    if (anOldReviewedGame != null)
+    CustomerAccount existingReviewAuthor = reviewAuthor;
+    reviewAuthor = aReviewAuthor;
+    if (existingReviewAuthor != null && !existingReviewAuthor.equals(aReviewAuthor))
     {
-      anOldReviewedGame.setReview(null);
+      existingReviewAuthor.removeReview(this);
     }
+    reviewAuthor.addReview(this);
     wasSet = true;
     return wasSet;
   }
@@ -260,11 +281,17 @@ public class Review
       reviewReplies.remove(aReviewReply);
     }
     
-    OrderGame existingReviewedGame = reviewedGame;
-    reviewedGame = null;
-    if (existingReviewedGame != null)
+    CustomerAccount placeholderReviewAuthor = reviewAuthor;
+    this.reviewAuthor = null;
+    if(placeholderReviewAuthor != null)
     {
-      existingReviewedGame.setReview(null);
+      placeholderReviewAuthor.removeReview(this);
+    }
+    CustomerOrder existingReviewedOrder = reviewedOrder;
+    reviewedOrder = null;
+    if (existingReviewedOrder != null)
+    {
+      existingReviewedOrder.delete();
     }
   }
 
@@ -276,6 +303,7 @@ public class Review
             "comment" + ":" + getComment()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "rating" + "=" + (getRating() != null ? !getRating().equals(this)  ? getRating().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "reviewDate" + "=" + (getReviewDate() != null ? !getReviewDate().equals(this)  ? getReviewDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "reviewedGame = "+(getReviewedGame()!=null?Integer.toHexString(System.identityHashCode(getReviewedGame())):"null");
+            "  " + "reviewAuthor = "+(getReviewAuthor()!=null?Integer.toHexString(System.identityHashCode(getReviewAuthor())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "reviewedOrder = "+(getReviewedOrder()!=null?Integer.toHexString(System.identityHashCode(getReviewedOrder())):"null");
   }
 }

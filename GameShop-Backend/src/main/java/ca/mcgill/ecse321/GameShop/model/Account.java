@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
+/*This code was generated using the UMPLE 1.34.0.7242.6b8819789 modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
 
@@ -7,7 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 
 // line 4 "../../../../../../model.ump"
-// line 147 "../../../../../../model.ump"
+// line 141 "../../../../../../model.ump"
 @MappedSuperclass
 public abstract class Account
 {
