@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.GameShop.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Date;
 
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.GameShop.model.RequestNote;
+import jakarta.transaction.Transactional;
 import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
 import ca.mcgill.ecse321.GameShop.model.GameRequest;
 
@@ -36,30 +38,32 @@ public class RequestNoteRepositoryTests {
     }
 
     @Test
+    @Transactional
     public void testPersistAndLoadRequestNote() {
-        // Create a GameRequest (assuming the class exists and is required by RequestNote)
+        // Arrange
         GameRequest gameRequest = new GameRequest();
         gameRequest = gameRequestRepo.save(gameRequest);
 
-        // Create an EmployeeAccount (concrete subclass of StaffAccount)
-        EmployeeAccount staffAccount = new EmployeeAccount("test.email@example.com", "password", true);
-        staffAccount = employeeAccountRepo.save(staffAccount);
+        EmployeeAccount employeeAccount = new EmployeeAccount("test.email@example.com", "password", true);
+        employeeAccount = employeeAccountRepo.save(employeeAccount);
 
-        // Create RequestNote
-        RequestNote note = new RequestNote("This is a test note.", Date.valueOf("2023-10-10"), gameRequest, staffAccount);
+        RequestNote note = new RequestNote("This is a test note.", Date.valueOf("2023-10-10"), gameRequest, employeeAccount);
 
-        // Save RequestNote
+        // Act
         note = requestNoterepo.save(note);
         int noteId = note.getNoteId();
 
-        // Read RequestNote from the database
-        RequestNote noteFromDb = requestNoterepo.findById(noteId).orElse(null);
+        RequestNote noteFromDb = requestNoterepo.findRequestNoteByNoteId(noteId);
 
-        // Assert correct retrieval
+        // Assert
         assertNotNull(noteFromDb);
+        assertEquals(noteId, noteFromDb.getNoteId());
         assertEquals(note.getContent(), noteFromDb.getContent());
         assertEquals(note.getNoteDate(), noteFromDb.getNoteDate());
+
         assertEquals(gameRequest.getGameEntityId(), noteFromDb.getGameRequest().getGameEntityId());
-        assertEquals(staffAccount.getStaffId(), noteFromDb.getNotesWriter().getStaffId());
+        assertEquals(employeeAccount.getStaffId(), noteFromDb.getNotesWriter().getStaffId());
+        assertTrue(gameRequestRepo.findById(gameRequest.getGameEntityId()).get().getAssociatedNotes().contains(noteFromDb), "GameRequest should contain the persisted RequestNote");
+        assertTrue(employeeAccountRepo.findById(employeeAccount.getStaffId()).get().getWrittenNotes().contains(noteFromDb), "EmployeeAccount should contain the persisted RequestNote");
     }
 }

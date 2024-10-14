@@ -4,10 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
@@ -32,23 +32,29 @@ public class GameRepositoryTests {
     @Test
     @Transactional
     public void testPersistAndLoadGame() {
+        // Arrange
         GameCategory category = new GameCategory(true, "Action");
         category.setCategoryType(GameCategory.CategoryType.GENRE);
         category = gameCategoryRepo.save(category);
 
-        // Create a new game
         Game game = new Game("GameTitle", "Description", "ImageURL", 10, true, 19.99, category);
 
-        // Save the game
+        // Act
         gameRepo.save(game);
         int gameId = game.getGameEntityId();
 
-        // Read the game from the database
         Game gameFromDb = gameRepo.findById(gameId).orElse(null);
+        GameCategory categoryFromDb = gameCategoryRepo.findById(category.getCategoryId()).orElse(null);
 
-        // Assertions
+        // Assert
+        assertNotNull(categoryFromDb);
+        assertTrue(categoryFromDb.getGames().contains(gameFromDb));
         assertNotNull(gameFromDb);
         assertEquals("GameTitle", gameFromDb.getName());
+        assertEquals("Description", gameFromDb.getDescription());
+        assertEquals("ImageURL", gameFromDb.getImageURL());
+        assertEquals(10, gameFromDb.getQuantityInStock());
+        assertEquals(true, gameFromDb.isIsAvailable());
         assertEquals(game.getCategories().size(), gameFromDb.getCategories().size());
         for (int i = 0; i < game.getCategories().size(); i++) {
             GameCategory expectedCategory = game.getCategories().get(i);
