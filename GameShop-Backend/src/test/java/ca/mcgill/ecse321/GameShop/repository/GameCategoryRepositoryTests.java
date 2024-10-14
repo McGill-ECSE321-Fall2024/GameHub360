@@ -33,6 +33,7 @@ public class GameCategoryRepositoryTests {
 
         // Assert
         assertNotNull(categoryFromDb);
+        assertEquals(category.getCategoryId(), categoryFromDb.getCategoryId());
         assertEquals(name, categoryFromDb.getName());
         assertEquals(isAvailable, categoryFromDb.getIsAvailable());
     }
