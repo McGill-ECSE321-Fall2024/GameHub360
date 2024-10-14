@@ -48,52 +48,62 @@ public class ReviewRepositoryTests {
     @Test
     public void testCreateAndRetrieveReview() {
         // Arrange
-        CustomerAccount customer = new CustomerAccount("email@example.com", "password");
+        String customerEmail = "email@example.com";
+        String customerPassword = "password";
+        CustomerAccount customer = new CustomerAccount(customerEmail, customerPassword);
         customer = customerAccountRepo.save(customer);
-    
-        GameCategory category = new GameCategory(true, "Action");
+
+        boolean categoryIsAvailable = true;
+        String categoryName = "Action";
+        GameCategory category = new GameCategory(categoryIsAvailable, categoryName);
         category.setCategoryType(GameCategory.CategoryType.GENRE);
         category = gameCategoryRepo.save(category);
-    
-        Game game = new Game("GameTitle", "Description", "ImageURL", 10, true, 19.99, category);
+
+        String gameTitle = "GameTitle";
+        String gameDescription = "Description";
+        String gameImageUrl = "ImageURL";
+        int gameStock = 10;
+        boolean gameIsAvailable = true;
+        double gamePrice = 19.99;
+        Game game = new Game(gameTitle, gameDescription, gameImageUrl, gameStock, gameIsAvailable, gamePrice, category);
         game = gameRepo.save(game);
- 
-        PaymentDetails payment = new PaymentDetails("Cardholder", "H3H 1K1", 12345678, 12, 2024, customer);
+
+        String cardName = "Cardholder";
+        String postalCode = "H3H 1K1";
+        int cardNumber = 12345678;
+        int expMonth = 12;
+        int expYear = 2024;
+        PaymentDetails payment = new PaymentDetails(cardName, postalCode, cardNumber, expMonth, expYear, customer);
         payment = paymentDetailsRepo.save(payment);
 
-        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf("2024-10-10"), customer, payment);
+        Date orderDate = Date.valueOf("2024-10-10");
+        CustomerOrder customerOrder = new CustomerOrder(orderDate, customer, payment);
         customerOrder = customerOrderRepo.save(customerOrder);
 
         OrderGame orderGame = new OrderGame(customerOrder, game);
         orderGame = orderGameRepo.save(orderGame);
 
-        // Define variables to avoid hardcoding
-        String comment = "Amazing game!";
+        String reviewComment = "Amazing game!";
         Date reviewDate = Date.valueOf("2024-10-11");
-        Review.GameReviewRating rating = Review.GameReviewRating.FIVE_STARS;
-
+        Review.GameReviewRating reviewRating = Review.GameReviewRating.FIVE_STARS;
         Review review = new Review(reviewDate, orderGame);
-        review.setComment(comment);
-        review.setRating(rating);
-    
-        // Explicitly set bidirectional association and save orderGame after setting the review
+        review.setComment(reviewComment);
+        review.setRating(reviewRating);
+
         orderGame.setReview(review);
         reviewRepo.save(review);
         orderGameRepo.save(orderGame);
-    
+
         // Act
         Review reviewFromDb = reviewRepo.findReviewByReviewId(review.getReviewId());
-    
-        // Assert
 
-        // Verify Attributes
+        // Assert
         assertNotNull(reviewFromDb);
         assertEquals(review.getReviewId(), reviewFromDb.getReviewId());
-        assertEquals(comment, reviewFromDb.getComment());
+        assertEquals(reviewComment, reviewFromDb.getComment());
         assertEquals(reviewDate, reviewFromDb.getReviewDate());
-        assertEquals(rating, reviewFromDb.getRating());
+        assertEquals(reviewRating, reviewFromDb.getRating());
 
-        // Verify associations
         assertNotNull(reviewFromDb.getReviewedGame());
         assertEquals(orderGame.getOrderGameId(), reviewFromDb.getReviewedGame().getOrderGameId());
     }

@@ -23,18 +23,17 @@ public class ManagerAccountRepositoryTests {
     @Test
     public void testCreateAndRetrieveManagerAccount() {
         // Arrange
-        ManagerAccount manager = new ManagerAccount("email@manager.com", "password");
-
-        // Define variables to avoid hardcoding
         String email = "email@manager.com";
         String password = "password";
+        ManagerAccount manager = new ManagerAccount(email, password);
 
         // Act
         manager = repo.save(manager);
+        ManagerAccount managerFromDb = repo.findManagerAccountByStaffId(manager.getStaffId());
 
         // Assert
-        assertNotNull(repo.findManagerAccountByStaffId(manager.getStaffId()));
-        assertEquals(email, manager.getEmail());
-        assertEquals(password, manager.getPassword());
+        assertNotNull(managerFromDb);
+        assertEquals(email, managerFromDb.getEmail());
+        assertEquals(password, managerFromDb.getPassword());
     }
 }
