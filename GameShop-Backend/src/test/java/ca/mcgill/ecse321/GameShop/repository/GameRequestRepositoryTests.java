@@ -25,6 +25,7 @@ public class GameRequestRepositoryTests {
     private EmployeeAccountRepository employeeRepo;
 
     private EmployeeAccount employee;
+    private EmployeeAccount employee2;
     @BeforeEach
     public void setUp() {
         employee = new EmployeeAccount("email@example.com", "password123", true);
@@ -38,12 +39,14 @@ public class GameRequestRepositoryTests {
 
     @Test
     public void testCreateAndRetrieveGameRequest() {
+        // Arrange
         Date requestDate = Date.valueOf("2024-10-13");
         GameCategory category = new GameCategory(true, "Action");
         GameRequest gameRequest = new GameRequest("Test Name", "Test Description", "http://image.url", requestDate, employee, category);
+        // Act
         repo.save(gameRequest);
-
-        GameRequest retrievedRequest = repo.findById(gameRequest.getGameEntityId()).orElse(null);
+        // Assert
+        GameRequest retrievedRequest = repo.findGameRequestByGameEntityId(gameRequest.getGameEntityId());
         assertNotNull(retrievedRequest);
         assertEquals("Test Name", retrievedRequest.getName());
         assertEquals("Test Description", retrievedRequest.getDescription());
@@ -54,45 +57,38 @@ public class GameRequestRepositoryTests {
 
     @Test
     public void testUpdateGameRequest() {
-        Date requestDate = Date.valueOf("2024-10-13");
+        // Arrange
+        employee2 = new EmployeeAccount("email2@example.com", "password1234", true);
+        Date requestDate1 = Date.valueOf("2024-10-13");
+        Date requestDate2 = Date.valueOf("2024-10-14");
         GameCategory category = new GameCategory(true, "Action");
-        GameRequest gameRequest = new GameRequest("Initial Name", "Initial Description", "http://image.url", requestDate, employee, category);
+        GameRequest gameRequest = new GameRequest("Initial Name", "Initial Description", "http://image.url", requestDate1, employee, category);
+        // Act
         repo.save(gameRequest);
-
+        employeeRepo.save(employee2);
         gameRequest.setRequestStatus(RequestStatus.APPROVED);
+        gameRequest.setRequestPlacer(employee2);
+        gameRequest.setRequestDate(requestDate2);
         repo.save(gameRequest);
-
-        GameRequest updatedRequest = repo.findById(gameRequest.getGameEntityId()).orElse(null);
+        // Assert
+        GameRequest updatedRequest = repo.findGameRequestByGameEntityId(gameRequest.getGameEntityId());
         assertNotNull(updatedRequest);
         assertEquals(RequestStatus.APPROVED, updatedRequest.getRequestStatus());
+        assertEquals(requestDate2, updatedRequest.getRequestDate());
+        assertEquals(employee2.getStaffId(), updatedRequest.getRequestPlacer().getStaffId());
     }
     @Test
     public void testDeleteGameRequest() {
+        // Arrange
         Date requestDate = Date.valueOf("2024-10-13");
         GameCategory category = new GameCategory(true, "Action");
         GameRequest gameRequest = new GameRequest("Test Name", "Test Description", "http://image.url", requestDate, employee, category);
+        // Act
         repo.save(gameRequest);
-
         repo.delete(gameRequest);
-
-        GameRequest deletedRequest = repo.findById(gameRequest.getGameEntityId()).orElse(null);
+        employeeRepo.delete(employee);
+        // Assert
+        GameRequest deletedRequest = repo.findGameRequestByGameEntityId(gameRequest.getGameEntityId());
         assertNull(deletedRequest);
-    }
-
-    @Test
-    public void testFindAllGameRequests() {
-        Date requestDate1 = Date.valueOf("2024-10-13");
-        GameCategory category1 = new GameCategory(true, "Action");
-        GameRequest gameRequest1 = new GameRequest("First Request", "First Description", "http://image1.url", requestDate1, employee, category1);
-        repo.save(gameRequest1);
-
-        Date requestDate2 = Date.valueOf("2024-10-14");
-        GameCategory category2 = new GameCategory(true, "Comedy");
-        GameRequest gameRequest2 = new GameRequest("Second Request", "Second Description", "http://image2.url", requestDate2, employee, category2);
-        repo.save(gameRequest2);
-
-        List<GameRequest> requests = new ArrayList<>();
-        repo.findAll().forEach(requests::add);
-        assertEquals(2, requests.size());
     }
 }

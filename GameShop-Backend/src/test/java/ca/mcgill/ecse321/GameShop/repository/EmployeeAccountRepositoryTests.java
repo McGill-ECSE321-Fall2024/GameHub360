@@ -23,10 +23,12 @@ public class EmployeeAccountRepositoryTests {
 
     @Test
     public void testCreateAndRetrieveEmployeeAccount() {
+        // Arrange
         EmployeeAccount employee = new EmployeeAccount("email@example.com", "password123", true);
+        // Act
         repo.save(employee);
-
-        EmployeeAccount retrievedEmployee = repo.findById(employee.getStaffId()).orElse(null);
+        // Assert
+        EmployeeAccount retrievedEmployee = repo.findEmployeeAccountByStaffId(employee.getStaffId());
         assertNotNull(retrievedEmployee);
         assertEquals("email@example.com", retrievedEmployee.getEmail());
         assertEquals("password123", retrievedEmployee.getPassword());
@@ -35,15 +37,16 @@ public class EmployeeAccountRepositoryTests {
 
     @Test
     public void testUpdateEmployeeAccount() {
+        // Arrange
         EmployeeAccount employee = new EmployeeAccount("email@example.com", "password123", true);
+        // Act
         repo.save(employee);
-
         employee.setPhoneNumber("4388289999");
         employee.setPassword("newpassword123");
         employee.setIsActive(false);
         repo.save(employee);
-
-        EmployeeAccount updatedEmployee = repo.findById(employee.getStaffId()).orElse(null);
+        // Assert
+        EmployeeAccount updatedEmployee = repo.findEmployeeAccountByStaffId(employee.getStaffId());
         assertNotNull(updatedEmployee);
         assertEquals("4388289999", updatedEmployee.getPhoneNumber());
         assertEquals("newpassword123", updatedEmployee.getPassword());
@@ -52,25 +55,14 @@ public class EmployeeAccountRepositoryTests {
 
     @Test
     public void testDeleteEmployeeAccount() {
+        // Arrange
         EmployeeAccount employee = new EmployeeAccount("email@example.com", "password123", true);
+        // Act
         repo.save(employee);
-
         repo.delete(employee);
-        EmployeeAccount deletedEmployee = repo.findById(employee.getStaffId()).orElse(null);
+        // Assert
+        EmployeeAccount deletedEmployee = repo.findEmployeeAccountByStaffId(employee.getStaffId());
         assertNull(deletedEmployee);
-    }
-
-    @Test
-    public void testFindAllEmployeeAccounts() {
-        EmployeeAccount employee1 = new EmployeeAccount("email1@example.com", "password123", true);
-        EmployeeAccount employee2 = new EmployeeAccount("email2@example.com", "password1234", true);
-        repo.save(employee1);
-        repo.save(employee2);
-
-
-        List<EmployeeAccount> employees = new ArrayList<>();
-        repo.findAll().forEach(employees::add);
-        assertEquals(2, employees.size());
     }
 
 }

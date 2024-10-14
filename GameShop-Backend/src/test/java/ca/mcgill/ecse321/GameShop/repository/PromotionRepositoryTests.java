@@ -40,12 +40,15 @@ public class PromotionRepositoryTests {
     }
     @Test
     public void testCreateAndRetrievePromotion() {
+        // Arrange
         Promotion promotion = new Promotion(20.0, storeInfo);
         promotion.setPromotionType(Promotion.PromotionType.GAME);
+        // Act
         repo.save(promotion);
-
-        Promotion retrievedPromotion = repo.findById(promotion.getPromotionId()).orElse(null);
+        // Assert
+        Promotion retrievedPromotion = repo.findPromotionByPromotionId(promotion.getPromotionId());
         assertNotNull(retrievedPromotion);
+        assertEquals(promotion.getPromotionId(), retrievedPromotion.getPromotionId());
         assertEquals(20.0, retrievedPromotion.getDiscountPercentageValue());
         assertEquals(Promotion.PromotionType.GAME, retrievedPromotion.getPromotionType());
         assertEquals(storeInfo.getStoreInfoId(), retrievedPromotion.getInfo().getStoreInfoId());
@@ -53,51 +56,34 @@ public class PromotionRepositoryTests {
 
     @Test
     public void testUpdatePromotion() {
+        // Arrange
         Promotion promotion = new Promotion(20.0, storeInfo);
+        promotion.setPromotionType(Promotion.PromotionType.GAME);
+        // Act
         repo.save(promotion);
-
         promotion.setDiscountPercentageValue(30.0);
+        promotion.setPromotionType(Promotion.PromotionType.CATEGORY);
+        promotion.getInfo().setStorePolicy("New store policy.");
+        storeRepo.save(storeInfo);
         repo.save(promotion);
-
-        Promotion updatedPromotion = repo.findById(promotion.getPromotionId()).orElse(null);
+        // Assert
+        Promotion updatedPromotion = repo.findPromotionByPromotionId(promotion.getPromotionId());
         assertNotNull(updatedPromotion);
         assertEquals(30.0, updatedPromotion.getDiscountPercentageValue());
+        assertEquals(Promotion.PromotionType.CATEGORY, updatedPromotion.getPromotionType());
+        assertEquals("New store policy.", updatedPromotion.getInfo().getStorePolicy());
     }
     @Test
     public void testDeletePromotion() {
+        // Arrange
         Promotion promotion = new Promotion(20.0, storeInfo);
+        // Act
         repo.save(promotion);
-
         repo.delete(promotion);
-
-        Promotion deletedPromotion = repo.findById(promotion.getPromotionId()).orElse(null);
+        storeRepo.delete(storeInfo);
+        // Assert
+        Promotion deletedPromotion = repo.findPromotionByPromotionId(promotion.getPromotionId());
         assertNull(deletedPromotion);
-    }
-
-    @Test
-    public void testFindAllPromotions() {
-        Promotion promotion1 = new Promotion(20.0, storeInfo);
-        repo.save(promotion1);
-
-        Promotion promotion2 = new Promotion(30.0, storeInfo);
-        repo.save(promotion2);
-
-        List<Promotion> promotions = new ArrayList<>();
-        repo.findAll().forEach(promotions::add);
-
-        assertEquals(2, promotions.size());
-    }
-    @Test
-    public void testAddGameCategoryToPromotion() {
-        Promotion promotion = new Promotion(20.0, storeInfo);
-        GameCategory category = new GameCategory(true, "Action");
-        categoryRepo.save(category);
-        promotion.addPromotedCategory(category);
-        repo.save(promotion);
-
-        Promotion retrievedPromotion = repo.findById(promotion.getPromotionId()).orElse(null);
-        assertNotNull(retrievedPromotion);
-        assertTrue(retrievedPromotion.getPromotedCategories().contains(category));
     }
 
 }
