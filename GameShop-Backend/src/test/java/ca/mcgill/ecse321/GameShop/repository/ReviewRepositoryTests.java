@@ -12,7 +12,6 @@ import java.sql.Date;
 
 @SpringBootTest
 public class ReviewRepositoryTests {
-
     @Autowired
     private ReviewRepository reviewRepo;
 
@@ -58,16 +57,16 @@ public class ReviewRepositoryTests {
     
         Game game = new Game("GameTitle", "Description", "ImageURL", 10, true, 19.99, category);
         game = gameRepo.save(game);
-    
+ 
         PaymentDetails payment = new PaymentDetails("Cardholder", "H3H 1K1", 12345678, 12, 2024, customer);
         payment = paymentDetailsRepo.save(payment);
-    
+
         CustomerOrder customerOrder = new CustomerOrder(Date.valueOf("2024-10-10"), customer, payment);
         customerOrder = customerOrderRepo.save(customerOrder);
-    
+
         OrderGame orderGame = new OrderGame(customerOrder, game);
         orderGame = orderGameRepo.save(orderGame);
-    
+
         // Define variables to avoid hardcoding
         String comment = "Amazing game!";
         Date reviewDate = Date.valueOf("2024-10-11");
