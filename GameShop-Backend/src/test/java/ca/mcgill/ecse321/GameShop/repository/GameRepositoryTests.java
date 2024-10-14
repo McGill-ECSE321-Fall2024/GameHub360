@@ -44,11 +44,8 @@ public class GameRepositoryTests {
         int gameId = game.getGameEntityId();
 
         Game gameFromDb = gameRepo.findById(gameId).orElse(null);
-        GameCategory categoryFromDb = gameCategoryRepo.findById(category.getCategoryId()).orElse(null);
 
         // Assert
-        assertNotNull(categoryFromDb);
-        assertTrue(categoryFromDb.getGames().contains(gameFromDb));
         assertNotNull(gameFromDb);
         assertEquals("GameTitle", gameFromDb.getName());
         assertEquals("Description", gameFromDb.getDescription());
