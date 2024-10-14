@@ -33,6 +33,7 @@ public class ManagerAccountRepositoryTests {
 
         // Assert
         assertNotNull(managerFromDb);
+        assertEquals(manager.getStaffId(), managerFromDb.getStaffId());
         assertEquals(email, managerFromDb.getEmail());
         assertEquals(password, managerFromDb.getPassword());
     }

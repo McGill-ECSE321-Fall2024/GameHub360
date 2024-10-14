@@ -33,6 +33,7 @@ public class CustomerAccountRepositoryTests {
 
         // Assert
         assertNotNull(accountFromDb);
+        assertEquals(account.getCustomerId(), accountFromDb.getCustomerId());
         assertEquals(email, accountFromDb.getEmail());
         assertEquals(password, accountFromDb.getPassword());
     }
