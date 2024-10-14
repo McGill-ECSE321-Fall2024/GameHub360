@@ -41,10 +41,15 @@ public class OrderGameRepositoryTests {
     @AfterEach
     public void clearDatabase() {
         repo.deleteAll();
+        gameRepo.deleteAll();
+        gameCategoryRepo.deleteAll();
+        customerOrderRepo.deleteAll();
+        paymentDetailsRepo.deleteAll();
+        customerAccRepo.deleteAll();
+        reviewRepo.deleteAll();
     }
 
     @Test
-    @Transactional
     void testCreateAndReadOrderGame(){
 
         // ---- Arrange
@@ -63,6 +68,7 @@ public class OrderGameRepositoryTests {
         game = gameRepo.save(game);
 
         OrderGame orderGame = new OrderGame(customerOrder, game);
+        orderGame = repo.save(orderGame);
 
         Review review = new Review(orderDate, orderGame);
         review = reviewRepo.save(review);
