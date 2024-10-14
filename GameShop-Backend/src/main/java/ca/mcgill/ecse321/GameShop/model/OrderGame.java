@@ -62,10 +62,6 @@ public class OrderGame
   //------------------------
   // INTERFACE
   //------------------------
-  public int getOrderGameId()
-  {
-    return id;
-  }
   /* Code from template association_GetOne */
   public Review getReview()
   {
