@@ -59,16 +59,13 @@ public class ReplyRepositoryTests {
     @Test
     void testPersistAndLoadReply() {
 
-        // Arrange 
+        // ---- Arrange 
 
-        // Create ManagerAccount (dependent entity)
         ManagerAccount manager = new ManagerAccount("john.doe@email.com", "1234");
         managerRepo.save(manager);
 
-        // Create Review (dependent entity)
         Date date = new Date(System.currentTimeMillis());
 
-        // ---- Create CustomerOrder
         CustomerAccount customerAcc = new CustomerAccount("mab_222@mail.com", "password");
         customerAcc = customerAccRepo.save(customerAcc);
         PaymentDetails payementDetails = new PaymentDetails("TDCard", "XXX XXX", 1234, 10, 2025, customerAcc);
@@ -76,35 +73,34 @@ public class ReplyRepositoryTests {
         CustomerOrder customerOrder = new CustomerOrder(date, customerAcc, payementDetails);
         customerOrder = customerOrdRepo.save(customerOrder);
 
-        // ---- Create Game
         GameCategory category = new GameCategory(true, "Arcade");
         category = gameCatRepo.save(category);
         Game game = new Game("COD", "Call Of Duty", "https://www.url.ca", 10, true, 20.99, category);
         game = gameRepo.save(game);
 
-        // ---- Create OrderGame
         OrderGame reviewedGame = new OrderGame(customerOrder, game);
         reviewedGame = orderGameRepo.save(reviewedGame);
 
-        // ---- Create and Save Review
         Review review = new Review(date, reviewedGame);
         reviewRepo.save(review);
 
-        // Create and save Reply 
         String replyContent = "Thank you for your feedback!";
         Reply reply = new Reply(replyContent, date, review, manager);
         repo.save(reply);
 
-        // Act
+        // ---- Act
         Reply retrievedReply = repo.findReplyByReplyId(reply.getReplyId());
 
-        // Assert
+        // ---- Assert
+        // Asserting the Attributes
         assertNotNull(retrievedReply);
-        assertEquals(reply.getReplyId(), retrievedReply.getReplyId()); 
-        assertEquals(replyContent, retrievedReply.getContent());
-        assertEquals(date.toString(), retrievedReply.getReplyDate().toString());
-        assertEquals(manager.getEmail(), retrievedReply.getReviewer().getEmail());
-        assertEquals(review.getReviewId(), retrievedReply.getReviewRecord().getReviewId());
+        assertEquals(retrievedReply.getReplyId(), reply.getReplyId());
+        assertEquals(retrievedReply.getContent(), reply.getContent());
+        assertEquals(retrievedReply.getReplyDate().toString(), reply.getReplyDate().toString());
+
+        // Asserting the Associations
+        assertEquals(retrievedReply.getReviewRecord().getReviewId(), reply.getReviewRecord().getReviewId());
+        assertEquals(retrievedReply.getReviewer().getStaffId(), reply.getReviewer().getStaffId());
     }
 
 }

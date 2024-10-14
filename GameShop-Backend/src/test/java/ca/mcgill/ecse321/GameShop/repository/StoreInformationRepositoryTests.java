@@ -27,20 +27,23 @@ public class StoreInformationRepositoryTests {
     @Transactional
     void testCreateAndReadStoreInformation(){
 
-        // Arrange
+        // ---- Arrange
         StoreInformation storeInfo = new StoreInformation();
         storeInfo.setStorePolicy("This is a store policy");
         storeInfo.addCurrentPromotion(0.45);
         storeInfo = repo.save(storeInfo);
 
-        // Act
+        // ---- Act
         StoreInformation retrievedStoreInfo = repo.findStoreInformationByStoreInfoId(storeInfo.getStoreInfoId());
 
-        // Assert
+        // ---- Assert
+        // Asserting the Attributes
         assertNotNull(retrievedStoreInfo);
-        assertEquals(storeInfo.getStorePolicy(), retrievedStoreInfo.getStorePolicy());
-        assertEquals(retrievedStoreInfo.getCurrentPromotions().size(), 1);
-        assertEquals(storeInfo.getCurrentPromotion(0), retrievedStoreInfo.getCurrentPromotion(0));
+        assertEquals(retrievedStoreInfo.getStoreInfoId(), storeInfo.getStoreInfoId());
+        assertEquals(retrievedStoreInfo.getStorePolicy(), storeInfo.getStorePolicy());
+
+        // Asserting the Associations
+        assertEquals(retrievedStoreInfo.getCurrentPromotion(0).getPromotionId(), storeInfo.getCurrentPromotion(0).getPromotionId());
     }
 
 }

@@ -13,6 +13,7 @@ import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
+import ca.mcgill.ecse321.GameShop.model.Review;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,6 +34,8 @@ public class OrderGameRepositoryTests {
     private GameCategoryRepository gameCategoryRepo;
     @Autowired 
     private GameRepository gameRepo;
+    @Autowired
+    private ReviewRepository reviewRepo;
 
     @BeforeEach
     @AfterEach
@@ -44,7 +47,7 @@ public class OrderGameRepositoryTests {
     @Transactional
     void testCreateAndReadOrderGame(){
 
-        // Arrange
+        // ---- Arrange
         Date orderDate = new Date(System.currentTimeMillis());
 
         CustomerAccount orderedBy = new CustomerAccount("myemail@mail.com", "pwd");
@@ -60,18 +63,24 @@ public class OrderGameRepositoryTests {
         game = gameRepo.save(game);
 
         OrderGame orderGame = new OrderGame(customerOrder, game);
+
+        Review review = new Review(orderDate, orderGame);
+        review = reviewRepo.save(review);
+        orderGame.setReview(review);
+
         orderGame = repo.save(orderGame);
 
-        // Act
+        // ---- Act
         OrderGame retrievedOrderGame = repo.findOrderGameById(orderGame.getOrderGameId());
 
-        // Assert
+        // ---- Assert
+        // Asserting the Attributes
         assertNotNull(retrievedOrderGame);
-        assertNotNull(retrievedOrderGame.getOrderGameId());
-        assertEquals(customerOrder.getOrderId(), retrievedOrderGame.getCustomerOrder().getOrderId());
-        assertEquals(game.getGameEntityId(), retrievedOrderGame.getGame().getGameEntityId());
-        assertEquals(customerOrder.getOrderDate().toString(), retrievedOrderGame.getCustomerOrder().getOrderDate().toString());
-        assertEquals(game.getName(), retrievedOrderGame.getGame().getName());
+        assertEquals(retrievedOrderGame.getOrderGameId(), orderGame.getOrderGameId());
+        // Asserting the Associations
+        assertEquals(retrievedOrderGame.getReview().getReviewId(), orderGame.getReview().getReviewId());
+        assertEquals(retrievedOrderGame.getCustomerOrder().getOrderId(), orderGame.getCustomerOrder().getOrderId());
+        assertEquals(retrievedOrderGame.getGame().getGameEntityId(), orderGame.getGame().getGameEntityId());
     }
     
 }
