@@ -25,11 +25,16 @@ public class GameCategoryRepositoryTests {
         // Arrange
         GameCategory category = new GameCategory(true, "Adventure");
 
+        // Define variables to avoid hardcoding
+        String name = "Adventure";
+        boolean isAvailable = true;
+
         // Act
         category = repo.save(category);
 
         // Assert
         assertNotNull(repo.findById(category.getCategoryId()));
-        assertEquals("Adventure", category.getName());
+        assertEquals(name, category.getName());
+        assertEquals(isAvailable, category.getIsAvailable());
     }
 }

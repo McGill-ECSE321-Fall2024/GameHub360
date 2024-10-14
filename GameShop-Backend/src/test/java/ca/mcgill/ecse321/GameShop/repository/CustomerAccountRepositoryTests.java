@@ -24,12 +24,17 @@ public class CustomerAccountRepositoryTests {
     public void testCreateAndRetrieveCustomerAccount() {
         // Arrange
         CustomerAccount account = new CustomerAccount("email@example.com", "password");
-        
+
+        // Define variables to avoid hardcoding
+        String email = "email@example.com";
+        String password = "password";
+
         // Act
         account = repo.save(account);
 
         // Assert
         assertNotNull(repo.findById(account.getCustomerId()));
-        assertEquals("email@example.com", account.getEmail());
+        assertEquals(email, account.getEmail());
+        assertEquals(password, account.getPassword());
     }
 }

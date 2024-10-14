@@ -68,29 +68,34 @@ public class ReviewRepositoryTests {
         OrderGame orderGame = new OrderGame(customerOrder, game);
         orderGame = orderGameRepo.save(orderGame);
     
-        Review review = new Review(Date.valueOf("2024-10-11"), orderGame);
-        review.setComment("Amazing game!");
-        review.setRating(Review.GameReviewRating.FIVE_STARS);
+        // Define variables to avoid hardcoding
+        String comment = "Amazing game!";
+        Date reviewDate = Date.valueOf("2024-10-11");
+        Review.GameReviewRating rating = Review.GameReviewRating.FIVE_STARS;
+
+        Review review = new Review(reviewDate, orderGame);
+        review.setComment(comment);
+        review.setRating(rating);
     
         // Explicitly set bidirectional association and save orderGame after setting the review
-        orderGame.setReview(review); // Set the review in orderGame
-        reviewRepo.save(review);      // Save review first
-        orderGameRepo.save(orderGame); // Save orderGame again to persist the association
+        orderGame.setReview(review);
+        reviewRepo.save(review);
+        orderGameRepo.save(orderGame);
     
         // Act
         Review reviewFromDb = reviewRepo.findReviewByReviewId(review.getReviewId());
     
         // Assert
 
-        // Verify all attributes
-        assertNotNull(reviewFromDb, "Review should be saved in the database");
+        // Verify Attributes
+        assertNotNull(reviewFromDb);
         assertEquals(review.getReviewId(), reviewFromDb.getReviewId());
-        assertEquals("Amazing game!", reviewFromDb.getComment());
-        assertEquals(Date.valueOf("2024-10-11"), reviewFromDb.getReviewDate());
-        assertEquals(Review.GameReviewRating.FIVE_STARS, reviewFromDb.getRating());
+        assertEquals(comment, reviewFromDb.getComment());
+        assertEquals(reviewDate, reviewFromDb.getReviewDate());
+        assertEquals(rating, reviewFromDb.getRating());
 
-        // Verify all associations
-        assertNotNull(reviewFromDb.getReviewedGame(), "OrderGame should be associated with Review");
+        // Verify associations
+        assertNotNull(reviewFromDb.getReviewedGame());
         assertEquals(orderGame.getOrderGameId(), reviewFromDb.getReviewedGame().getOrderGameId());
     }
 }
