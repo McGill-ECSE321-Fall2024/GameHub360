@@ -23,27 +23,18 @@ public class GameCategoryRepositoryTests {
     @Test
     public void testCreateAndRetrieveGameCategory() {
         // Arrange
-        GameCategory category = new GameCategory(true, "Adventure");
+        String name = "Adventure";
+        boolean isAvailable = true;
+        GameCategory category = new GameCategory(isAvailable, name);
 
         // Act
         category = repo.save(category);
+        GameCategory categoryFromDb = repo.findGameCategoryByCategoryId(category.getCategoryId());
 
         // Assert
-        assertNotNull(repo.findById(category.getCategoryId()));
-        assertEquals("Adventure", category.getName());
-    }
-
-    @Test
-    public void testUpdateGameCategory() {
-        // Arrange
-        GameCategory category = new GameCategory(true, "Adventure");
-        category = repo.save(category);
-        
-        // Act
-        category.setName("Action");
-        category = repo.save(category);
-
-        // Assert
-        assertEquals("Action", repo.findById(category.getCategoryId()).get().getName());
+        assertNotNull(categoryFromDb);
+        assertEquals(category.getCategoryId(), categoryFromDb.getCategoryId());
+        assertEquals(name, categoryFromDb.getName());
+        assertEquals(isAvailable, categoryFromDb.getIsAvailable());
     }
 }

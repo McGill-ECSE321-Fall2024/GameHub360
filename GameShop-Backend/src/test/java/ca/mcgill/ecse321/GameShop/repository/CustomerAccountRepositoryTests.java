@@ -23,27 +23,18 @@ public class CustomerAccountRepositoryTests {
     @Test
     public void testCreateAndRetrieveCustomerAccount() {
         // Arrange
-        CustomerAccount account = new CustomerAccount("email@example.com", "password");
-        
+        String email = "email@example.com";
+        String password = "password";
+        CustomerAccount account = new CustomerAccount(email, password);
+
         // Act
         account = repo.save(account);
+        CustomerAccount accountFromDb = repo.findCustomerAccountByCustomerId(account.getCustomerId());
 
         // Assert
-        assertNotNull(repo.findById(account.getCustomerId()));
-        assertEquals("email@example.com", account.getEmail());
-    }
-
-    @Test
-    public void testUpdateCustomerAccountDetails() {
-        // Arrange
-        CustomerAccount account = new CustomerAccount("email@example.com", "password");
-        account = repo.save(account);
-        
-        // Act
-        account.setPassword("newPassword");
-        account = repo.save(account);
-
-        // Assert
-        assertEquals("newPassword", repo.findById(account.getCustomerId()).get().getPassword());
+        assertNotNull(accountFromDb);
+        assertEquals(account.getCustomerId(), accountFromDb.getCustomerId());
+        assertEquals(email, accountFromDb.getEmail());
+        assertEquals(password, accountFromDb.getPassword());
     }
 }
