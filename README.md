@@ -35,7 +35,7 @@ I am a U3 Software Engineering student with a strong passion for web development
 | Team Member | Time Spent (h) | Responsibilities | 
 | --- | --- | --- |
 | name | #hours | Work description |
-| Ismail Sentissi | X | Requirements, use-case & report|
+| Ismail Sentissi | 17 | Requirements, use-case & report|
 | Ahmed Mossa | 18 | Writing Umple code for the domain model and generating/editing Java code, Spring Boot project setup, requirements & use-cases |
 | Nicolas Bolouri | 22 | Minutes organizer and scribe, GitHub setup initialization & Creating/editing domain model |
 | Hamza Alfarrash | 18 | Use-case diagram 1, requirements, wiki documentation & testing |
