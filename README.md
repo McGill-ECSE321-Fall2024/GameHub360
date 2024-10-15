@@ -15,7 +15,7 @@ I am a third-year Software Engineering student with expertise across various are
 I am a third-year Computer Engineering student with a strong passion for software development. I enjoy tackling complex problems and continuously seek opportunities to enhance my technical skills while collaborating with others in dynamic environments like this project 👨🏻‍💻💻
 
 ### Ismail Sentissi
-[insert intro]
+I am a third-year Software Engineering student with a strong passion for software development and machine learning. I thrive on solving intricate challenges and constantly look for ways to sharpen my technical expertise.
 
 ### Nicolas Bolouri
 I am a U3 Software Engineering student with a strong passion for web development, artificial intelligence, and robotics. I have experience in developing scalable applications and a keen interest in exploring innovative solutions at the intersection of AI and engineering. 
