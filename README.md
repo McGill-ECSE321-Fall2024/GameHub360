@@ -9,7 +9,7 @@ Our Game Shop Management System offers a seamless way to manage inventory, custo
 I am a third-year Software Engineering student with expertise across various areas of software engineering. I thrive in collaborative environments, such as this project, where I can sharpen both my technical and interpersonal skills through diverse roles 👨🏻‍💻
 
 ### Amgad Elgamal
-[insert intro]
+I am a third-year Software Engineering student with a keen interest in software development and problem-solving. I enjoy working on projects that challenge me to think critically and collaborate with others to build efficient, impactful solutions.
 
 ### Hamza Alfarrash
 I am a third-year Computer Engineering student with a strong passion for software development. I enjoy tackling complex problems and continuously seek opportunities to enhance my technical skills while collaborating with others in dynamic environments like this project 👨🏻‍💻💻
@@ -21,7 +21,7 @@ I am a third-year Software Engineering student with a strong passion for softwar
 I am a U3 Software Engineering student with a strong passion for web development, artificial intelligence, and robotics. I have experience in developing scalable applications and a keen interest in exploring innovative solutions at the intersection of AI and engineering. 
 
 ### Mohamed-Amine Benzaid
-[insert intro]
+I am a third-year Computer Engineering student passionate about software design and development. I love exploring new technologies and working in team environments to create innovative solutions that drive progress in the field.
 
 # Deliverable 1
 ## Links
