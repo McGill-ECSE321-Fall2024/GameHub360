@@ -18,7 +18,7 @@ I am a third-year Computer Engineering student with a strong passion for softwar
 [insert intro]
 
 ### Nicolas Bolouri
-[insert intro]
+I am a U3 Software Engineering student with a strong passion for web development, artificial intelligence, and robotics. I have experience in developing scalable applications and a keen interest in exploring innovative solutions at the intersection of AI and engineering. 
 
 ### Mohamed-Amine Benzaid
 [insert intro]
@@ -37,7 +37,7 @@ I am a third-year Computer Engineering student with a strong passion for softwar
 | name | #hours | Work description |
 | Ismail Sentissi | X | requirements, use-case, report|
 | Ahmed Mossa | 8 | Writing Umple code for the domain model and generating/editing Java code, Spring Boot project setup, requirements & use-cases. |
-| Nicolas Bolouri | X | Minutes organizer and scribe, GitHub setup initialization, Creating/editing domain model |
+| Nicolas Bolouri | 22 | Minutes organizer and scribe, GitHub setup initialization, Creating/editing domain model |
 | Hamza Alfarrash | 10 | use-case diagram 1, requirements, wiki documentation, testing |
 | Amgad Elgamal | X | Domain Model Rationale, requirements, JPA annotations |
 | Mohamed-Amine Benzaid| X | use-case diagram 1, use-case scenarios, requirements |
