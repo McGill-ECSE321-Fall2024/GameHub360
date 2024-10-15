@@ -6,7 +6,7 @@ Our Game Shop Management System offers a seamless way to manage inventory, custo
 # Our Team
 
 ### Ahmed Mossa
-[insert intro]
+I am a third-year Software Engineering student with expertise across various areas of software engineering. I thrive in collaborative environments, such as this project, where I can sharpen both my technical and interpersonal skills through diverse roles 👨🏻‍💻
 
 ### Amgad Elgamal
 [insert intro]
@@ -36,7 +36,7 @@ Our Game Shop Management System offers a seamless way to manage inventory, custo
 | --- | --- | --- |
 | name | #hours | Work description |
 | Ismail Sentissi | X | requirements, use-case, report|
-| Ahmed Mossa | X | generating UML diagram from Umple, requirements, Use-case |
+| Ahmed Mossa | 8 | Writing Umple code for the domain model and generating/editing Java code, Spring Boot project setup, requirements & use-cases. |
 | Nicolas Bolouri | X | Minutes organizer and scribe, GitHub setup initialization, Creating/editing domain model |
 | Hamza Alfarrash | X | use-case diagram 1, requirements, wiki documentation |
 | Amgad Elgamal | X | Domain Model Rationale, requirements, JPA annotations |
