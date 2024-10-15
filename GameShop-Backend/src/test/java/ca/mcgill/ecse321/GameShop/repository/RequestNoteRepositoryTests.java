@@ -61,9 +61,12 @@ public class RequestNoteRepositoryTests {
         assertEquals(note.getContent(), noteFromDb.getContent());
         assertEquals(note.getNoteDate(), noteFromDb.getNoteDate());
 
+        assertNotNull(noteFromDb.getGameRequest());
         assertEquals(gameRequest.getGameEntityId(), noteFromDb.getGameRequest().getGameEntityId());
+        assertTrue(gameRequestRepo.findById(gameRequest.getGameEntityId()).get().getAssociatedNotes().contains(noteFromDb));
+        
+        assertNotNull(noteFromDb.getNotesWriter());
         assertEquals(employeeAccount.getStaffId(), noteFromDb.getNotesWriter().getStaffId());
-        assertTrue(gameRequestRepo.findById(gameRequest.getGameEntityId()).get().getAssociatedNotes().contains(noteFromDb), "GameRequest should contain the persisted RequestNote");
-        assertTrue(employeeAccountRepo.findById(employeeAccount.getStaffId()).get().getWrittenNotes().contains(noteFromDb), "EmployeeAccount should contain the persisted RequestNote");
+        assertTrue(employeeAccountRepo.findById(employeeAccount.getStaffId()).get().getWrittenNotes().contains(noteFromDb));
     }
 }

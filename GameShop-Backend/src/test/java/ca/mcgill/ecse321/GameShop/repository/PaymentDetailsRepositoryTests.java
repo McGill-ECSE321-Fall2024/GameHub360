@@ -47,7 +47,8 @@ public class PaymentDetailsRepositoryTests {
         // Act
         paymentDetails = paymentDetailsRepository.save(paymentDetails);
         int paymentDetailsId = paymentDetails.getPaymentDetailsId();
-        PaymentDetails paymentDetailsFromDb = paymentDetailsRepository.findById(paymentDetailsId).orElse(null);
+
+        PaymentDetails paymentDetailsFromDb = paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(paymentDetailsId);
 
         // Assert
         assertNotNull(paymentDetailsFromDb);
@@ -57,6 +58,8 @@ public class PaymentDetailsRepositoryTests {
         assertEquals(cardNumber, paymentDetailsFromDb.getCardNumber());
         assertEquals(expMonth, paymentDetailsFromDb.getExpMonth());
         assertEquals(expYear, paymentDetailsFromDb.getExpYear());
+
+        assertNotNull(paymentDetailsFromDb.getCardOwner());
         assertEquals(customerId, paymentDetailsFromDb.getCardOwner().getCustomerId());
         assertTrue(customerAccountRepository.findById(customerId).get().getPaymentCards().contains(paymentDetailsFromDb));
     }
