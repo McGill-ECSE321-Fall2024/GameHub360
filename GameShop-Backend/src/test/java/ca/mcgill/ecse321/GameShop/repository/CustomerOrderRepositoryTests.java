@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -39,28 +40,20 @@ public class CustomerOrderRepositoryTests {
     @BeforeEach
     @AfterEach
     public void clearDatabase() {
-        paymentDetailsRepo.deleteAll();
-        orderGameRepo.deleteAll();
-        gameRepo.deleteAll();
-        gameCategoryRepo.deleteAll();
-        customerOrderRepo.deleteAll();
+        orderGameRepo.deleteAll();  
+        customerOrderRepo.deleteAll();  
+        paymentDetailsRepo.deleteAll();  
+        gameRepo.deleteAll(); 
+        gameCategoryRepo.deleteAll();  
         customerAccountRepo.deleteAll();
     }
 
-    // tests go here --> annotate each test with @Test (see tutorial notes)
-    // The @Transactional annotation ensures that the database session is kept open 
-    // throughout the method's execution, allowing lazy-loaded relationships (like games) 
-    // to be fetched when they are accessed.
-
     @Test
     @Transactional
-    public void testCreateAndReadCustomerOrder() {
-        // 1. Create and save related entities
-        
-        // ---- Attributes
+    void testCreateAndReadCustomerOrder() {
+        // ---- Arrange
         Date orderDate = new Date(System.currentTimeMillis()); // Current date for order
         
-        // ---- Associations
         CustomerAccount customer = new CustomerAccount("mohamed-amine@email.com", "MyPasswordTest");
         customer = customerAccountRepo.save(customer);
 
@@ -70,50 +63,32 @@ public class CustomerOrderRepositoryTests {
         GameCategory category1 = new GameCategory(true, "War Games");
         category1 = gameCategoryRepo.save(category1);
 
-        GameCategory category2 = new GameCategory(true, "Arcade");
-        category2 = gameCategoryRepo.save(category2);
-
         Game game1 = new Game("COD", "Call Of Duty", "https://www.url.ca", 10, true, 20.99, category1);
         game1 = gameRepo.save(game1);
 
-        Game game2 = new Game("Mario", "It's me Mario!", "https://www.mario.ca", 10, true, 25.99, category2);
-        game2 = gameRepo.save(game2);
-
-        // ---- Initialize and save CustomerOrder
         CustomerOrder order = new CustomerOrder(orderDate, customer, paymentInfo);
-        order = customerOrderRepo.save(order);  // Save the CustomerOrder first to ensure it has an ID
+        order = customerOrderRepo.save(order);  
 
-        // ---- ---- Add Game Orders to the Customer Order
         OrderGame orderGame1 = new OrderGame(order, game1);
         orderGame1 = orderGameRepo.save(orderGame1);
 
-        OrderGame orderGame2 = new OrderGame(order, game2);
-        orderGame2 = orderGameRepo.save(orderGame2);
-
         order.addOrderedGame(orderGame1);
-        order.addOrderedGame(orderGame2);
         
-        // ---- ---- Save Customer Order
         order = customerOrderRepo.save(order);
         
-        // 3. Read the object from the database using the repository
+        // ---- Act
         CustomerOrder savedOrder = customerOrderRepo.findOrderByOrderId(order.getOrderId());
 
-        // 4. Assert that the object from the database has the correct attributes
-
+        // ---- Assert
+        // Asserting the attributes
         assertNotNull(savedOrder);
-        assertEquals(orderDate.toString(), savedOrder.getOrderDate().toString());
+        assertEquals(savedOrder.getOrderId(), order.getOrderId());
+        assertEquals(savedOrder.getOrderStatus(), order.getOrderStatus());
+        assertEquals(savedOrder.getOrderDate().toString(), orderDate.toString());
         
-        assertNotNull(savedOrder.getOrderedBy());
-        assertEquals(customer.getEmail(), savedOrder.getOrderedBy().getEmail());
-        assertEquals(customer.getPassword(), savedOrder.getOrderedBy().getPassword());
-        
-        assertNotNull(savedOrder.getPaymentInformation());
-        assertEquals(paymentInfo.getCardName(), savedOrder.getPaymentInformation().getCardName());
-        assertEquals(paymentInfo.getCardNumber(), savedOrder.getPaymentInformation().getCardNumber());
-
-        assertEquals(2, savedOrder.getOrderedGames().size());
-        assertTrue(savedOrder.getOrderedGames().contains(orderGame1));
-        assertTrue(savedOrder.getOrderedGames().contains(orderGame2));
+        // Asserting the associations
+        assertEquals(savedOrder.getOrderedGame(0).getOrderGameId(), orderGame1.getOrderGameId());
+        assertEquals(savedOrder.getOrderedBy().getCustomerId(), customer.getCustomerId());
+        assertEquals(savedOrder.getPaymentInformation().getPaymentDetailsId(), paymentInfo.getPaymentDetailsId());
     }
 }

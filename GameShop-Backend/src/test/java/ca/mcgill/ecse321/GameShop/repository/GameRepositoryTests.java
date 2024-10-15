@@ -17,7 +17,6 @@ import java.util.List;
 
 @SpringBootTest
 public class GameRepositoryTests {
-
     @Autowired
     private GameRepository gameRepo;
 
