@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.GameShop.service;
 
 import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.ManagerResponseDto;
+import ca.mcgill.ecse321.GameShop.exception.ManagerNotFoundException;
 import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,17 @@ public class ManagerService {
 
         ManagerAccount manager = managerAccountRepository.findManagerAccountByEmail(managerRequestDto.getEmail());
 
-        // Check if email exists and if the password matches
-        if (manager != null && manager.getPassword().equals(managerRequestDto.getPassword())) {
-            return new ManagerResponseDto(manager);
+        // Check if email exists
+        if (manager == null) {
+            throw new ManagerNotFoundException("Email not found.");
         }
 
-        return null; // Incorrect email or password
+        // Check if the password matches
+        if (!manager.getPassword().equals(managerRequestDto.getPassword())) {
+            throw new IllegalArgumentException("Incorrect password.");
+        }
+
+        // Successful login
+        return new ManagerResponseDto(manager);
     }
 }

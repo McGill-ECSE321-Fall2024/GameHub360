@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.GameShop.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -16,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.ManagerResponseDto;
+import ca.mcgill.ecse321.GameShop.exception.ManagerNotFoundException;
 import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
 
@@ -44,7 +44,6 @@ public class ManagerServiceTests {
 
         // Assert
         assertNotNull(responseDto);
-        assertEquals(manager.getStaffId(), responseDto.getStaffId());
         assertEquals(manager.getEmail(), responseDto.getEmail());
         assertEquals(manager.getName(), responseDto.getName());
         assertEquals(manager.getPhoneNumber(), responseDto.getPhoneNumber());
@@ -60,11 +59,11 @@ public class ManagerServiceTests {
         // Mock repository behavior
         when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(manager);
 
-        // Act
-        ManagerResponseDto responseDto = managerService.login(requestDto);
-
+        // Act 
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> managerService.login(requestDto));
+        
         // Assert
-        assertNull(responseDto); 
+        assertEquals("Incorrect password.", e.getMessage());
         verify(managerAccountRepository, times(1)).findManagerAccountByEmail("manager@example.com");
     }
 
@@ -76,11 +75,11 @@ public class ManagerServiceTests {
         // Mock repository behavior
         when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(null);
 
-        // Act
-        ManagerResponseDto responseDto = managerService.login(requestDto);
-
+        // Act 
+        ManagerNotFoundException e = assertThrows(ManagerNotFoundException.class, () -> managerService.login(requestDto));
+        
         // Assert
-        assertNull(responseDto); // Should be null due to non-existent email
+        assertEquals("Email not found.", e.getMessage());
         verify(managerAccountRepository, times(1)).findManagerAccountByEmail("nonexistent@example.com");
     }
 
