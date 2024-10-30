@@ -13,6 +13,7 @@
 - [ ] Created Controller Unit Tests
 - [ ] Created Service Unit Tests
 - [ ] Created Integration Tests 
+- [ ] Update Repository Tests (if applicable)
 
 - [ ] Documentation in Swagger
 - [ ] Documentation in API Docs on the Wiki
