@@ -5,5 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import ca.mcgill.ecse321.GameShop.model.Promotion;
 
 public interface PromotionRepository extends CrudRepository<Promotion, Integer> {
+    // Find promotion by promotion id
     public Promotion findPromotionByPromotionId(Integer promotionId);
 }

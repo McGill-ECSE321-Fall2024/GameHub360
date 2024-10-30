@@ -5,8 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,19 +30,19 @@ public class CustomerOrderRepositoryTests {
     private PaymentDetailsRepository paymentDetailsRepo;
     @Autowired
     private GameCategoryRepository gameCategoryRepo;
-    @Autowired 
+    @Autowired
     private GameRepository gameRepo;
-    @Autowired 
+    @Autowired
     private OrderGameRepository orderGameRepo;
 
     @BeforeEach
     @AfterEach
     public void clearDatabase() {
-        orderGameRepo.deleteAll();  
-        customerOrderRepo.deleteAll();  
-        paymentDetailsRepo.deleteAll();  
-        gameRepo.deleteAll(); 
-        gameCategoryRepo.deleteAll();  
+        orderGameRepo.deleteAll();
+        customerOrderRepo.deleteAll();
+        paymentDetailsRepo.deleteAll();
+        gameRepo.deleteAll();
+        gameCategoryRepo.deleteAll();
         customerAccountRepo.deleteAll();
     }
 
@@ -53,7 +51,7 @@ public class CustomerOrderRepositoryTests {
     void testCreateAndReadCustomerOrder() {
         // ---- Arrange
         Date orderDate = new Date(System.currentTimeMillis()); // Current date for order
-        
+
         CustomerAccount customer = new CustomerAccount("mohamed-amine@email.com", "MyPasswordTest");
         customer = customerAccountRepo.save(customer);
 
@@ -67,15 +65,15 @@ public class CustomerOrderRepositoryTests {
         game1 = gameRepo.save(game1);
 
         CustomerOrder order = new CustomerOrder(orderDate, customer, paymentInfo);
-        order = customerOrderRepo.save(order);  
+        order = customerOrderRepo.save(order);
 
         OrderGame orderGame1 = new OrderGame(order, game1);
         orderGame1 = orderGameRepo.save(orderGame1);
 
         order.addOrderedGame(orderGame1);
-        
+
         order = customerOrderRepo.save(order);
-        
+
         // ---- Act
         CustomerOrder savedOrder = customerOrderRepo.findOrderByOrderId(order.getOrderId());
 
@@ -85,7 +83,7 @@ public class CustomerOrderRepositoryTests {
         assertEquals(savedOrder.getOrderId(), order.getOrderId());
         assertEquals(savedOrder.getOrderStatus(), order.getOrderStatus());
         assertEquals(savedOrder.getOrderDate().toString(), orderDate.toString());
-        
+
         // Asserting the associations
         assertEquals(savedOrder.getOrderedGame(0).getOrderGameId(), orderGame1.getOrderGameId());
         assertEquals(savedOrder.getOrderedBy().getCustomerId(), customer.getCustomerId());
