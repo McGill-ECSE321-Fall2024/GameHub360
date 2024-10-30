@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
@@ -32,7 +31,7 @@ public class OrderGameRepositoryTests {
     private CustomerOrderRepository customerOrderRepo;
     @Autowired
     private GameCategoryRepository gameCategoryRepo;
-    @Autowired 
+    @Autowired
     private GameRepository gameRepo;
     @Autowired
     private ReviewRepository reviewRepo;
@@ -50,7 +49,7 @@ public class OrderGameRepositoryTests {
     }
 
     @Test
-    void testCreateAndReadOrderGame(){
+    void testCreateAndReadOrderGame() {
 
         // ---- Arrange
         Date orderDate = new Date(System.currentTimeMillis());
@@ -88,5 +87,5 @@ public class OrderGameRepositoryTests {
         assertEquals(retrievedOrderGame.getCustomerOrder().getOrderId(), orderGame.getCustomerOrder().getOrderId());
         assertEquals(retrievedOrderGame.getGame().getGameEntityId(), orderGame.getGame().getGameEntityId());
     }
-    
+
 }
