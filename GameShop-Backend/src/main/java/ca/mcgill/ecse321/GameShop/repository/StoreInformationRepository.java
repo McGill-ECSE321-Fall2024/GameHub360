@@ -5,5 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import ca.mcgill.ecse321.GameShop.model.StoreInformation;
 
 public interface StoreInformationRepository extends CrudRepository<StoreInformation, Integer> {
+    // Find store information by store information id
     public StoreInformation findStoreInformationByStoreInfoId(Integer storeInfoId);
 }
