@@ -8,13 +8,11 @@
 
 - [ ] Created Controller file
 - [ ] Created Service file
-- [ ] Created DTO file (if needed)
-- [ ] Updated DTO converter (if needed)
+- [ ] Created DTO file(s)
 
 - [ ] Created Controller Unit Tests
 - [ ] Created Service Unit Tests
 - [ ] Created Integration Tests 
-- [ ] Updated DTO Converter Unit Tests (if needed)
 
 - [ ] Documentation in Swagger
 - [ ] Documentation in API Docs on the Wiki
