@@ -1,11 +1,11 @@
 package ca.mcgill.ecse321.GameShop.service;
 
 import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.ManagerResponseDto;
-import ca.mcgill.ecse321.GameShop.exception.ManagerNotFoundException;
+import ca.mcgill.ecse321.GameShop.exception.ManagerException;
 import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -15,30 +15,26 @@ public class ManagerService {
     @Autowired
     private ManagerAccountRepository managerAccountRepository;
 
-    public ManagerResponseDto login(ManagerRequestDto managerRequestDto) {
+    public ManagerAccount login(ManagerRequestDto managerRequestDto) {
         // Check if email is empty
         if (!StringUtils.hasText(managerRequestDto.getEmail())) {
-            throw new IllegalArgumentException("Email cannot be empty.");
+            throw new ManagerException(HttpStatus.BAD_REQUEST, "Email cannot be empty.");
         }
 
         // Check if password is empty
         if (!StringUtils.hasText(managerRequestDto.getPassword())) {
-            throw new IllegalArgumentException("Password cannot be empty.");
+            throw new ManagerException(HttpStatus.BAD_REQUEST, "Password cannot be empty.");
         }
 
+        // Fetch manager by email
         ManagerAccount manager = managerAccountRepository.findManagerAccountByEmail(managerRequestDto.getEmail());
 
-        // Check if email exists
-        if (manager == null) {
-            throw new ManagerNotFoundException("Email not found.");
-        }
-
-        // Check if the password matches
-        if (!manager.getPassword().equals(managerRequestDto.getPassword())) {
-            throw new IllegalArgumentException("Incorrect password.");
+        // Check if the email exists and if the password matches
+        if (manager == null || !manager.getPassword().equals(managerRequestDto.getPassword())) {
+            throw new ManagerException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
         }
 
         // Successful login
-        return new ManagerResponseDto(manager);
+        return manager;
     }
 }

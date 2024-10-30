@@ -14,10 +14,10 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.ManagerResponseDto;
-import ca.mcgill.ecse321.GameShop.exception.ManagerNotFoundException;
+import ca.mcgill.ecse321.GameShop.exception.ManagerException;
 import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
+import org.springframework.http.HttpStatus;
 
 @SpringBootTest
 public class ManagerServiceTests {
@@ -30,7 +30,7 @@ public class ManagerServiceTests {
 
     @Test
     public void testLoginSuccess() {
-        // Set up
+        // Arrange
         ManagerRequestDto requestDto = new ManagerRequestDto("manager@example.com", "password123");
         ManagerAccount manager = new ManagerAccount("manager@example.com", "password123");
         manager.setName("John Doe");
@@ -40,70 +40,74 @@ public class ManagerServiceTests {
         when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(manager);
 
         // Act
-        ManagerResponseDto responseDto = managerService.login(requestDto);
+        ManagerAccount response = managerService.login(requestDto);
 
         // Assert
-        assertNotNull(responseDto);
-        assertEquals(manager.getEmail(), responseDto.getEmail());
-        assertEquals(manager.getName(), responseDto.getName());
-        assertEquals(manager.getPhoneNumber(), responseDto.getPhoneNumber());
+        assertNotNull(response);
+        assertEquals(manager.getEmail(), response.getEmail());
+        assertEquals(manager.getName(), response.getName());
+        assertEquals(manager.getPhoneNumber(), response.getPhoneNumber());
         verify(managerAccountRepository, times(1)).findManagerAccountByEmail("manager@example.com");
     }
 
     @Test
-    public void testLoginIncorrectPassword() {
-        // Set up
+    public void testLoginWithInvalidPassword() {
+        // Arrange
         ManagerRequestDto requestDto = new ManagerRequestDto("manager@example.com", "wrongpassword");
         ManagerAccount manager = new ManagerAccount("manager@example.com", "password123");
 
         // Mock repository behavior
         when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(manager);
 
-        // Act 
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> managerService.login(requestDto));
-        
+        // Act
+        ManagerException e = assertThrows(ManagerException.class, () -> managerService.login(requestDto));
+
         // Assert
-        assertEquals("Incorrect password.", e.getMessage());
+        assertEquals("Invalid email or password.", e.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
         verify(managerAccountRepository, times(1)).findManagerAccountByEmail("manager@example.com");
     }
 
     @Test
-    public void testLoginNonExistentEmail() {
-        // Set up
+    public void testLoginWithNonExistentEmail() {
+        // Arrange
         ManagerRequestDto requestDto = new ManagerRequestDto("nonexistent@example.com", "password123");
 
         // Mock repository behavior
         when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(null);
 
-        // Act 
-        ManagerNotFoundException e = assertThrows(ManagerNotFoundException.class, () -> managerService.login(requestDto));
-        
+        // Act
+        ManagerException e = assertThrows(ManagerException.class, () -> managerService.login(requestDto));
+
         // Assert
-        assertEquals("Email not found.", e.getMessage());
+        assertEquals("Invalid email or password.", e.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
         verify(managerAccountRepository, times(1)).findManagerAccountByEmail("nonexistent@example.com");
     }
 
     @Test
     public void testNullEmailThrowsException() {
-        // Set up
+        // Arrange
         ManagerRequestDto requestDto = new ManagerRequestDto(null, "password123");
 
-        // Act 
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> managerService.login(requestDto));
-        
+        // Act
+        ManagerException e = assertThrows(ManagerException.class, () -> managerService.login(requestDto));
+
         // Assert
         assertEquals("Email cannot be empty.", e.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
     }
 
     @Test
     public void testNullPasswordThrowsException() {
-        // Set up
+        // Arrange
         ManagerRequestDto requestDto = new ManagerRequestDto("manager@example.com", null);
 
-        // Act 
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> managerService.login(requestDto));
-        
+        // Act
+        ManagerException e = assertThrows(ManagerException.class, () -> managerService.login(requestDto));
+
         // Assert
         assertEquals("Password cannot be empty.", e.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
     }
 }
