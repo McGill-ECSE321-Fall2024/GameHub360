@@ -3,6 +3,8 @@ package ca.mcgill.ecse321.GameShop.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 
 import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.ManagerResponseDto;
+import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
+import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -27,15 +31,32 @@ public class ManagerIntegrationTests {
     @Autowired
     private TestRestTemplate client;
 
+    @Autowired
+    private ManagerAccountRepository managerAccountRepository;
+
     private final String VALID_EMAIL = "manager@example.com";
     private final String VALID_PASSWORD = "password123";
     private final String INVALID_PASSWORD = "wrongpassword";
     private final String NON_EXISTENT_EMAIL = "nonexistent@example.com";
 
+    @BeforeAll
+    public void setUp() {
+        managerAccountRepository.deleteAll();
+
+        // Create a test ManagerAccount in the database
+        ManagerAccount manager = new ManagerAccount(VALID_EMAIL, VALID_PASSWORD);
+        managerAccountRepository.save(manager);
+    }
+
+    @AfterAll
+    public void cleanUp() {
+        managerAccountRepository.deleteAll();
+    }
+
     @Test
     @Order(1)
     public void testValidLogin() {
-        // Set up
+        // Arrange
         ManagerRequestDto request = new ManagerRequestDto(VALID_EMAIL, VALID_PASSWORD);
 
         // Act
@@ -51,8 +72,8 @@ public class ManagerIntegrationTests {
 
     @Test
     @Order(2)
-    public void testLoginWithIncorrectPassword() {
-        // Set up
+    public void testLoginWithInvalidPassword() {
+        // Arrange
         ManagerRequestDto request = new ManagerRequestDto(VALID_EMAIL, INVALID_PASSWORD);
 
         // Act
@@ -63,13 +84,13 @@ public class ManagerIntegrationTests {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         String responseBody = response.getBody();
         assertNotNull(responseBody);
-        assertEquals("Incorrect password.", responseBody);
+        assertEquals("Invalid email or password.", responseBody);
     }
 
     @Test
     @Order(3)
     public void testLoginWithNonExistentEmail() {
-        // Set up
+        // Arrange
         ManagerRequestDto request = new ManagerRequestDto(NON_EXISTENT_EMAIL, VALID_PASSWORD);
 
         // Act
@@ -77,16 +98,16 @@ public class ManagerIntegrationTests {
 
         // Assert
         assertNotNull(response);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         String responseBody = response.getBody();
         assertNotNull(responseBody);
-        assertEquals("Email not found.", responseBody);
+        assertEquals("Invalid email or password.", responseBody);
     }
 
     @Test
     @Order(4)
     public void testLoginWithEmptyEmail() {
-        // Set up
+        // Arrange
         ManagerRequestDto request = new ManagerRequestDto("", VALID_PASSWORD);
 
         // Act
@@ -103,7 +124,7 @@ public class ManagerIntegrationTests {
     @Test
     @Order(5)
     public void testLoginWithEmptyPassword() {
-        // Set up
+        // Arrange
         ManagerRequestDto request = new ManagerRequestDto(VALID_EMAIL, "");
 
         // Act

@@ -31,7 +31,7 @@ public class ManagerService {
 
         // Check if the email exists and if the password matches
         if (manager == null || !manager.getPassword().equals(managerRequestDto.getPassword())) {
-            throw new ManagerException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
+            throw new ManagerException(HttpStatus.BAD_REQUEST, "Invalid email or password.");
         }
 
         // Successful login
