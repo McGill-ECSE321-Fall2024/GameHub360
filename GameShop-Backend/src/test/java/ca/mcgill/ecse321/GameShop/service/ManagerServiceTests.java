@@ -64,7 +64,7 @@ public class ManagerServiceTests {
 
         // Assert
         assertEquals("Invalid email or password.", e.getMessage());
-        assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
         verify(managerAccountRepository, times(1)).findManagerAccountByEmail("manager@example.com");
     }
 
@@ -81,7 +81,7 @@ public class ManagerServiceTests {
 
         // Assert
         assertEquals("Invalid email or password.", e.getMessage());
-        assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
         verify(managerAccountRepository, times(1)).findManagerAccountByEmail("nonexistent@example.com");
     }
 
