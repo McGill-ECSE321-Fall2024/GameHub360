@@ -3,8 +3,8 @@ package ca.mcgill.ecse321.GameShop.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -34,12 +34,12 @@ public class ManagerIntegrationTests {
     @Autowired
     private ManagerAccountRepository managerAccountRepository;
 
-    private final String VALID_EMAIL = "manager@example.com";
-    private final String VALID_PASSWORD = "password123";
-    private final String INVALID_PASSWORD = "wrongpassword";
-    private final String NON_EXISTENT_EMAIL = "nonexistent@example.com";
+    private static final String VALID_EMAIL = "manager@example.com";
+    private static final String VALID_PASSWORD = "password123";
+    private static final String INVALID_PASSWORD = "wrongpassword";
+    private static final String NON_EXISTENT_EMAIL = "nonexistent@example.com";
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         managerAccountRepository.deleteAll();
 
@@ -48,7 +48,7 @@ public class ManagerIntegrationTests {
         managerAccountRepository.save(manager);
     }
 
-    @AfterAll
+    @AfterEach
     public void cleanUp() {
         managerAccountRepository.deleteAll();
     }
