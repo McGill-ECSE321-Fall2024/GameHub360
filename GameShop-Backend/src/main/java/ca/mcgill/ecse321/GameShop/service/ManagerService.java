@@ -4,6 +4,8 @@ import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.ManagerException;
 import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ public class ManagerService {
     @Autowired
     private ManagerAccountRepository managerAccountRepository;
 
+    @Transactional
     public ManagerAccount login(ManagerRequestDto managerRequestDto) {
         // Check if email is empty
         if (!StringUtils.hasText(managerRequestDto.getEmail())) {

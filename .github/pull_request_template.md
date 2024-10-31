@@ -16,6 +16,10 @@
 - [ ] Documentation in controllers using JavaDocs
 - [ ] Documentation in API Docs on the Wiki
 
+- [ ] Formatted all my files
+- [ ] Got rid of all unused imports and variables
+- [ ] Added comments to my code
+
 - [ ] The project builds successfully
 - [ ] The project runs successfully
 - [ ] The project passes all tests
