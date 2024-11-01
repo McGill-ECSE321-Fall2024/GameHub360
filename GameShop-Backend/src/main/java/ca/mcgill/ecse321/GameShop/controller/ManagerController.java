@@ -24,9 +24,23 @@ public class ManagerController {
      *                          (optionally).
      * @return A response containing the newly created manager's details.
      */
-    @PostMapping("/create")
+    @PostMapping("/")
     public ManagerResponseDto createManager(@Valid @RequestBody ManagerRequestDto managerRequestDto) {
         ManagerAccount manager = managerService.createManager(managerRequestDto);
+        return new ManagerResponseDto(manager);
+    }
+
+    /**
+     * Endpoint to update an existing manager's details.
+     *
+     * @param managerRequestDto The request object containing the manager's email,
+     *                          password, name (optionally), and phone number
+     *                          (optionally).
+     * @return A response containing the updated manager's details.
+     */
+    @PutMapping("/")
+    public ManagerResponseDto updateManager(@Valid @RequestBody ManagerRequestDto managerRequestDto) {
+        ManagerAccount manager = managerService.updateManager(managerRequestDto);
         return new ManagerResponseDto(manager);
     }
 
@@ -40,20 +54,6 @@ public class ManagerController {
     @PostMapping("/login")
     public ManagerResponseDto login(@Valid @RequestBody ManagerRequestDto managerRequestDto) {
         ManagerAccount manager = managerService.login(managerRequestDto);
-        return new ManagerResponseDto(manager);
-    }
-
-    /**
-     * Endpoint to update an existing manager's details.
-     *
-     * @param managerRequestDto The request object containing the manager's email,
-     *                          password, name (optionally), and phone number
-     *                          (optionally).
-     * @return A response containing the updated manager's details.
-     */
-    @PutMapping("/update")
-    public ManagerResponseDto updateManager(@Valid @RequestBody ManagerRequestDto managerRequestDto) {
-        ManagerAccount manager = managerService.updateManager(managerRequestDto);
         return new ManagerResponseDto(manager);
     }
 }
