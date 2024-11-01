@@ -9,7 +9,7 @@ public class ManagerRequestDto {
     @Email(message = "Email must be a valid email address.")
     private String email;
 
-    @NotBlank(message = "Password cannot be empty.")
+    @NotBlank(message = "Password cannot be empty.", groups = ValidationGroups.Post.class)
     private String password;
 
     private String name;
