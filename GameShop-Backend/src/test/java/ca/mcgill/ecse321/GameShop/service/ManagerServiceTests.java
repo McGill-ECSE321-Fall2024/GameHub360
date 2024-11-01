@@ -12,12 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
 import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.ManagerException;
 import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
-import org.springframework.http.HttpStatus;
+import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
 
 @SpringBootTest
 public class ManagerServiceTests {
@@ -32,7 +33,7 @@ public class ManagerServiceTests {
     public void testLoginSuccess() {
         // Arrange
         ManagerRequestDto requestDto = new ManagerRequestDto("manager@example.com", "password123");
-        ManagerAccount manager = new ManagerAccount("manager@example.com", "password123");
+        ManagerAccount manager = new ManagerAccount("manager@example.com", EncryptionUtils.encrypt("password123"));
         manager.setName("John Doe");
         manager.setPhoneNumber("123-456-7890");
 
@@ -54,7 +55,7 @@ public class ManagerServiceTests {
     public void testLoginWithInvalidPassword() {
         // Arrange
         ManagerRequestDto requestDto = new ManagerRequestDto("manager@example.com", "wrongpassword");
-        ManagerAccount manager = new ManagerAccount("manager@example.com", "password123");
+        ManagerAccount manager = new ManagerAccount("manager@example.com", EncryptionUtils.encrypt("password123"));
 
         // Mock repository behavior
         when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(manager);
@@ -86,28 +87,78 @@ public class ManagerServiceTests {
     }
 
     @Test
-    public void testNullEmailThrowsException() {
+    public void testCreateManagerSuccess() {
         // Arrange
-        ManagerRequestDto requestDto = new ManagerRequestDto(null, "password123");
+        ManagerRequestDto requestDto = new ManagerRequestDto("manager@example.com", "StrongP@ssw0rd", "John Doe",
+                "123-456-7890");
+
+        // Mock repository behavior to simulate no existing manager
+        when(managerAccountRepository.count()).thenReturn(0L);
+        when(managerAccountRepository.save(any(ManagerAccount.class))).thenAnswer(i -> i.getArgument(0));
 
         // Act
-        ManagerException e = assertThrows(ManagerException.class, () -> managerService.login(requestDto));
+        ManagerAccount response = managerService.createManager(requestDto);
 
         // Assert
-        assertEquals("Email cannot be empty.", e.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+        assertNotNull(response);
+        assertEquals(requestDto.getEmail(), response.getEmail());
+        assertEquals(requestDto.getName(), response.getName());
+        assertEquals(requestDto.getPhoneNumber(), response.getPhoneNumber());
+        verify(managerAccountRepository, times(1)).save(any(ManagerAccount.class));
     }
 
     @Test
-    public void testNullPasswordThrowsException() {
+    public void testCreateManagerWhenManagerExists() {
         // Arrange
-        ManagerRequestDto requestDto = new ManagerRequestDto("manager@example.com", null);
+        ManagerRequestDto requestDto = new ManagerRequestDto("manager@example.com", "StrongP@ssw0rd");
+
+        // Mock repository behavior to simulate an existing manager
+        when(managerAccountRepository.count()).thenReturn(1L);
 
         // Act
-        ManagerException e = assertThrows(ManagerException.class, () -> managerService.login(requestDto));
+        ManagerException e = assertThrows(ManagerException.class, () -> managerService.createManager(requestDto));
 
         // Assert
-        assertEquals("Password cannot be empty.", e.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+        assertEquals("A manager already exists. Only one manager is allowed.", e.getMessage());
+        assertEquals(HttpStatus.CONFLICT, e.getStatus());
+    }
+
+    @Test
+    public void testUpdateManagerSuccess() {
+        // Arrange
+        ManagerRequestDto requestDto = new ManagerRequestDto("manager@example.com", "NewStr0ngP@ssw0rd", "John Updated",
+                "321-654-0987");
+        ManagerAccount manager = new ManagerAccount("manager@example.com", EncryptionUtils.encrypt("OldPassword"));
+        manager.setName("John Doe");
+        manager.setPhoneNumber("123-456-7890");
+
+        // Mock repository behavior
+        when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(manager);
+        when(managerAccountRepository.save(any(ManagerAccount.class))).thenAnswer(i -> i.getArgument(0));
+
+        // Act
+        ManagerAccount response = managerService.updateManager(requestDto);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(requestDto.getName(), response.getName());
+        assertEquals(requestDto.getPhoneNumber(), response.getPhoneNumber());
+        verify(managerAccountRepository, times(1)).save(manager);
+    }
+
+    @Test
+    public void testUpdateManagerNotFound() {
+        // Arrange
+        ManagerRequestDto requestDto = new ManagerRequestDto("nonexistent@example.com", "password123");
+
+        // Mock repository behavior to simulate manager not found
+        when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(null);
+
+        // Act
+        ManagerException e = assertThrows(ManagerException.class, () -> managerService.updateManager(requestDto));
+
+        // Assert
+        assertEquals("Manager not found.", e.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
     }
 }
