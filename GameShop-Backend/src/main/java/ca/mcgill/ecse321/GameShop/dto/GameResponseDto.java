@@ -1,9 +1,10 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import ca.mcgill.ecse321.GameShop.model.Game;
 
 public class GameResponseDto {
-
     private Integer id;
     private String name;
     private String description;
@@ -11,16 +12,24 @@ public class GameResponseDto {
     private int quantityInStock;
     private boolean isAvailable;
     private double price;
+    private List<Integer> categoryId;
+    private List<Integer> promotionId;
 
-    // Constructor
+    // Constructor from entity
     public GameResponseDto(Game game) {
         this.id = game.getGameEntityId();
         this.name = game.getName();
-        this.price = game.getPrice();
-        this.quantityInStock = game.getQuantityInStock();
-        this.isAvailable = game.getIsAvailable();
         this.description = game.getDescription();
         this.imageUrl = game.getImageURL();
+        this.quantityInStock = game.getQuantityInStock();
+        this.isAvailable = game.getIsAvailable();
+        this.price = game.getPrice();
+        this.categoryId = game.getCategories().stream()
+                .map(category -> category.getCategoryId())
+                .collect(Collectors.toList());
+        this.promotionId = game.getPromotions().stream()
+                .map(promotion -> promotion.getPromotionId())
+                .collect(Collectors.toList());
     }
 
     // Default constructor
@@ -82,5 +91,21 @@ public class GameResponseDto {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public List<Integer> getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(List<Integer> categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public List<Integer> getPromotionId() {
+        return promotionId;
+    }
+
+    public void setPromotionId(List<Integer> promotionId) {
+        this.promotionId = promotionId;
     }
 }
