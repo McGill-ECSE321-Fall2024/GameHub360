@@ -7,13 +7,13 @@ import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,101 +26,80 @@ public class GameService {
     private GameCategoryRepository gameCategoryRepository;
 
     /**
-     * Submits a new game request.
-     *
-     * @param gameRequestDto The request object containing game details.
-     * @return A response containing the submitted game's details.
-     */
-    @Transactional
-    public GameResponseDto submitGameRequest(GameRequestDto gameRequestDto) {
-        Game game = new Game();
-        game.setName(gameRequestDto.getName());
-        game.setPrice(gameRequestDto.getPrice());
-        game.setQuantityInStock(gameRequestDto.getQuantityInStock());
-        game.setIsAvailable(false);
-        game = gameRepository.save(game);
-        return new GameResponseDto(game);
-    }
-
-    /**
-     * Approves or rejects a game request.
-     *
-     * @param requestId The ID of the game request.
-     * @param approval  Boolean indicating approval or rejection.
-     * @return A response containing the updated game request details.
-     */
-    @Transactional
-    public GameResponseDto approveOrRejectGameRequest(Integer requestId, boolean approval) {
-        Game game = gameRepository.findById(requestId).orElseThrow(
-                () -> new GameException(HttpStatus.NOT_FOUND, "Game request not found."));
-        game.setIsAvailable(approval);
-        game = gameRepository.save(game);
-        return new GameResponseDto(game);
-    }
-
-    /**
-     * Creates a new game directly.
-     *
-     * @param gameRequestDto The request object containing game details.
-     * @return A response containing the newly created game's details.
+     * Create a new game directly
      */
     @Transactional
     public GameResponseDto createGame(GameRequestDto gameRequestDto) {
-        // Check if a game with the same title already exists
-        Game existingGame = gameRepository.findGameByName(gameRequestDto.getName());
-        if (existingGame != null) {
-            throw new GameException(HttpStatus.CONFLICT, "Game with this title already exists.");
+        // Validate category
+        GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(gameRequestDto.getCategoryId());
+        if (category == null) {
+            throw new GameException(HttpStatus.NOT_FOUND, "Category not found");
         }
 
+        // Check if game with same name exists
+        if (gameRepository.findGameByName(gameRequestDto.getName()) != null) {
+            throw new GameException(HttpStatus.BAD_REQUEST, "Game with this name already exists");
+        }
+
+        // Create new game
         Game game = new Game();
         game.setName(gameRequestDto.getName());
-        game.setPrice(gameRequestDto.getPrice());
+        game.setDescription(gameRequestDto.getDescription());
+        game.setImageURL(gameRequestDto.getImageUrl());
         game.setQuantityInStock(gameRequestDto.getQuantityInStock());
+        game.setPrice(gameRequestDto.getPrice());
         game.setIsAvailable(true);
+        game.addCategory(category);
 
-        // Save the game
-        game = gameRepository.save(game);
-
-        return new GameResponseDto(game);
+        return new GameResponseDto(gameRepository.save(game));
     }
 
     /**
-     * Updates an existing game.
-     *
-     * @param gameId         The ID of the game to update.
-     * @param gameRequestDto The request object containing updated game details.
-     * @return A response containing the updated game's details.
+     * Update an existing game
      */
     @Transactional
     public GameResponseDto updateGame(Integer gameId, GameRequestDto gameRequestDto) {
-        Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new GameException(HttpStatus.NOT_FOUND, "Game not found."));
-        game.setName(gameRequestDto.getName());
-        game.setPrice(gameRequestDto.getPrice());
-        game.setQuantityInStock(gameRequestDto.getQuantityInStock());
-        game = gameRepository.save(game);
-        return new GameResponseDto(game);
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+        }
+
+        // Update fields if provided
+        if (gameRequestDto.getName() != null) {
+            Game existingGame = gameRepository.findGameByName(gameRequestDto.getName());
+            if (existingGame != null && existingGame.getGameEntityId() != gameId) {
+                throw new GameException(HttpStatus.BAD_REQUEST, "Game with this name already exists");
+            }
+            game.setName(gameRequestDto.getName());
+        }
+        if (gameRequestDto.getDescription() != null)
+            game.setDescription(gameRequestDto.getDescription());
+        if (gameRequestDto.getImageUrl() != null)
+            game.setImageURL(gameRequestDto.getImageUrl());
+        if (gameRequestDto.getQuantityInStock() != null)
+            game.setQuantityInStock(gameRequestDto.getQuantityInStock());
+        if (gameRequestDto.getPrice() != null)
+            game.setPrice(gameRequestDto.getPrice());
+
+        return new GameResponseDto(gameRepository.save(game));
     }
 
     /**
-     * Archives a game.
-     *
-     * @param gameId The ID of the game to archive.
-     * @return A response containing the archived game's details.
+     * Archive a game
      */
     @Transactional
     public GameResponseDto archiveGame(Integer gameId) {
-        Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new GameException(HttpStatus.NOT_FOUND, "Game not found."));
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+        }
+
         game.setIsAvailable(false);
-        game = gameRepository.save(game);
-        return new GameResponseDto(game);
+        return new GameResponseDto(gameRepository.save(game));
     }
 
     /**
-     * Views all archived games.
-     *
-     * @return A list of archived games.
+     * View all archived games
      */
     @Transactional
     public List<GameResponseDto> viewArchivedGames() {
@@ -131,134 +110,127 @@ public class GameService {
     }
 
     /**
-     * Reactivates an archived game.
-     *
-     * @param gameId The ID of the game to reactivate.
-     * @return A response containing the reactivated game's details.
+     * Reactivate an archived game
      */
     @Transactional
     public GameResponseDto reactivateArchivedGame(Integer gameId) {
-        Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new GameException(HttpStatus.NOT_FOUND, "Archived game not found."));
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+        }
+
+        if (game.getIsAvailable()) {
+            throw new GameException(HttpStatus.BAD_REQUEST, "Game is already active");
+        }
+
         game.setIsAvailable(true);
-        game = gameRepository.save(game);
-        return new GameResponseDto(game);
+        return new GameResponseDto(gameRepository.save(game));
     }
 
     /**
-     * Browses all available games.
-     *
-     * @return A list of available games.
+     * Browse games with optional filters
      */
     @Transactional
-    public List<GameResponseDto> browseGames() {
+    public List<GameResponseDto> browseGames(String category, Double minPrice, Double maxPrice) {
         return gameRepository.findAll().stream()
                 .filter(Game::getIsAvailable)
+                .filter(game -> category == null ||
+                        game.getCategories().stream()
+                                .anyMatch(cat -> cat.getName().equalsIgnoreCase(category)))
+                .filter(game -> minPrice == null || game.getPrice() >= minPrice)
+                .filter(game -> maxPrice == null || game.getPrice() <= maxPrice)
                 .map(GameResponseDto::new)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Searches for games by a query.
-     *
-     * @param query The search query.
-     * @return A list of games matching the search query.
+     * Search games with filters
      */
     @Transactional
-    public List<GameResponseDto> searchGames(String query) {
+    public List<GameResponseDto> searchGames(String query, String category, Double minPrice, Double maxPrice) {
         return gameRepository.findAll().stream()
-                .filter(game -> game.getName().toLowerCase().contains(query.toLowerCase()))
+                .filter(Game::getIsAvailable)
+                .filter(game -> game.getName().toLowerCase().contains(query.toLowerCase()) ||
+                        game.getDescription().toLowerCase().contains(query.toLowerCase()))
+                .filter(game -> category == null ||
+                        game.getCategories().stream()
+                                .anyMatch(cat -> cat.getName().equalsIgnoreCase(category)))
+                .filter(game -> minPrice == null || game.getPrice() >= minPrice)
+                .filter(game -> maxPrice == null || game.getPrice() <= maxPrice)
                 .map(GameResponseDto::new)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Adds a game to a category.
-     *
-     * @param gameId     The ID of the game.
-     * @param categoryId The ID of the category.
-     * @return A response containing the updated game's details.
+     * Add game to category
      */
     @Transactional
     public GameResponseDto addGameToCategory(Integer gameId, Integer categoryId) {
-        Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new GameException(HttpStatus.NOT_FOUND, "Game not found."));
-        GameCategory category = gameCategoryRepository.findById(categoryId).orElseThrow(
-                () -> new GameException(HttpStatus.NOT_FOUND, "Category not found."));
-
-        // Add the game to the category and vice versa
-        if (!category.getGames().contains(game)) {
-            category.addGame(game);
-            game.getCategories().add(category);
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
-        game = gameRepository.save(game);
-        return new GameResponseDto(game);
+        GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
+        if (category == null) {
+            throw new GameException(HttpStatus.NOT_FOUND, "Category not found");
+        }
+
+        if (game.getCategories().contains(category)) {
+            throw new GameException(HttpStatus.BAD_REQUEST, "Game already in this category");
+        }
+
+        game.addCategory(category);
+        return new GameResponseDto(gameRepository.save(game));
     }
 
     /**
-     * Updates the stock of a game.
-     *
-     * @param gameId The ID of the game.
-     * @param stock  The new stock quantity.
-     * @return A response containing the updated game's details.
+     * Update game stock
      */
     @Transactional
-    public GameResponseDto updateGameStock(Integer gameId, int stock) {
-        Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new GameException(HttpStatus.NOT_FOUND, "Game not found."));
-        game.setQuantityInStock(stock);
-        game = gameRepository.save(game);
-        return new GameResponseDto(game);
-    }
+    public GameResponseDto updateGameStock(Integer gameId, Integer stock) {
+        // Find the game first
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+        }
 
-    /**
-     * Updates the price of a game.
-     *
-     * @param gameId The ID of the game.
-     * @param price  The new price.
-     * @return A response containing the updated game's details.
-     */
-    @Transactional
-    public GameResponseDto updateGamePrice(Integer gameId, double price) {
-        Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new GameException(HttpStatus.NOT_FOUND, "Game not found."));
-        game.setPrice(price);
-        game = gameRepository.save(game);
-        return new GameResponseDto(game);
-    }
+        // Validate stock
+        if (stock < 0) {
+            throw new GameException(HttpStatus.BAD_REQUEST, "Stock cannot be negative");
+        }
 
-    public void deleteGame(int gameId) {
-        Optional<Game> game = gameRepository.findById(gameId);
-        if (game.isPresent()) {
-            gameRepository.delete(game.get());
-        } else {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game not found.");
+        // Update and save
+        try {
+            game.setQuantityInStock(stock);
+            return new GameResponseDto(gameRepository.save(game));
+        } catch (Exception e) {
+            throw new GameException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating game stock: " + e.getMessage());
         }
     }
 
     /**
-     * Retrieves a game by its ID.
-     *
-     * @param gameId The ID of the game.
-     * @return A response containing the game's details.
+     * Update game price
      */
     @Transactional
-    public GameResponseDto getGameById(int gameId) {
-        Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new GameException(HttpStatus.NOT_FOUND, "Game not found."));
-        return new GameResponseDto(game);
-    }
+    public GameResponseDto updateGamePrice(Integer gameId, Double price) {
+        // Find the game first
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+        }
 
-    /**
-     * Retrieves all games.
-     *
-     * @return A list of all games.
-     */
-    @Transactional
-    public List<GameResponseDto> findAllGames() {
-        return gameRepository.findAll().stream()
-                .map(GameResponseDto::new)
-                .collect(Collectors.toList());
+        // Validate price
+        if (price <= 0) {
+            throw new GameException(HttpStatus.BAD_REQUEST, "Price must be positive");
+        }
+
+        // Update and save
+        try {
+            game.setPrice(price);
+            return new GameResponseDto(gameRepository.save(game));
+        } catch (Exception e) {
+            throw new GameException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating game price: " + e.getMessage());
+        }
     }
 }

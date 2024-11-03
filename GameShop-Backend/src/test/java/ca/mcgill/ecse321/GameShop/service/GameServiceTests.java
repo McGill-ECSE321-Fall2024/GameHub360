@@ -1,32 +1,29 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
+import static org.mockito.Mockito.*;
 
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameResponseDto;
 import ca.mcgill.ecse321.GameShop.exception.GameException;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
-import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class GameServiceTests {
 
     @Mock
@@ -38,157 +35,164 @@ public class GameServiceTests {
     @InjectMocks
     private GameService gameService;
 
-    @Test
-    public void testCreateGameSuccess() {
-        // Arrange
-        GameRequestDto requestDto = new GameRequestDto();
-        requestDto.setName("Chess");
-        requestDto.setPrice(19.99);
-        requestDto.setQuantityInStock(10);
-        GameCategory category = new GameCategory(true, "Board Games");
-        when(gameCategoryRepository.findById(any(Integer.class))).thenReturn(Optional.of(category));
+    private Game testGame;
+    private GameCategory testCategory;
+    private GameRequestDto validGameRequest;
 
-        Game game = new Game("Chess", "A classic game", "image_url", 10, true, 19.99, category);
-        when(gameRepository.save(any(Game.class))).thenReturn(game);
+    @BeforeEach
+    public void setUp() {
+        // Set up test category
+        testCategory = new GameCategory(true, "Test Category");
+        testCategory.setCategoryType(GameCategory.CategoryType.GENRE);
+
+        // Set up test game
+        testGame = new Game();
+        testGame.setName("Test Game");
+        testGame.setDescription("Test Description");
+        testGame.setImageURL("http://test.com/image.jpg");
+        testGame.setQuantityInStock(10);
+        testGame.setPrice(29.99);
+        testGame.setIsAvailable(true);
+        testGame.addCategory(testCategory);
+
+        // Set up valid game request
+        validGameRequest = new GameRequestDto();
+        validGameRequest.setName("Test Game");
+        validGameRequest.setDescription("Test Description");
+        validGameRequest.setImageUrl("http://test.com/image.jpg");
+        validGameRequest.setQuantityInStock(10);
+        validGameRequest.setPrice(29.99);
+        validGameRequest.setCategoryId(1);
+    }
+
+    @Test
+    public void testCreateGameSuccessfully() {
+        // Arrange
+        when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(testCategory);
+        when(gameRepository.findGameByName("Test Game")).thenReturn(null);
+        when(gameRepository.save(any(Game.class))).thenReturn(testGame);
 
         // Act
-        GameResponseDto response = gameService.createGame(requestDto);
+        GameResponseDto response = gameService.createGame(validGameRequest);
 
         // Assert
         assertNotNull(response);
-        assertEquals("Chess", response.getName());
-        assertEquals(19.99, response.getPrice());
+        assertEquals("Test Game", response.getName());
+        assertEquals(29.99, response.getPrice());
         assertEquals(10, response.getQuantityInStock());
-        verify(gameRepository, times(1)).save(any(Game.class));
+        assertTrue(response.isAvailable());
+        verify(gameRepository).save(any(Game.class));
     }
 
     @Test
-    public void testCreateGameWithExistingTitle() {
+    public void testCreateGameWithDuplicateName() {
         // Arrange
-        GameRequestDto requestDto = new GameRequestDto();
-        requestDto.setName("Chess");
-        requestDto.setPrice(19.99);
-        requestDto.setQuantityInStock(10);
-        GameCategory category = new GameCategory(true, "Board Games");
-        when(gameCategoryRepository.findById(any(Integer.class))).thenReturn(Optional.of(category));
+        when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(testCategory);
+        when(gameRepository.findGameByName("Test Game")).thenReturn(testGame);
 
-        Game existingGame = new Game("Chess", "A classic game", "image_url", 10, true, 19.99, category);
-        when(gameRepository.findGameByName("Chess")).thenReturn(existingGame);
-
-        // Act
-        GameException e = assertThrows(GameException.class, () -> gameService.createGame(requestDto));
-
-        // Assert
-        assertEquals("Game with this title already exists.", e.getMessage());
-        assertEquals(HttpStatus.CONFLICT, e.getStatus());
+        // Act & Assert
+        GameException exception = assertThrows(GameException.class,
+                () -> gameService.createGame(validGameRequest));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("Game with this name already exists", exception.getMessage());
     }
 
     @Test
-    public void testUpdateGameSuccess() {
+    public void testCreateGameWithInvalidCategory() {
         // Arrange
-        GameRequestDto requestDto = new GameRequestDto();
-        requestDto.setName("Chess");
-        requestDto.setPrice(25.99);
-        requestDto.setQuantityInStock(15);
-        GameCategory category = new GameCategory(true, "Board Games");
-        when(gameCategoryRepository.findById(any(Integer.class))).thenReturn(Optional.of(category));
+        when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(null);
 
-        Game game = new Game("Chess", "A classic game", "image_url", 10, true, 19.99, category);
-        when(gameRepository.findById(any(Integer.class))).thenReturn(Optional.of(game));
-        when(gameRepository.save(any(Game.class))).thenReturn(game);
-
-        // Act
-        GameResponseDto response = gameService.updateGame(1, requestDto);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals("Chess", response.getName());
-        assertEquals(25.99, response.getPrice());
-        assertEquals(15, response.getQuantityInStock());
-        verify(gameRepository, times(1)).save(any(Game.class));
+        // Act & Assert
+        GameException exception = assertThrows(GameException.class,
+                () -> gameService.createGame(validGameRequest));
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Category not found", exception.getMessage());
     }
 
     @Test
-    public void testUpdateGameNotFound() {
+    public void testUpdateGameSuccessfully() {
         // Arrange
-        GameRequestDto requestDto = new GameRequestDto();
-        requestDto.setName("Chess");
-        requestDto.setPrice(25.99);
-        requestDto.setQuantityInStock(15);
-        when(gameRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
+        when(gameRepository.save(any(Game.class))).thenReturn(testGame);
+
+        GameRequestDto updateRequest = new GameRequestDto();
+        updateRequest.setName("Updated Game");
+        updateRequest.setPrice(39.99);
 
         // Act
-        GameException e = assertThrows(GameException.class, () -> gameService.updateGame(1, requestDto));
-
-        // Assert
-        assertEquals("Game not found.", e.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-    }
-
-    @Test
-    public void testDeleteGameSuccess() {
-        // Arrange
-        GameCategory category = new GameCategory(true, "Board Games");
-        Game game = new Game("Chess", "A classic game", "image_url", 10, true, 19.99, category);
-        when(gameRepository.findById(any(Integer.class))).thenReturn(Optional.of(game));
-
-        // Act
-        gameService.deleteGame(1);
-
-        // Assert
-        verify(gameRepository, times(1)).delete(game);
-    }
-
-    @Test
-    public void testDeleteGameNotFound() {
-        // Arrange
-        when(gameRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
-
-        // Act
-        GameException e = assertThrows(GameException.class, () -> gameService.deleteGame(1));
-
-        // Assert
-        assertEquals("Game not found.", e.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-    }
-
-    @Test
-    public void testGetGameByIdSuccess() {
-        // Arrange
-        GameCategory category = new GameCategory(true, "Board Games");
-        Game game = new Game("Chess", "A classic game", "image_url", 10, true, 19.99, category);
-        when(gameRepository.findById(1)).thenReturn(Optional.of(game));
-
-        // Act
-        GameResponseDto response = gameService.getGameById(1);
+        GameResponseDto response = gameService.updateGame(1, updateRequest);
 
         // Assert
         assertNotNull(response);
-        assertEquals("Chess", response.getName());
-        assertEquals(19.99, response.getPrice());
-        assertEquals(10, response.getQuantityInStock());
+        assertEquals("Updated Game", response.getName());
+        assertEquals(39.99, response.getPrice());
+        verify(gameRepository).save(any(Game.class));
     }
 
     @Test
-    public void testGetGameByIdNotFound() {
+    public void testUpdateNonExistentGame() {
         // Arrange
-        when(gameRepository.findById(1)).thenReturn(Optional.empty());
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(null);
+
+        // Act & Assert
+        GameException exception = assertThrows(GameException.class,
+                () -> gameService.updateGame(1, validGameRequest));
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Game not found", exception.getMessage());
+    }
+
+    @Test
+    public void testArchiveGameSuccessfully() {
+        // Arrange
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
+        when(gameRepository.save(any(Game.class))).thenReturn(testGame);
 
         // Act
-        GameException e = assertThrows(GameException.class, () -> gameService.getGameById(1));
+        GameResponseDto response = gameService.archiveGame(1);
 
         // Assert
-        assertEquals("Game not found.", e.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+        assertNotNull(response);
+        assertFalse(response.isAvailable());
+        verify(gameRepository).save(any(Game.class));
     }
 
     @Test
-    public void testUpdateGameStockSuccess() {
+    public void testViewArchivedGames() {
         // Arrange
-        GameCategory category = new GameCategory(true, "Board Games");
-        Game game = new Game("Chess", "A classic game", "image_url", 10, true, 19.99, category);
-        when(gameRepository.findById(1)).thenReturn(Optional.of(game));
-        when(gameRepository.save(any(Game.class))).thenReturn(game);
+        Game archivedGame = new Game();
+        archivedGame.setIsAvailable(false);
+        archivedGame.setName("Archived Game");
+
+        when(gameRepository.findAll()).thenReturn(Arrays.asList(testGame, archivedGame));
+
+        // Act
+        List<GameResponseDto> archivedGames = gameService.viewArchivedGames();
+
+        // Assert
+        assertNotNull(archivedGames);
+        assertEquals(1, archivedGames.size());
+        assertEquals("Archived Game", archivedGames.get(0).getName());
+    }
+
+    @Test
+    public void testSearchGames() {
+        // Arrange
+        when(gameRepository.findAll()).thenReturn(Arrays.asList(testGame));
+
+        // Act
+        List<GameResponseDto> searchResults = gameService.searchGames("Test", null, null, null);
+
+        // Assert
+        assertNotNull(searchResults);
+        assertEquals(1, searchResults.size());
+        assertEquals("Test Game", searchResults.get(0).getName());
+    }
+
+    @Test
+    public void testUpdateGameStock() {
+        // Arrange
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
+        when(gameRepository.save(any(Game.class))).thenReturn(testGame);
 
         // Act
         GameResponseDto response = gameService.updateGameStock(1, 20);
@@ -196,44 +200,45 @@ public class GameServiceTests {
         // Assert
         assertNotNull(response);
         assertEquals(20, response.getQuantityInStock());
-        verify(gameRepository, times(1)).save(any(Game.class));
+        verify(gameRepository).save(any(Game.class));
     }
 
     @Test
-    public void testUpdateGamePriceSuccess() {
+    public void testUpdateGameStockWithNegativeValue() {
+        // Add game ID to testGame
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
+
+        // Act & Assert
+        GameException exception = assertThrows(GameException.class,
+                () -> gameService.updateGameStock(1, -1));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("Stock cannot be negative", exception.getMessage());
+    }
+
+    @Test
+    public void testUpdateGamePrice() {
         // Arrange
-        GameCategory category = new GameCategory(true, "Board Games");
-        Game game = new Game("Chess", "A classic game", "image_url", 10, true, 19.99, category);
-        when(gameRepository.findById(1)).thenReturn(Optional.of(game));
-        when(gameRepository.save(any(Game.class))).thenReturn(game);
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
+        when(gameRepository.save(any(Game.class))).thenReturn(testGame);
 
         // Act
-        GameResponseDto response = gameService.updateGamePrice(1, 29.99);
+        GameResponseDto response = gameService.updateGamePrice(1, 49.99);
 
         // Assert
         assertNotNull(response);
-        assertEquals(29.99, response.getPrice());
-        verify(gameRepository, times(1)).save(any(Game.class));
+        assertEquals(49.99, response.getPrice());
+        verify(gameRepository).save(any(Game.class));
     }
 
     @Test
-    public void testFindAllGames() {
-        // Arrange
-        GameCategory category = new GameCategory(true, "Board Games");
-        when(gameCategoryRepository.save(any(GameCategory.class))).thenReturn(category);
+    public void testUpdateGamePriceWithInvalidValue() {
+        // Add game ID to testGame
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
 
-        Game game1 = new Game("Chess", "A classic game", "image_url", 10, true, 19.99, category);
-        Game game2 = new Game("Checkers", "Another classic game", "image_url", 5, true, 9.99, category);
-
-        when(gameRepository.findAll()).thenReturn(Arrays.asList(game1, game2));
-
-        // Act
-        List<GameResponseDto> games = gameService.findAllGames();
-
-        // Assert
-        assertNotNull(games);
-        assertEquals(2, games.size());
-        assertEquals("Chess", games.get(0).getName());
-        assertEquals("Checkers", games.get(1).getName());
+        // Act & Assert
+        GameException exception = assertThrows(GameException.class,
+                () -> gameService.updateGamePrice(1, 0.0));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals("Price must be positive", exception.getMessage());
     }
 }
