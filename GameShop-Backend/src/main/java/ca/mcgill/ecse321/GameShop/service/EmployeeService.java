@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import ca.mcgill.ecse321.GameShop.dto.EmployeeRequestDto;
-import ca.mcgill.ecse321.GameShop.exception.EmployeeException;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
 import ca.mcgill.ecse321.GameShop.repository.EmployeeAccountRepository;
 import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
@@ -23,14 +23,14 @@ public class EmployeeService {
      * 
      * @param employeeRequestDto the login request containing email and password.
      * @return the authenticated EmployeeAccount.
-     * @throws EmployeeException if authentication fails.
+     * @throws GameShopException if authentication fails.
      */
     @Transactional
     public EmployeeAccount login(EmployeeRequestDto employeeRequestDto) {
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByEmail(employeeRequestDto.getEmail());
 
         if (employee == null || !EncryptionUtils.matches(employeeRequestDto.getPassword(), employee.getPassword())) {
-            throw new EmployeeException(HttpStatus.BAD_REQUEST, "Invalid email or password.");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Invalid email or password.");
         }
         return employee;
     }
@@ -40,7 +40,7 @@ public class EmployeeService {
      * 
      * @param employeeRequestDto the details for creating the employee.
      * @return the created EmployeeAccount.
-     * @throws EmployeeException if an employee already exists or if password
+     * @throws GameShopException if an employee already exists or if password
      *                           requirements are not met.
      */
     @Transactional
@@ -49,12 +49,12 @@ public class EmployeeService {
         String newEmployeePassword = employeeRequestDto.getPassword();
 
         if (employeeAccountRepository.findEmployeeAccountByEmail(newEmployeeEmail) != null) {
-            throw new EmployeeException(HttpStatus.CONFLICT, "An employee with same email already exists.");
+            throw new GameShopException(HttpStatus.CONFLICT, "An employee with same email already exists.");
         }
 
         // Validate and encrypt password
         if (!PasswordUtils.isValidPassword(newEmployeePassword)) {
-            throw new EmployeeException(HttpStatus.BAD_REQUEST, "Password does not meet security requirements.");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Password does not meet security requirements.");
         }
         String encryptedPassword = EncryptionUtils.encrypt(newEmployeePassword);
 
@@ -73,7 +73,7 @@ public class EmployeeService {
      * @param employeeId         The ID of the employee to update.
      * @param employeeRequestDto the employee details to update.
      * @return the updated EmployeeAccount.
-     * @throws EmployeeException if the employee is not found or if password
+     * @throws GameShopException if the employee is not found or if password
      *                           requirements are not met.
      */
     @Transactional
@@ -81,7 +81,7 @@ public class EmployeeService {
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
 
         if (employee == null) {
-            throw new EmployeeException(HttpStatus.NOT_FOUND, "Employee not found.");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
         }
 
         String newEmployeePassword = employeeRequestDto.getPassword();
@@ -89,7 +89,7 @@ public class EmployeeService {
         // Updating allowed fields only
         if (newEmployeePassword != null) {
             if (!PasswordUtils.isValidPassword(newEmployeePassword)) {
-                throw new EmployeeException(HttpStatus.BAD_REQUEST, "Password does not meet security requirements.");
+                throw new GameShopException(HttpStatus.BAD_REQUEST, "Password does not meet security requirements.");
             }
             employee.setPassword(EncryptionUtils.encrypt(newEmployeePassword));
         }
@@ -111,14 +111,14 @@ public class EmployeeService {
      * 
      * @param employeeId The ID of the employee to deactivate.
      * @return the deactivated EmployeeAccount.
-     * @throws EmployeeException if the employee is not found.
+     * @throws GameShopException if the employee is not found.
      */
     @Transactional
     public EmployeeAccount deactivateEmployee(Integer employeeId) {
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
 
         if (employee == null) {
-            throw new EmployeeException(HttpStatus.NOT_FOUND, "Employee not found.");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
         }
 
         employee.setIsActive(false);
@@ -131,14 +131,14 @@ public class EmployeeService {
      * 
      * @param employeeId The ID of the employee to retrieve.
      * @return the retrieved EmployeeAccount.
-     * @throws EmployeeException if the employee is not found.
+     * @throws GameShopException if the employee is not found.
      */
     @Transactional
     public EmployeeAccount retrieveEmployee(Integer employeeId) {
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
 
         if (employee == null) {
-            throw new EmployeeException(HttpStatus.NOT_FOUND, "Employee not found.");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
         }
 
         return employee;
