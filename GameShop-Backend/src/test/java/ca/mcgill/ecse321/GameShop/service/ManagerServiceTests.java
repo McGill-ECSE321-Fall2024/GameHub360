@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
-import ca.mcgill.ecse321.GameShop.exception.ManagerException;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
 import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
@@ -61,7 +61,7 @@ public class ManagerServiceTests {
         when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(manager);
 
         // Act
-        ManagerException e = assertThrows(ManagerException.class, () -> managerService.login(requestDto));
+        GameShopException e = assertThrows(GameShopException.class, () -> managerService.login(requestDto));
 
         // Assert
         assertEquals("Invalid email or password.", e.getMessage());
@@ -78,7 +78,7 @@ public class ManagerServiceTests {
         when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(null);
 
         // Act
-        ManagerException e = assertThrows(ManagerException.class, () -> managerService.login(requestDto));
+        GameShopException e = assertThrows(GameShopException.class, () -> managerService.login(requestDto));
 
         // Assert
         assertEquals("Invalid email or password.", e.getMessage());
@@ -116,7 +116,7 @@ public class ManagerServiceTests {
         when(managerAccountRepository.count()).thenReturn(1L);
 
         // Act
-        ManagerException e = assertThrows(ManagerException.class, () -> managerService.createManager(requestDto));
+        GameShopException e = assertThrows(GameShopException.class, () -> managerService.createManager(requestDto));
 
         // Assert
         assertEquals("A manager already exists. Only one manager is allowed.", e.getMessage());
@@ -155,7 +155,7 @@ public class ManagerServiceTests {
         when(managerAccountRepository.findManagerAccountByEmail(any(String.class))).thenReturn(null);
 
         // Act
-        ManagerException e = assertThrows(ManagerException.class, () -> managerService.updateManager(requestDto));
+        GameShopException e = assertThrows(GameShopException.class, () -> managerService.updateManager(requestDto));
 
         // Assert
         assertEquals("Manager not found.", e.getMessage());
