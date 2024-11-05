@@ -1,11 +1,14 @@
 package ca.mcgill.ecse321.GameShop.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import ca.mcgill.ecse321.GameShop.dto.EmployeeRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
+import ca.mcgill.ecse321.GameShop.model.ActivityLog;
 import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
 import ca.mcgill.ecse321.GameShop.repository.EmployeeAccountRepository;
 import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
@@ -126,21 +129,19 @@ public class EmployeeService {
     }
 
     /**
-     * Retrieves an employee account by ID. Used for admin purposes like retrieving
-     * activity logs.
+     * Retrieves a list of ActivityLog associated with an employee.
      * 
-     * @param employeeId The ID of the employee to retrieve.
-     * @return the retrieved EmployeeAccount.
-     * @throws GameShopException if the employee is not found.
+     * @param employeeId The ID of the employee to retrieve logs for.
+     * @return a list of ActivityLog associated with the employee.
+     * @throws GameShopException if no employees are found.
      */
     @Transactional
-    public EmployeeAccount retrieveEmployee(Integer employeeId) {
+    public List<ActivityLog> getEmployeeActivityLogs(Integer employeeId) {
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
 
         if (employee == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
         }
-
-        return employee;
+        return employee.getLogs();
     }
 }

@@ -120,7 +120,7 @@ public class EmployeeController {
      * @return A list of all activity logs.
      */
     @GetMapping("/{employeeId}/activities")
-    public List<ActivityLog> getEmployeeActivities(@PathVariable Integer employeeId) {
-        return employeeService.retrieveEmployee(employeeId).getLogs();
+    public List<ActivityLog> getEmployeeActivityLogs(@PathVariable Integer employeeId) {
+        return employeeService.getEmployeeActivityLogs(employeeId);
     }
 }
