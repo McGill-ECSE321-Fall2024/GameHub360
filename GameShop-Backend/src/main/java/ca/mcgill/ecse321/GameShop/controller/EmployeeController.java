@@ -109,17 +109,18 @@ public class EmployeeController {
      */
     @GetMapping("/activities")
     public List<ActivityLog> getAllEmployeesActivitiActivityLogs() {
-        return activityLogService.getAllEmployeesActivitiActivityLogs();
+        return activityLogService.getAllEmployeesActivityLogs();
     }
 
     /**
      * Endpoint to retrieve activity logs for monitoring purposes for an employee by
      * employee ID.
      *
+     * @param employeeId The ID of the employee to retrieve activity logs for.
      * @return A list of all activity logs.
      */
     @GetMapping("/{employeeId}/activities")
     public List<ActivityLog> getEmployeeActivities(@PathVariable Integer employeeId) {
-        return activityLogService.findActivityLogByEmployeeId(employeeId);
+        return employeeService.retrieveEmployee(employeeId).getLogs();
     }
 }

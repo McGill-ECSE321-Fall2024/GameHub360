@@ -124,4 +124,23 @@ public class EmployeeService {
         employee.setIsActive(false);
         return employeeAccountRepository.save(employee);
     }
+
+    /**
+     * Retrieves an employee account by ID. Used for admin purposes like retrieving
+     * activity logs.
+     * 
+     * @param employeeId The ID of the employee to retrieve.
+     * @return the retrieved EmployeeAccount.
+     * @throws EmployeeException if the employee is not found.
+     */
+    @Transactional
+    public EmployeeAccount retrieveEmployee(Integer employeeId) {
+        EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
+
+        if (employee == null) {
+            throw new EmployeeException(HttpStatus.NOT_FOUND, "Employee not found.");
+        }
+
+        return employee;
+    }
 }

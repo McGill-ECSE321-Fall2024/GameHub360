@@ -20,17 +20,8 @@ public class ActivityLogService {
      *
      * @return List of all activity logs for all employees.
      */
-    public List<ActivityLog> getAllEmployeesActivitiActivityLogs() {
+    public List<ActivityLog> getAllEmployeesActivityLogs() {
         return (List<ActivityLog>) activityLogRepository.findAll();
-    }
-
-    /**
-     * Retrieves activity logs for a specific employee.
-     *
-     * @return List of all activity logs for the employee.
-     */
-    public List<ActivityLog> findActivityLogByEmployeeId(Integer employeeId) {
-        return activityLogRepository.findActivityLogByEmployeeId(employeeId);
     }
 
     /**
