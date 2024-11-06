@@ -6,6 +6,11 @@
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
         <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/GameShop-Backend" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>

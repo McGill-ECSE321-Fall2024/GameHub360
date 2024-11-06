@@ -52,42 +52,43 @@ public class CustomerServiceTests {
         verify(customerAccountRepository, times(1)).save(any(CustomerAccount.class));
     }
 
-    // @Test
-    // public void testCreateCustomerWithExistingEmail() {
-    //     // Arrange
-    //     CustomerRequestDto requestDto = new CustomerRequestDto(VALID_EMAIL, VALID_PASSWORD, "John Doe", VALID_PHONE);
-    //     when(customerAccountRepository.findCustomerAccountByEmail(VALID_EMAIL)).thenReturn(new CustomerAccount());
+     @Test
+     public void testCreateCustomerWithExistingEmail() {
+         // Arrange
+         CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "Strong@Pass1", "John Doe",
+                 "123-456-7890");
+         when(customerAccountRepository.findCustomerAccountByEmail("customer@example.com")).thenReturn(new CustomerAccount());
 
-    //     // Act & Assert
-    //     ManagerException exception = assertThrows(ManagerException.class, () -> customerService.createCustomer(requestDto));
-    //     assertEquals(HttpStatus.CONFLICT, exception.getStatus());
-    //     assertEquals("An account with this email already exists.", exception.getMessage());
-    //     verify(customerAccountRepository, never()).save(any(CustomerAccount.class));
-    // }
+         // Act & Assert
+         ManagerException exception = assertThrows(ManagerException.class, () -> customerService.createCustomer(requestDto));
+         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+         assertEquals("An account with this email already exists.", exception.getMessage());
+         verify(customerAccountRepository, never()).save(any(CustomerAccount.class));
+     }
 
-    // @Test
-    // public void testCreateCustomerWithInvalidPassword() {
-    //     // Arrange
-    //     CustomerRequestDto requestDto = new CustomerRequestDto(VALID_EMAIL, INVALID_PASSWORD, "John Doe", VALID_PHONE);
-    //     when(customerAccountRepository.findCustomerAccountByEmail(VALID_EMAIL)).thenReturn(null);
+     @Test
+     public void testCreateCustomerWithInvalidPassword() {
+         // Arrange
+         CustomerRequestDto requestDto = new CustomerRequestDto(VALID_EMAIL, INVALID_PASSWORD, "John Doe", VALID_PHONE);
+         when(customerAccountRepository.findCustomerAccountByEmail(VALID_EMAIL)).thenReturn(null);
 
-    //     // Act & Assert
-    //     ManagerException exception = assertThrows(ManagerException.class, () -> customerService.createCustomer(requestDto));
-    //     assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-    //     assertEquals("Password does not meet security requirements.", exception.getMessage());
-    //     verify(customerAccountRepository, never()).save(any(CustomerAccount.class));
-    // }
+         // Act & Assert
+         ManagerException exception = assertThrows(ManagerException.class, () -> customerService.createCustomer(requestDto));
+         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+         assertEquals("Password does not meet security requirements.", exception.getMessage());
+         verify(customerAccountRepository, never()).save(any(CustomerAccount.class));
+     }
 
-    // @Test
-    // public void testCreateCustomerWithInvalidPhoneNumber() {
-    //     // Arrange
-    //     CustomerRequestDto requestDto = new CustomerRequestDto(VALID_EMAIL, VALID_PASSWORD, "John Doe", INVALID_PHONE);
-    //     when(customerAccountRepository.findCustomerAccountByEmail(VALID_EMAIL)).thenReturn(null);
+     @Test
+     public void testCreateCustomerWithInvalidPhoneNumber() {
+         // Arrange
+         CustomerRequestDto requestDto = new CustomerRequestDto(VALID_EMAIL, VALID_PASSWORD, "John Doe", INVALID_PHONE);
+         when(customerAccountRepository.findCustomerAccountByEmail(VALID_EMAIL)).thenReturn(null);
 
-    //     // Act & Assert
-    //     ManagerException exception = assertThrows(ManagerException.class, () -> customerService.createCustomer(requestDto));
-    //     assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-    //     assertEquals("Phone Number does not meet formatting criteria.", exception.getMessage());
-    //     verify(customerAccountRepository, never()).save(any(CustomerAccount.class));
-    // }
+         // Act & Assert
+         ManagerException exception = assertThrows(ManagerException.class, () -> customerService.createCustomer(requestDto));
+         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+         assertEquals("Phone Number does not meet formatting criteria.", exception.getMessage());
+         verify(customerAccountRepository, never()).save(any(CustomerAccount.class));
+     }
 }
