@@ -3,11 +3,11 @@ package ca.mcgill.ecse321.GameShop.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 
-public class ManagerException extends RuntimeException {
+public class GameShopException extends RuntimeException {
     @NonNull
     private final HttpStatus status;
 
-    public ManagerException(@NonNull HttpStatus status, String message) {
+    public GameShopException(@NonNull HttpStatus status, String message) {
         super(message);
         this.status = status;
     }
