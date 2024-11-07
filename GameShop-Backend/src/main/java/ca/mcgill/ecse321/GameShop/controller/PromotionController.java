@@ -5,6 +5,7 @@ import ca.mcgill.ecse321.GameShop.dto.PromotionRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.PromotionResponseDto;
 import ca.mcgill.ecse321.GameShop.model.Promotion;
 import ca.mcgill.ecse321.GameShop.service.PromotionService;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,11 +37,12 @@ public class PromotionController {
     /**
      * Endpoint to create a new store promotion.
      *
-     * @param promotionDto The details of the new promotion.
+     * @param promotionRequestDto The details of the new promotion.
      * @return The created promotion details.
      */
     @PostMapping("/")
-    public PromotionResponseDto createPromotion(@RequestBody PromotionRequestDto promotionRequestDto) {
+    public PromotionResponseDto createPromotion(
+            @Valid @RequestBody PromotionRequestDto promotionRequestDto) {
         Promotion promotion = promotionService.createPromotion(promotionRequestDto);
         return new PromotionResponseDto(promotion);
     }
@@ -48,8 +50,8 @@ public class PromotionController {
     /**
      * Endpoint to update an existing promotion.
      *
-     * @param promotionId  The ID of the promotion to update.
-     * @param promotionDto The updated promotion details.
+     * @param promotionId         The ID of the promotion to update.
+     * @param promotionRequestDto The updated promotion details (can be null).
      * @return The updated promotion information.
      */
     @PutMapping("/{promotionId}")
