@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ca.mcgill.ecse321.GameShop.dto.ActivityLogResponseDto;
 import ca.mcgill.ecse321.GameShop.model.ActivityLog;
 import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
 import ca.mcgill.ecse321.GameShop.repository.ActivityLogRepository;
@@ -20,8 +21,9 @@ public class ActivityLogService {
      *
      * @return List of all activity logs for all employees.
      */
-    public List<ActivityLog> getAllEmployeesActivityLogs() {
-        return (List<ActivityLog>) activityLogRepository.findAll();
+    public ActivityLogResponseDto getAllEmployeesActivityLogs() {
+        List<ActivityLog> logs = (List<ActivityLog>) activityLogRepository.findAll();
+        return new ActivityLogResponseDto(logs);
     }
 
     /**

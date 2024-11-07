@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.GameShop.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import ca.mcgill.ecse321.GameShop.dto.ActivityLogResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.EmployeeRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.EmployeeResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.ErrorResponseDto;
@@ -181,7 +183,7 @@ public class EmployeeIntegrationTests {
                 ISACTIVE_TRUE);
         ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
                 EmployeeResponseDto.class);
-        EmployeeRequestDto updateRequest = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, "Ahmed AlRawi",
+        EmployeeRequestDto updateRequest = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, "Mike Tyson",
                 "987-654-321", ISACTIVE_TRUE);
 
         // Act
@@ -195,7 +197,7 @@ public class EmployeeIntegrationTests {
         EmployeeResponseDto responseBody = updateResponse.getBody();
         assertNotNull(responseBody);
         assertEquals(VALID_EMAIL, responseBody.getEmail());
-        assertEquals("Ahmed AlRawi", responseBody.getName());
+        assertEquals("Mike Tyson", responseBody.getName());
         assertEquals("987-654-321", responseBody.getPhoneNumber());
         assertEquals(ISACTIVE_TRUE, responseBody.getIsActive());
     }
@@ -334,5 +336,56 @@ public class EmployeeIntegrationTests {
         assertEquals(VALID_PHONE, responseBody.getPhoneNumber());
         assertEquals(ISACTIVE_FALSE, responseBody.getIsActive());
     }
+
+    /**@Test
+    @Order(14)
+    public void testGetAllEmployeesActivityLogs() {
+        // Arrange
+        testUpdateEmployeeDetails(); // create & update 1st employee, the create & update info will be logged
+        EmployeeRequestDto request = new EmployeeRequestDto("secondemployee@example.com", VALID_PASSWORD, "Mark Tyson",
+                VALID_PHONE,
+                ISACTIVE_TRUE);
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request, EmployeeResponseDto.class); // Create 2nd employee, the creation info will be logged
+
+        // Act, !!!!!!!!!! check if there are no employees what would happen, add a check in the controller.
+        ResponseEntity<ActivityLogResponseDto> activitiesResponse = client.getForEntity("/employees/activities",
+                ActivityLogResponseDto.class);
+
+        // Assert
+        assertNotNull(activitiesResponse);
+        assertEquals(HttpStatus.OK, activitiesResponse.getStatusCode());
+        ActivityLogResponseDto responseBody = activitiesResponse.getBody();
+        assertNotNull(responseBody);
+        assertEquals(3, responseBody.getActivityLogs().size());
+        assertTrue(responseBody.getActivityLogs().get(2).getContent().contains("Employee account created for ID: " + creationResponse.getBody().getStaffId()));
+    }
+
+    @Test
+    @Order(14)
+    public void testGetEmployeeActivityLogs() {
+        // Arrange
+        EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
+                ISACTIVE_TRUE);
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+                EmployeeResponseDto.class);
+        EmployeeRequestDto updateRequest = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, "Mike Tyson",
+                "987-654-321", ISACTIVE_TRUE);
+        ResponseEntity<EmployeeResponseDto> updateResponse = client.exchange(
+                "/employees/" + creationResponse.getBody().getStaffId(), HttpMethod.PUT,
+                new HttpEntity<>(updateRequest), EmployeeResponseDto.class);
+
+        // Act
+        ResponseEntity<ActivityLogResponseDto> activitiesResponse = client.getForEntity("/employees/" + updateResponse.getBody().getStaffId() + "/activities",
+                ActivityLogResponseDto.class);
+        
+        // Assert
+        assertNotNull(activitiesResponse);
+        assertEquals(HttpStatus.OK, activitiesResponse.getStatusCode());
+        ActivityLogResponseDto responseBody = activitiesResponse.getBody();
+        assertNotNull(responseBody);
+        assertEquals(2, responseBody.getActivityLogs().size());
+        assertTrue(responseBody.getActivityLogs().get(1).getContent().contains("Employee account updated for ID: " + updateResponse.getBody().getStaffId()));
+
+    }**/
 
 }

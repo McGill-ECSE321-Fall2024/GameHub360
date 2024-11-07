@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import ca.mcgill.ecse321.GameShop.dto.ActivityLogResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.EmployeeRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.ActivityLog;
@@ -136,12 +137,17 @@ public class EmployeeService {
      * @throws GameShopException if no employees are found.
      */
     @Transactional
-    public List<ActivityLog> getEmployeeActivityLogs(Integer employeeId) {
+    public EmployeeAccount getEmployeeActivityLogs(Integer employeeId) {
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
 
         if (employee == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
         }
-        return employee.getLogs();
+
+        if (!employee.hasLogs()) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "No activity logs found for employee.");
+        }
+
+        return employee;
     }
 }

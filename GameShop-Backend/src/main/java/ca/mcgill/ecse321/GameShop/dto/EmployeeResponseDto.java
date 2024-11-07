@@ -1,5 +1,8 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
+import java.util.List;
+
+import ca.mcgill.ecse321.GameShop.model.ActivityLog;
 import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
 
 public class EmployeeResponseDto {
@@ -9,6 +12,7 @@ public class EmployeeResponseDto {
     private String name;
     private String phoneNumber;
     private Boolean isActive;
+    private List<ActivityLog> logs; //makes sense to be here as it's a response attribute
 
     // Constructors
     public EmployeeResponseDto() {
@@ -20,6 +24,7 @@ public class EmployeeResponseDto {
         this.name = employee.getName();
         this.phoneNumber = employee.getPhoneNumber();
         this.isActive = employee.getIsActive();
+        this.logs = employee.getLogs();
     }
 
     // Getters and Setters
@@ -61,5 +66,13 @@ public class EmployeeResponseDto {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public List<ActivityLog> getLogs() {
+        return logs;
+    }
+
+    public void setLogs(List<ActivityLog> logs) {
+        this.logs = logs;
     }
 }
