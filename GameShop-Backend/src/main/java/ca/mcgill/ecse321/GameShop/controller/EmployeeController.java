@@ -60,7 +60,7 @@ public class EmployeeController {
      */
     @PutMapping("/{employeeId}")
     public EmployeeResponseDto updateEmployee(
-            @PathVariable Integer employeeId,
+            @PathVariable("employeeId") Integer employeeId,
             @Validated({ ValidationGroups.Update.class }) @RequestBody EmployeeRequestDto employeeRequestDto) {
         EmployeeAccount employee = employeeService.updateEmployee(employeeId, employeeRequestDto);
         // Log activity for update
@@ -91,7 +91,7 @@ public class EmployeeController {
      * @return A response containing the deactivated employee's details.
      */
     @PutMapping("/{employeeId}/deactivate")
-    public EmployeeResponseDto deactivateEmployee(@PathVariable Integer employeeId) {
+    public EmployeeResponseDto deactivateEmployee(@PathVariable("employeeId") Integer employeeId) {
         EmployeeAccount employee = employeeService.deactivateEmployee(employeeId);
         // Log activity for deactivation
         String contentMessage = "Employee account deactivated for ID: " + employee.getStaffId() + " on "
@@ -120,7 +120,7 @@ public class EmployeeController {
      * @return A list of all activity logs.
      */
     @GetMapping("/{employeeId}/activities")
-    public List<ActivityLog> getEmployeeActivityLogs(@PathVariable Integer employeeId) {
+    public List<ActivityLog> getEmployeeActivityLogs(@PathVariable("employeeId") Integer employeeId) {
         return employeeService.getEmployeeActivityLogs(employeeId);
     }
 }
