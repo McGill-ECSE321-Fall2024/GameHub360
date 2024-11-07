@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class ManagerExceptionHandler {
+public class GameShopExceptionHandler {
 
-    @ExceptionHandler(ManagerException.class)
-    public ResponseEntity<ErrorResponseDto> handleManagerException(ManagerException e) {
+    @ExceptionHandler(GameShopException.class)
+    public ResponseEntity<ErrorResponseDto> handleGameShopException(GameShopException e) {
         ErrorResponseDto errorResponse = new ErrorResponseDto(e.getMessage(), e.getStatus().toString());
         return new ResponseEntity<>(errorResponse, e.getStatus());
     }
