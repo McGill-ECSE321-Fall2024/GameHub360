@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="42e7dcb1-e7d8-4e96-973d-ca748bf474ae" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/controller/CustomerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/service/CustomerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/service/CustomerService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/service/CustomerServiceTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/service/CustomerServiceTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -228,7 +226,7 @@
       <workItem from="1730933672629" duration="41000" />
       <workItem from="1730933878009" duration="2000" />
       <workItem from="1730934798870" duration="6196000" />
-      <workItem from="1730993370676" duration="5324000" />
+      <workItem from="1730993370676" duration="7545000" />
     </task>
     <servers />
   </component>
