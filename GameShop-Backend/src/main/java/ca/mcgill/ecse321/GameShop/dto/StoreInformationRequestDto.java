@@ -1,7 +1,10 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class StoreInformationRequestDto {
     // Attributes
+    @NotBlank(message = "Store policy cannot be empty.")
     private String storePolicy;
 
     // Constructors
