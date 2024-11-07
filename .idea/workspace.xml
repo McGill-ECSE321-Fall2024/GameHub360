@@ -46,25 +46,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.CustomerServiceTests.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.CustomerServiceTests.testCreateCustomerSuccess.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.CustomerServiceTests.testCreateCustomerSuccessfully.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;API-Endpoints-Benzo&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.CustomerServiceTests.executor": "Run",
+    "Gradle.CustomerServiceTests.testCreateCustomerSuccess.executor": "Run",
+    "Gradle.CustomerServiceTests.testCreateCustomerSuccessfully.executor": "Run",
+    "Gradle.CustomerServiceTests.testGetAllCustomers.executor": "Run",
+    "Gradle.CustomerServiceTests.testGetCustomerByIdNotFound.executor": "Run",
+    "Gradle.CustomerServiceTests.testGetCustomerByIdSuccess.executor": "Run",
+    "Gradle.CustomerServiceTests.testLoginCustomerNotFound.executor": "Run",
+    "Gradle.CustomerServiceTests.testLoginInvalidPassword.executor": "Run",
+    "Gradle.CustomerServiceTests.testLoginSuccess.executor": "Run",
+    "Gradle.CustomerServiceTests.testUpdateCustomerNotFound.executor": "Run",
+    "Gradle.CustomerServiceTests.testUpdateCustomerSuccess.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "API-Endpoints-Benzo",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager" selected="Gradle.CustomerServiceTests">
-    <configuration name="CustomerServiceTests" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+}]]></component>
+  <component name="RunManager" selected="Gradle.CustomerServiceTests.testLoginCustomerNotFound">
+    <configuration name="CustomerServiceTests.testGetCustomerByIdNotFound" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
@@ -77,7 +85,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;ca.mcgill.ecse321.GameShop.service.CustomerServiceTests&quot;" />
+            <option value="&quot;ca.mcgill.ecse321.GameShop.service.CustomerServiceTests.testGetCustomerByIdNotFound&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -88,7 +96,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="CustomerServiceTests.testCreateCustomerSuccess" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="CustomerServiceTests.testGetCustomerByIdSuccess" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
@@ -101,7 +109,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;ca.mcgill.ecse321.GameShop.service.CustomerServiceTests.testCreateCustomerSuccess&quot;" />
+            <option value="&quot;ca.mcgill.ecse321.GameShop.service.CustomerServiceTests.testGetCustomerByIdSuccess&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -112,7 +120,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="CustomerServiceTests.testCreateCustomerSuccessfully" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="CustomerServiceTests.testLoginCustomerNotFound" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
@@ -125,7 +133,55 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;ca.mcgill.ecse321.GameShop.service.CustomerServiceTests.testCreateCustomerSuccessfully&quot;" />
+            <option value="&quot;ca.mcgill.ecse321.GameShop.service.CustomerServiceTests.testLoginCustomerNotFound&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="CustomerServiceTests.testLoginInvalidPassword" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;ca.mcgill.ecse321.GameShop.service.CustomerServiceTests.testLoginInvalidPassword&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="CustomerServiceTests.testLoginSuccess" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;ca.mcgill.ecse321.GameShop.service.CustomerServiceTests.testLoginSuccess&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -145,9 +201,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.CustomerServiceTests" />
-        <item itemvalue="Gradle.CustomerServiceTests.testCreateCustomerSuccess" />
-        <item itemvalue="Gradle.CustomerServiceTests.testCreateCustomerSuccessfully" />
+        <item itemvalue="Gradle.CustomerServiceTests.testLoginCustomerNotFound" />
+        <item itemvalue="Gradle.CustomerServiceTests.testLoginInvalidPassword" />
+        <item itemvalue="Gradle.CustomerServiceTests.testLoginSuccess" />
+        <item itemvalue="Gradle.CustomerServiceTests.testGetCustomerByIdNotFound" />
+        <item itemvalue="Gradle.CustomerServiceTests.testGetCustomerByIdSuccess" />
       </list>
     </recent_temporary>
   </component>
@@ -170,6 +228,7 @@
       <workItem from="1730933672629" duration="41000" />
       <workItem from="1730933878009" duration="2000" />
       <workItem from="1730934798870" duration="6196000" />
+      <workItem from="1730993370676" duration="5324000" />
     </task>
     <servers />
   </component>

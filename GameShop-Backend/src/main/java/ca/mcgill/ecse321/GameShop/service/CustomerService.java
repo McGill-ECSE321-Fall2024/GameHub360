@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.GameShop.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import ca.mcgill.ecse321.GameShop.dto.CustomerRequestDto;
@@ -96,5 +97,48 @@ public class CustomerService {
 
         // Save and return the updated customer account
         return customerAccountRepository.save(customer);
+    }
+
+    /**
+     * Retrieves all customer accounts.
+     *
+     * @return A list of CustomerAccount objects representing all customer accounts.
+     */
+    public List<CustomerAccount> getAllCustomers() {
+        return (List<CustomerAccount>) customerAccountRepository.findAll();
+    }
+
+    /**
+     * Retrieves a customer account by its unique ID.
+     *
+     * @param customerId The unique ID of the customer to retrieve.
+     * @return The CustomerAccount object corresponding to the given ID.
+     * @throws GameShopException if no customer is found with the specified ID.
+     */
+    public CustomerAccount getCustomerById(Integer customerId) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+        return customer;
+    }
+
+    /**
+     * Authenticates a customer based on their email and password.
+     *
+     * @param customerRequestDto The DTO containing the customer's email and password for authentication.
+     * @return The CustomerAccount object of the authenticated customer.
+     * @throws GameShopException if the email is not found or if the password does not match.
+     */
+    public CustomerAccount login(CustomerRequestDto customerRequestDto) {
+        // Retrieve the customer by email
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByEmail(customerRequestDto.getEmail());
+
+        // Check if customer exists and password matches
+        if (customer == null || !EncryptionUtils.matches(customerRequestDto.getPassword(), customer.getPassword())) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Invalid email or password.");
+        }
+
+        return customer;
     }
 }
