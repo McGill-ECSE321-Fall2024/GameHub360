@@ -32,5 +32,11 @@ public class CustomerController {
         return new CustomerResponseDto(customer);
     }
 
-
+    @PutMapping("/{customerId}")
+    public CustomerResponseDto updateCustomer(
+            @PathVariable Integer customerId,
+            @Validated({ ValidationGroups.Update.class }) @RequestBody CustomerRequestDto customerRequestDto) {
+        CustomerAccount updatedCustomer = customerService.updateCustomer(customerId, customerRequestDto);
+        return new CustomerResponseDto(updatedCustomer);
+    }
 }
