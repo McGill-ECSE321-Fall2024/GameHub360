@@ -5,6 +5,7 @@ import ca.mcgill.ecse321.GameShop.dto.StoreInformationResponseDto;
 import ca.mcgill.ecse321.GameShop.model.StoreInformation;
 import ca.mcgill.ecse321.GameShop.dto.SalesMetricsDto;
 import ca.mcgill.ecse321.GameShop.service.StoreInformationService;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,8 @@ public class StoreInformationController {
      * @return A response containing the created store policy details.
      */
     @PostMapping("/policy")
-    public StoreInformationResponseDto createPolicy(@RequestBody StoreInformationRequestDto storeInfoRequestDto) {
+    public StoreInformationResponseDto createPolicy(
+            @Valid @RequestBody StoreInformationRequestDto storeInfoRequestDto) {
         StoreInformation storePolicy = storeInformationService.createStorePolicy(storeInfoRequestDto);
         return new StoreInformationResponseDto(storePolicy);
     }
@@ -48,7 +50,8 @@ public class StoreInformationController {
      * @return A response containing the updated store policy details.
      */
     @PutMapping("/policy")
-    public StoreInformationResponseDto managePolicy(@RequestBody StoreInformationRequestDto storeInfoRequestDto) {
+    public StoreInformationResponseDto managePolicy(
+            @Valid @RequestBody StoreInformationRequestDto storeInfoRequestDto) {
         StoreInformation updatedPolicy = storeInformationService.updatePolicy(storeInfoRequestDto);
         return new StoreInformationResponseDto(updatedPolicy);
     }
