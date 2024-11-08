@@ -21,7 +21,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import ca.mcgill.ecse321.GameShop.dto.ActivityLogResponseDto;
+import ca.mcgill.ecse321.GameShop.dto.ActivityLogListDto;
 import ca.mcgill.ecse321.GameShop.dto.EmployeeRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.EmployeeResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.ErrorResponseDto;
@@ -337,32 +337,9 @@ public class EmployeeIntegrationTests {
         assertEquals(ISACTIVE_FALSE, responseBody.getIsActive());
     }
 
-    /**@Test
-    @Order(14)
-    public void testGetAllEmployeesActivityLogs() {
-        // Arrange
-        testUpdateEmployeeDetails(); // create & update 1st employee, the create & update info will be logged
-        EmployeeRequestDto request = new EmployeeRequestDto("secondemployee@example.com", VALID_PASSWORD, "Mark Tyson",
-                VALID_PHONE,
-                ISACTIVE_TRUE);
-        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request, EmployeeResponseDto.class); // Create 2nd employee, the creation info will be logged
-
-        // Act, !!!!!!!!!! check if there are no employees what would happen, add a check in the controller.
-        ResponseEntity<ActivityLogResponseDto> activitiesResponse = client.getForEntity("/employees/activities",
-                ActivityLogResponseDto.class);
-
-        // Assert
-        assertNotNull(activitiesResponse);
-        assertEquals(HttpStatus.OK, activitiesResponse.getStatusCode());
-        ActivityLogResponseDto responseBody = activitiesResponse.getBody();
-        assertNotNull(responseBody);
-        assertEquals(3, responseBody.getActivityLogs().size());
-        assertTrue(responseBody.getActivityLogs().get(2).getContent().contains("Employee account created for ID: " + creationResponse.getBody().getStaffId()));
-    }
-
     @Test
     @Order(14)
-    public void testGetEmployeeActivityLogs() {
+    public void testGetAllEmployeesActivityLogsSuccessfully() {
         // Arrange
         EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
                 ISACTIVE_TRUE);
@@ -375,17 +352,86 @@ public class EmployeeIntegrationTests {
                 new HttpEntity<>(updateRequest), EmployeeResponseDto.class);
 
         // Act
-        ResponseEntity<ActivityLogResponseDto> activitiesResponse = client.getForEntity("/employees/" + updateResponse.getBody().getStaffId() + "/activities",
-                ActivityLogResponseDto.class);
-        
+        ResponseEntity<ActivityLogListDto> activitiesResponse = client.getForEntity("/employees/activities",
+                ActivityLogListDto.class);
+
         // Assert
         assertNotNull(activitiesResponse);
         assertEquals(HttpStatus.OK, activitiesResponse.getStatusCode());
-        ActivityLogResponseDto responseBody = activitiesResponse.getBody();
+        ActivityLogListDto responseBody = activitiesResponse.getBody();
         assertNotNull(responseBody);
-        assertEquals(2, responseBody.getActivityLogs().size());
-        assertTrue(responseBody.getActivityLogs().get(1).getContent().contains("Employee account updated for ID: " + updateResponse.getBody().getStaffId()));
+        assertEquals(2, responseBody.getLogs().size());
+        assertTrue(responseBody.getLogs().get(1).getContent()
+                .contains("Employee account updated for ID: " + updateResponse.getBody().getStaffId()));
+    }
 
-    }**/
+    @Test
+    @Order(14)
+    public void testGetEmployeeActivityLogsSuccessfully() {
+        // Arrange
+        EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
+                ISACTIVE_TRUE);
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+                EmployeeResponseDto.class);
+        EmployeeRequestDto updateRequest = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, "Mike Tyson",
+                "987-654-321", ISACTIVE_TRUE);
+        ResponseEntity<EmployeeResponseDto> updateResponse = client.exchange(
+                "/employees/" + creationResponse.getBody().getStaffId(), HttpMethod.PUT,
+                new HttpEntity<>(updateRequest), EmployeeResponseDto.class);
+
+        // Act
+        ResponseEntity<ActivityLogListDto> activitiesResponse = client.getForEntity(
+                "/employees/" + creationResponse.getBody().getStaffId() + "/activities", ActivityLogListDto.class);
+
+        // Assert
+        assertNotNull(activitiesResponse);
+        assertEquals(HttpStatus.OK, activitiesResponse.getStatusCode());
+        ActivityLogListDto responseBody = activitiesResponse.getBody();
+        assertNotNull(responseBody);
+        assertEquals(2, responseBody.getLogs().size());
+        assertTrue(responseBody.getLogs().get(1).getContent()
+                .contains("Employee account updated for ID: " + updateResponse.getBody().getStaffId()));
+    }
+
+    @Test
+    @Order(15)
+    public void testGetEmployeeActivityLogsWithNonExistentIdFails() {
+        // Act
+        ResponseEntity<ErrorResponseDto> activitiesResponse = client.getForEntity("/employees/999/activities",
+                ErrorResponseDto.class);
+
+        // Assert
+        assertNotNull(activitiesResponse);
+        assertEquals(HttpStatus.NOT_FOUND, activitiesResponse.getStatusCode());
+        ErrorResponseDto errorResponse = activitiesResponse.getBody();
+        assertNotNull(errorResponse);
+        assertEquals("Employee not found.", errorResponse.getError());
+    }
+
+    @Test
+    @Order(16)
+    public void testGetEmployeeActivityLogsWithInactiveEmployeeSuccessfully() {
+        // Arrange
+        EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
+                ISACTIVE_TRUE);
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+                EmployeeResponseDto.class);
+        client.exchange("/employees/" + creationResponse.getBody().getStaffId() + "/deactivate", HttpMethod.PUT, null,
+                EmployeeResponseDto.class);
+
+        // Act
+        ResponseEntity<ActivityLogListDto> activitiesResponse = client.getForEntity(
+                "/employees/" + creationResponse.getBody().getStaffId() + "/activities", ActivityLogListDto.class);
+
+        // Assert
+        assertNotNull(activitiesResponse);
+        assertEquals(HttpStatus.OK, activitiesResponse.getStatusCode());
+        ActivityLogListDto responseBody = activitiesResponse.getBody();
+        assertNotNull(responseBody);
+        assertEquals(2, responseBody.getLogs().size());
+        assertTrue(responseBody.getLogs().get(1).getContent()
+                .contains("Employee account deactivated for ID: " + creationResponse.getBody().getStaffId()));
+
+    }
 
 }

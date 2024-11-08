@@ -12,7 +12,7 @@ public class EmployeeResponseDto {
     private String name;
     private String phoneNumber;
     private Boolean isActive;
-    private List<ActivityLog> logs; //makes sense to be here as it's a response attribute
+    private List<Integer> logsIds;
 
     // Constructors
     public EmployeeResponseDto() {
@@ -24,7 +24,7 @@ public class EmployeeResponseDto {
         this.name = employee.getName();
         this.phoneNumber = employee.getPhoneNumber();
         this.isActive = employee.getIsActive();
-        this.logs = employee.getLogs();
+        this.logsIds = employee.getLogs().stream().map(ActivityLog::getLogId).toList();
     }
 
     // Getters and Setters
@@ -68,11 +68,11 @@ public class EmployeeResponseDto {
         this.isActive = isActive;
     }
 
-    public List<ActivityLog> getLogs() {
-        return logs;
+    public List<Integer> getLogsIds() {
+        return logsIds;
     }
 
-    public void setLogs(List<ActivityLog> logs) {
-        this.logs = logs;
+    public void setLogsIds(List<Integer> logsIds) {
+        this.logsIds = logsIds;
     }
 }

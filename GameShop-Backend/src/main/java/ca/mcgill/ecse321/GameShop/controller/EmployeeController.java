@@ -1,6 +1,8 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -12,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ca.mcgill.ecse321.GameShop.dto.ActivityLogListDto;
 import ca.mcgill.ecse321.GameShop.dto.ActivityLogResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.EmployeeRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.EmployeeResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.ValidationGroups;
+import ca.mcgill.ecse321.GameShop.model.ActivityLog;
 import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
 import ca.mcgill.ecse321.GameShop.service.ActivityLogService;
 import ca.mcgill.ecse321.GameShop.service.EmployeeService;
@@ -107,8 +111,12 @@ public class EmployeeController {
      * @return A list of all activity logs.
      */
     @GetMapping("/activities")
-    public ActivityLogResponseDto getAllEmployeesActivityLogs() {
-        return (ActivityLogResponseDto) activityLogService.getAllEmployeesActivityLogs();
+    public ActivityLogListDto getAllEmployeesActivityLogs() {
+        List<ActivityLogResponseDto> ActivityLogsDto = new ArrayList<ActivityLogResponseDto>();
+        for (ActivityLog log : activityLogService.getAllEmployeesActivityLogs()) {
+            ActivityLogsDto.add(new ActivityLogResponseDto(log));
+        }
+        return new ActivityLogListDto(ActivityLogsDto);
     }
 
     /**
@@ -118,9 +126,14 @@ public class EmployeeController {
      * @param employeeId The ID of the employee to retrieve activity logs for.
      * @return A list of all activity logs.
      */
-    @GetMapping("/{employeeId}/activities")  
-    public EmployeeResponseDto getEmployeeActivityLogs(@PathVariable("employeeId") Integer employeeId) {
-        EmployeeAccount employee = employeeService.getEmployeeActivityLogs(employeeId);
-        return new EmployeeResponseDto(employee);
+    @GetMapping("/{employeeId}/activities")
+    public ActivityLogListDto getEmployeeActivityLogs(@PathVariable("employeeId") Integer employeeId) {
+        List<ActivityLogResponseDto> ActivityLogsDto = new ArrayList<ActivityLogResponseDto>();
+        EmployeeAccount employee = employeeService.getEmployeeById(employeeId);
+
+        for (ActivityLog log : activityLogService.getEmployeeActivityLogs(employee)) {
+            ActivityLogsDto.add(new ActivityLogResponseDto(log));
+        }
+        return new ActivityLogListDto(ActivityLogsDto);
     }
 }

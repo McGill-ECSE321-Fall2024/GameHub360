@@ -226,4 +226,39 @@ public class EmployeeServiceTests {
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
     }
 
+    @Test
+    public void testGetEmployeeByIdSuccess() {
+        // Arrange
+        EmployeeAccount employee = new EmployeeAccount("employee@example.com", EncryptionUtils.encrypt("OldPassword"),
+                true);
+        employee.setName("John Doe");
+
+        // Mock repository behavior
+        when(employeeAccountRepository.findEmployeeAccountByStaffId(any(Integer.class))).thenReturn(employee);
+
+        // Act
+        EmployeeAccount response = employeeService.getEmployeeById(employee.getStaffId());
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(employee.getEmail(), response.getEmail());
+        assertEquals(employee.getName(), response.getName());
+        assertEquals(employee.getPhoneNumber(), response.getPhoneNumber());
+        verify(employeeAccountRepository, times(1)).findEmployeeAccountByStaffId(employee.getStaffId());
+    }
+
+    @Test
+    public void testGetEmployeeByIdNotFound() {
+        // Arrange
+        // Mock repository behavior to simulate employee not found
+        when(employeeAccountRepository.findEmployeeAccountByStaffId(any(Integer.class))).thenReturn(null);
+
+        // Act
+        GameShopException e = assertThrows(GameShopException.class, () -> employeeService.getEmployeeById(1));
+
+        // Assert
+        assertEquals("Employee not found.", e.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+    }
+
 }

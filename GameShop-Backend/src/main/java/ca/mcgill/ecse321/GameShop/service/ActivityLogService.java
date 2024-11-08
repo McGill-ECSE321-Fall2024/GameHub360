@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ca.mcgill.ecse321.GameShop.dto.ActivityLogResponseDto;
 import ca.mcgill.ecse321.GameShop.model.ActivityLog;
 import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
 import ca.mcgill.ecse321.GameShop.repository.ActivityLogRepository;
@@ -21,9 +20,9 @@ public class ActivityLogService {
      *
      * @return List of all activity logs for all employees.
      */
-    public ActivityLogResponseDto getAllEmployeesActivityLogs() {
+    public List<ActivityLog> getAllEmployeesActivityLogs() {
         List<ActivityLog> logs = (List<ActivityLog>) activityLogRepository.findAll();
-        return new ActivityLogResponseDto(logs);
+        return logs;
     }
 
     /**
@@ -35,5 +34,17 @@ public class ActivityLogService {
     public void logActivity(String content, EmployeeAccount employee) {
         ActivityLog log = new ActivityLog(content, employee);
         activityLogRepository.save(log);
+    }
+
+    /**
+     * Retrieves all activity logs for a specific employee.
+     *
+     * @param employee The employee to retrieve activity logs for.
+     * @return List of all activity logs for the specified employee.
+     */
+    public List<ActivityLog> getEmployeeActivityLogs(EmployeeAccount employee) {
+        List<ActivityLog> logs = (List<ActivityLog>) activityLogRepository
+                .findActivityLogsByEmployee_StaffId(employee.getStaffId());
+        return logs;
     }
 }
