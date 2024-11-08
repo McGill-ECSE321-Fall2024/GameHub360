@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteDto;
 import ca.mcgill.ecse321.GameShop.exception.GameException;
 import ca.mcgill.ecse321.GameShop.model.*;
@@ -41,6 +42,9 @@ public class GameRequestServiceTests {
 
     @Mock
     private RequestNoteRepository requestNoteRepository;
+
+    @Mock
+    private ManagerAccountRepository managerAccountRepository;
 
     @InjectMocks
     private GameRequestService gameRequestService;
@@ -91,6 +95,7 @@ public class GameRequestServiceTests {
         // Arrange
         when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(testCategory);
         when(gameRequestRepository.save(any(GameRequest.class))).thenReturn(testRequest);
+        when(employeeAccountRepository.findEmployeeAccountByStaffId(any())).thenReturn(testEmployee);
 
         // Act
         GameRequestDto response = gameRequestService.createGameRequest(validRequestDto);
@@ -194,9 +199,15 @@ public class GameRequestServiceTests {
         when(gameRequestRepository.findGameRequestByGameEntityId(1)).thenReturn(testRequest);
         when(gameRepository.save(any(Game.class))).thenReturn(new Game());
         when(gameRequestRepository.save(any(GameRequest.class))).thenReturn(testRequest);
+        when(managerAccountRepository.findManagerAccountByStaffId(1)).thenReturn(new ManagerAccount());
+
+        // Create approval DTO with price and quantity
+        GameRequestApprovalDto approvalDto = new GameRequestApprovalDto();
+        approvalDto.setPrice(29.99);
+        approvalDto.setQuantityInStock(10);
 
         // Act
-        GameRequestDto response = gameRequestService.processRequest(1, true, null);
+        GameRequestDto response = gameRequestService.processRequest(1, 1, true, approvalDto);
 
         // Assert
         assertNotNull(response);
@@ -207,22 +218,15 @@ public class GameRequestServiceTests {
     public void testRejectGameRequest() {
         // Arrange
         when(gameRequestRepository.findGameRequestByGameEntityId(1)).thenReturn(testRequest);
-        when(employeeAccountRepository.findEmployeeAccountByStaffId(1)).thenReturn(testEmployee);
+        when(managerAccountRepository.findManagerAccountByStaffId(1)).thenReturn(new ManagerAccount());
         when(gameRequestRepository.save(any(GameRequest.class))).thenReturn(testRequest);
 
-        // Create and set up the test note properly
-        testNote = spy(testNote); // Create a spy of the existing testNote
-        when(testNote.getNoteId()).thenReturn(1);
-        when(testNote.getContent()).thenReturn("Rejection reason");
-        when(testNote.getNoteDate()).thenReturn(new Date(System.currentTimeMillis()));
-        when(requestNoteRepository.save(any(RequestNote.class))).thenReturn(testNote);
-
-        RequestNoteDto noteDto = new RequestNoteDto();
-        noteDto.setContent("Rejection reason");
-        noteDto.setStaffWriterId(1);
+        // Create GameRequestApprovalDto
+        GameRequestApprovalDto approvalDto = new GameRequestApprovalDto();
+        approvalDto.setRejectionReason("Rejection reason");
 
         // Act
-        GameRequestDto response = gameRequestService.processRequest(1, false, noteDto);
+        GameRequestDto response = gameRequestService.processRequest(1, 1, false, approvalDto);
 
         // Assert
         assertNotNull(response);
@@ -235,10 +239,11 @@ public class GameRequestServiceTests {
         // Arrange
         testRequest.setRequestStatus(GameRequest.RequestStatus.APPROVED);
         when(gameRequestRepository.findGameRequestByGameEntityId(1)).thenReturn(testRequest);
+        when(managerAccountRepository.findManagerAccountByStaffId(1)).thenReturn(new ManagerAccount());
 
         // Act & Assert
         GameException exception = assertThrows(GameException.class,
-                () -> gameRequestService.processRequest(1, true, null));
+                () -> gameRequestService.processRequest(1, 1, true, null));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("Request already processed", exception.getMessage());
     }

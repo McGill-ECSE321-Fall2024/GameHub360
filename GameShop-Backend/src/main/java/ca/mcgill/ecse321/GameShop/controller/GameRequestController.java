@@ -1,12 +1,13 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
+import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.RequestNoteDto;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
+import ca.mcgill.ecse321.GameShop.service.GameRequestService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import ca.mcgill.ecse321.GameShop.dto.*;
-import ca.mcgill.ecse321.GameShop.service.GameRequestService;
 
 import java.util.List;
 
@@ -23,17 +24,17 @@ public class GameRequestController {
      */
     @PostMapping
     public ResponseEntity<GameRequestDto> submitGameRequest(
-            @Validated(ValidationGroups.Post.class) @RequestBody GameRequestDto request) {
+            @RequestBody GameRequestDto request) {
         return ResponseEntity.ok(gameRequestService.createGameRequest(request));
     }
 
     /**
      * Edit an existing game request
      */
-    @PutMapping("/{requestId}")
+    @PostMapping("/{requestId}")
     public ResponseEntity<GameRequestDto> editGameRequest(
             @PathVariable Integer requestId,
-            @Validated(ValidationGroups.Update.class) @RequestBody GameRequestDto request) {
+            @RequestBody GameRequestDto request) {
         return ResponseEntity.ok(gameRequestService.updateGameRequest(requestId, request));
     }
 
@@ -52,7 +53,7 @@ public class GameRequestController {
     @PostMapping("/{requestId}/note")
     public ResponseEntity<RequestNoteDto> addNote(
             @PathVariable Integer requestId,
-            @Validated @RequestBody RequestNoteDto note) {
+            @RequestBody RequestNoteDto note) {
         return ResponseEntity.ok(gameRequestService.addNote(requestId, note));
     }
 
@@ -68,14 +69,16 @@ public class GameRequestController {
     }
 
     /**
-     * Approve or reject a game request
+     * Approve or reject a game request - manager only
      */
     @PutMapping("/{requestId}/approval")
-    public ResponseEntity<GameRequestDto> approveOrRejectRequest(
+    public ResponseEntity<GameRequestDto> processRequest(
             @PathVariable Integer requestId,
+            @RequestParam Integer managerId,
             @RequestParam boolean approval,
-            @RequestBody(required = false) RequestNoteDto note) {
-        return ResponseEntity.ok(gameRequestService.processRequest(requestId, approval, note));
+            @RequestBody(required = false) GameRequestApprovalDto noteDto) {
+        GameRequestDto response = gameRequestService.processRequest(requestId, managerId, approval, noteDto);
+        return ResponseEntity.ok(response);
     }
 
     /**
