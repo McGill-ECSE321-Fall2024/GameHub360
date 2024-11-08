@@ -27,8 +27,10 @@ public class EmployeeService {
      */
     @Transactional
     public EmployeeAccount login(EmployeeRequestDto employeeRequestDto) {
+        // Find employee by email
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByEmail(employeeRequestDto.getEmail());
 
+        // Check if employee exists and password matches
         if (employee == null || !EncryptionUtils.matches(employeeRequestDto.getPassword(), employee.getPassword())) {
             throw new GameShopException(HttpStatus.BAD_REQUEST, "Invalid email or password.");
         }
@@ -45,11 +47,13 @@ public class EmployeeService {
      */
     @Transactional
     public EmployeeAccount createEmployee(EmployeeRequestDto employeeRequestDto) {
+        // get new employee details
         String newEmployeeEmail = employeeRequestDto.getEmail();
         String newEmployeePassword = employeeRequestDto.getPassword();
 
+        // Check if employee already exists
         if (employeeAccountRepository.findEmployeeAccountByEmail(newEmployeeEmail) != null) {
-            throw new GameShopException(HttpStatus.CONFLICT, "An employee with same email already exists.");
+            throw new GameShopException(HttpStatus.CONFLICT, "An employee with the same email already exists.");
         }
 
         // Validate and encrypt password
@@ -78,12 +82,14 @@ public class EmployeeService {
      */
     @Transactional
     public EmployeeAccount updateEmployee(Integer employeeId, EmployeeRequestDto employeeRequestDto) {
+        // Find employee by ID
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
 
+        /// Check if employee exists
         if (employee == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
         }
-
+        // get new employee password
         String newEmployeePassword = employeeRequestDto.getPassword();
 
         // Updating allowed fields only
@@ -115,31 +121,34 @@ public class EmployeeService {
      */
     @Transactional
     public EmployeeAccount deactivateEmployee(Integer employeeId) {
+        // Find employee by ID
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
 
+        // Check if employee exists
         if (employee == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
         }
-
+        // Deactivate employee
         employee.setIsActive(false);
         return employeeAccountRepository.save(employee);
     }
 
     /**
-     * Retrieves a list of ActivityLog associated with an employee.
+     * Retrieves an employee account by ID.
      * 
-     * @param employeeId The ID of the employee to retrieve logs for.
-     * @return a list of ActivityLog associated with the employee.
-     * @throws GameShopException if no employees are found.
+     * @param employeeId The ID of the employee to retrieve.
+     * @return the EmployeeAccount.
+     * @throws GameShopException if the employee is not found.
      */
     @Transactional
     public EmployeeAccount getEmployeeById(Integer employeeId) {
+        // Find employee by ID
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
 
+        // Check if employee exists
         if (employee == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
         }
-
         return employee;
     }
 }

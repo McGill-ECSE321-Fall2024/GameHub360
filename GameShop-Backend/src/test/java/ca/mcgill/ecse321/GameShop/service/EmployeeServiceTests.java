@@ -123,7 +123,7 @@ public class EmployeeServiceTests {
         GameShopException e = assertThrows(GameShopException.class, () -> employeeService.createEmployee(requestDto));
 
         // Assert
-        assertEquals("An employee with same email already exists.", e.getMessage());
+        assertEquals("An employee with the same email already exists.", e.getMessage());
         assertEquals(HttpStatus.CONFLICT, e.getStatus());
     }
 

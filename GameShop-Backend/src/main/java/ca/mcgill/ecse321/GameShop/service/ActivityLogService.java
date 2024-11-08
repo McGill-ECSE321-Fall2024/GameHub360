@@ -21,6 +21,7 @@ public class ActivityLogService {
      * @return List of all activity logs for all employees.
      */
     public List<ActivityLog> getAllEmployeesActivityLogs() {
+        // Retrieve all activity logs
         List<ActivityLog> logs = (List<ActivityLog>) activityLogRepository.findAll();
         return logs;
     }
@@ -32,6 +33,7 @@ public class ActivityLogService {
      * @param employee The employee who performed the activity.
      */
     public void logActivity(String content, EmployeeAccount employee) {
+        // Create a new activity log
         ActivityLog log = new ActivityLog(content, employee);
         activityLogRepository.save(log);
     }
@@ -43,6 +45,7 @@ public class ActivityLogService {
      * @return List of all activity logs for the specified employee.
      */
     public List<ActivityLog> getEmployeeActivityLogs(EmployeeAccount employee) {
+        // Retrieve all activity logs for the employee
         List<ActivityLog> logs = (List<ActivityLog>) activityLogRepository
                 .findActivityLogsByEmployee_StaffId(employee.getStaffId());
         return logs;

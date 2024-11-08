@@ -96,7 +96,7 @@ public class EmployeeIntegrationTests {
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
-        assertEquals("An employee with same email already exists.", errorResponse.getError());
+        assertEquals("An employee with the same email already exists.", errorResponse.getError());
 
     }
 
