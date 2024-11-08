@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +38,7 @@ public class PromotionService {
 
     /**
      * Retrieves all promotions.
-     * 
+     *
      * @return A list of all promotions.
      */
     public List<Promotion> getAllPromotions() {
@@ -45,13 +47,14 @@ public class PromotionService {
 
     /**
      * Creates a new promotion based on the given promotion details.
-     * 
+     *
      * @param promotionRequestDto The promotion details to be created.
      * @return The created promotion.
      */
     @Transactional
     public Promotion createPromotion(PromotionRequestDto promotionRequestDto) {
         validatePromotionType(promotionRequestDto);
+        validateDiscountPercentage(promotionRequestDto.getDiscountPercentageValue());
 
         // Retrieve the store information
         StoreInformation storeInfo = storeInformationRepository.findFirstByOrderByStoreInfoIdAsc();
@@ -88,7 +91,7 @@ public class PromotionService {
 
     /**
      * Updates an existing promotion by ID with the provided details.
-     * 
+     *
      * @param promotionId         The ID of the promotion to update.
      * @param promotionRequestDto The updated promotion details.
      * @return The updated promotion.
@@ -103,10 +106,15 @@ public class PromotionService {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Promotion with ID " + promotionId + " not found.");
         }
 
+        // Prevent changing promotion type
+        if (promotionRequestDto.getPromotionType() != null &&
+                promotionRequestDto.getPromotionType() != existingPromotion.getPromotionType()) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Cannot change promotion type during update.");
+        }
+
         // Construct a combined DTO with existing and new values
         PromotionRequestDto combinedDto = new PromotionRequestDto(
-                promotionRequestDto.getPromotionType() != null ? promotionRequestDto.getPromotionType()
-                        : existingPromotion.getPromotionType(),
+                existingPromotion.getPromotionType(),
                 promotionRequestDto.getDiscountPercentageValue() != 0.0
                         ? promotionRequestDto.getDiscountPercentageValue()
                         : existingPromotion.getDiscountPercentageValue(),
@@ -122,29 +130,38 @@ public class PromotionService {
 
         // Validate the combined DTO
         validatePromotionType(combinedDto);
+        validateDiscountPercentage(combinedDto.getDiscountPercentageValue());
 
         // Apply the valid changes to the existing promotion
-        if (promotionRequestDto.getPromotionType() != null) {
-            existingPromotion.setPromotionType(combinedDto.getPromotionType());
-        }
         if (promotionRequestDto.getDiscountPercentageValue() != 0.0) {
             existingPromotion.setDiscountPercentageValue(combinedDto.getDiscountPercentageValue());
         }
 
-        if (combinedDto.getPromotionType() == Promotion.PromotionType.GAME) {
-            // Remove existing promoted categories
-            existingPromotion.getPromotedCategories().forEach(existingPromotion::removePromotedCategory);
+        if (existingPromotion.getPromotionType() == Promotion.PromotionType.GAME) {
+            if (promotionRequestDto.getPromotedGameIds() != null
+                    && !promotionRequestDto.getPromotedGameIds().isEmpty()) {
+                // Remove existing promoted games
+                List<Game> gamesToRemove = new ArrayList<>(existingPromotion.getPromotedGames());
+                for (Game game : gamesToRemove) {
+                    existingPromotion.removePromotedGame(game);
+                }
 
-            // Update the list of promoted games
-            combinedDto.getPromotedGameIds().forEach(gameId -> {
-                Game game = gameRepository.findById(gameId)
-                        .orElseThrow(() -> new GameShopException(HttpStatus.NOT_FOUND,
-                                "Game with ID " + gameId + " not found."));
-                existingPromotion.addPromotedGame(game);
-            });
-        } else if (combinedDto.getPromotionType() == Promotion.PromotionType.CATEGORY) {
-            // Remove existing promoted games
-            existingPromotion.getPromotedGames().forEach(existingPromotion::removePromotedGame);
+                // Update the list of promoted games
+                combinedDto.getPromotedGameIds().forEach(gameId -> {
+                    Game game = gameRepository.findById(gameId)
+                            .orElseThrow(() -> new GameShopException(HttpStatus.NOT_FOUND,
+                                    "Game with ID " + gameId + " not found."));
+                    existingPromotion.addPromotedGame(game);
+                });
+            }
+        } else if (existingPromotion.getPromotionType() == Promotion.PromotionType.CATEGORY
+                && promotionRequestDto.getPromotedCategoryIds() != null
+                && !promotionRequestDto.getPromotedCategoryIds().isEmpty()) {
+            // Remove existing promoted categories
+            List<GameCategory> categoriesToRemove = new ArrayList<>(existingPromotion.getPromotedCategories());
+            for (GameCategory category : categoriesToRemove) {
+                existingPromotion.removePromotedCategory(category);
+            }
 
             // Update the list of promoted categories
             combinedDto.getPromotedCategoryIds().forEach(categoryId -> {
@@ -160,7 +177,7 @@ public class PromotionService {
 
     /**
      * Deletes a promotion by its ID.
-     * 
+     *
      * @param promotionId The ID of the promotion to delete.
      * @throws GameShopException if the promotion is not found.
      */
@@ -174,7 +191,7 @@ public class PromotionService {
 
     /**
      * Retrieves a list of promotions associated with a specific game ID.
-     * 
+     *
      * @param gameId The ID of the game.
      * @return A list of promotions associated with the given game.
      * @throws GameShopException if the game is not found.
@@ -189,7 +206,7 @@ public class PromotionService {
 
     /**
      * Retrieves a list of promotions associated with a specific category ID.
-     * 
+     *
      * @param categoryId The ID of the category.
      * @return A list of promotions associated with the given category.
      * @throws GameShopException if the category is not found.
@@ -205,18 +222,46 @@ public class PromotionService {
     /**
      * Validates that only one type of promotion (either games or categories) is
      * provided.
-     * 
+     *
      * @param promotionRequestDto The promotion request details to validate.
      */
     private void validatePromotionType(PromotionRequestDto promotionRequestDto) {
-        if (promotionRequestDto.getPromotionType() == Promotion.PromotionType.GAME
-                && !promotionRequestDto.getPromotedCategoryIds().isEmpty()) {
-            throw new GameShopException(HttpStatus.BAD_REQUEST,
-                    "Promotion type GAME cannot have associated categories.");
-        } else if (promotionRequestDto.getPromotionType() == Promotion.PromotionType.CATEGORY
-                && !promotionRequestDto.getPromotedGameIds().isEmpty()) {
-            throw new GameShopException(HttpStatus.BAD_REQUEST,
-                    "Promotion type CATEGORY cannot have associated games.");
+        if (promotionRequestDto.getPromotionType() == Promotion.PromotionType.GAME) {
+            if (promotionRequestDto.getPromotedCategoryIds() != null
+                    && !promotionRequestDto.getPromotedCategoryIds().isEmpty()) {
+                throw new GameShopException(HttpStatus.BAD_REQUEST,
+                        "Promotion type GAME cannot have associated categories.");
+            }
+            if (promotionRequestDto.getPromotedGameIds() == null
+                    || promotionRequestDto.getPromotedGameIds().isEmpty()) {
+                throw new GameShopException(HttpStatus.BAD_REQUEST,
+                        "No promoted games provided for GAME promotion type.");
+            }
+        } else if (promotionRequestDto.getPromotionType() == Promotion.PromotionType.CATEGORY) {
+            if (promotionRequestDto.getPromotedGameIds() != null
+                    && !promotionRequestDto.getPromotedGameIds().isEmpty()) {
+                throw new GameShopException(HttpStatus.BAD_REQUEST,
+                        "Promotion type CATEGORY cannot have associated games.");
+            }
+            if (promotionRequestDto.getPromotedCategoryIds() == null
+                    || promotionRequestDto.getPromotedCategoryIds().isEmpty()) {
+                throw new GameShopException(HttpStatus.BAD_REQUEST,
+                        "No promoted categories provided for CATEGORY promotion type.");
+            }
+        }
+    }
+
+    /**
+     * Validates the discount percentage value.
+     *
+     * @param discountPercentage The discount percentage to validate.
+     */
+    private void validateDiscountPercentage(double discountPercentage) {
+        if (discountPercentage < 0.0) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Discount percentage value must be zero or positive.");
+        }
+        if (discountPercentage > 100.0) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Discount percentage cannot exceed 100%.");
         }
     }
 }

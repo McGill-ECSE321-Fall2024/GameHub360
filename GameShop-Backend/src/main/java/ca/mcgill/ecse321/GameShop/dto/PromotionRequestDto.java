@@ -4,14 +4,12 @@ import ca.mcgill.ecse321.GameShop.model.Promotion.PromotionType;
 
 import java.util.List;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 
 public class PromotionRequestDto {
     // Attributes
     @NotNull(message = "Promotion type cannot be null.")
     private PromotionType promotionType;
 
-    @PositiveOrZero(message = "Discount percentage value must be zero or positive.")
     private double discountPercentageValue;
 
     private List<Integer> promotedGameIds;
