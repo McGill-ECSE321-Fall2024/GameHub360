@@ -6,6 +6,7 @@ import ca.mcgill.ecse321.GameShop.model.ActivityLog;
 import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
 
 public class EmployeeResponseDto {
+    
     // Attributes
     private int staffId;
     private String email;

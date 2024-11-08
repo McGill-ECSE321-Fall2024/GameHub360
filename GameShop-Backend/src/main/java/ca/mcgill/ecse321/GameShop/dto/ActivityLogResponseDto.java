@@ -3,10 +3,13 @@ package ca.mcgill.ecse321.GameShop.dto;
 import ca.mcgill.ecse321.GameShop.model.ActivityLog;
 
 public class ActivityLogResponseDto {
+
+    // Attributes
     private Integer logId;
     private String content;
     private Integer employeeId;
 
+    // Constructors
     public ActivityLogResponseDto() {
     }
 
@@ -20,6 +23,7 @@ public class ActivityLogResponseDto {
         this(log.getLogId(), log.getContent(), log.getEmployee().getStaffId());
     }
 
+    // Getters and Setters
     public Integer getLogId() {
         return logId;
     }

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class EmployeeRequestDto {
+    
     // Attributes
     @NotBlank(message = "Email cannot be empty.")
     @Email(message = "Email must be a valid email address.")
