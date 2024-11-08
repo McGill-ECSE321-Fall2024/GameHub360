@@ -6,6 +6,7 @@ import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteDto;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
+import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.model.GameRequest;
 import ca.mcgill.ecse321.GameShop.repository.*;
 
@@ -13,8 +14,9 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -33,13 +35,17 @@ public class GameRequestIntegrationTests {
     @Autowired
     private EmployeeAccountRepository employeeAccountRepository;
 
+    @Autowired
+    private ManagerAccountRepository managerAccountRepository;
+
     private static Integer VALID_CATEGORY_ID;
     private static Integer VALID_EMPLOYEE_ID;
+    private static Integer VALID_MANAGER_ID;
     private static final String VALID_NAME = "Test Game Request";
-    private static final Double VALID_PRICE = 59.99;
-    private static final int VALID_STOCK = 50;
     private static final String VALID_DESCRIPTION = "A test game request description";
     private static final String VALID_IMAGE_URL = "http://example.com/game.jpg";
+    private static final Double VALID_PRICE = 19.99;
+    private static final Integer VALID_QUANTITY_IN_STOCK = 10;
 
     @BeforeAll
     public void setUp() {
@@ -47,6 +53,7 @@ public class GameRequestIntegrationTests {
         gameRequestRepository.deleteAll();
         gameCategoryRepository.deleteAll();
         employeeAccountRepository.deleteAll();
+        managerAccountRepository.deleteAll();
 
         // Create test category
         GameCategory category = new GameCategory(true, "Action Games");
@@ -54,8 +61,12 @@ public class GameRequestIntegrationTests {
         VALID_CATEGORY_ID = gameCategoryRepository.save(category).getCategoryId();
 
         // Create test employee
-        EmployeeAccount employee = new EmployeeAccount("testEmployee", "password123", true);
+        EmployeeAccount employee = new EmployeeAccount("testEmployee", "password123", false);
         VALID_EMPLOYEE_ID = employeeAccountRepository.save(employee).getStaffId();
+
+        // Create test manager
+        ManagerAccount manager = new ManagerAccount("testManager", "password123");
+        VALID_MANAGER_ID = managerAccountRepository.save(manager).getStaffId();
     }
 
     @AfterAll
@@ -63,6 +74,7 @@ public class GameRequestIntegrationTests {
         gameRequestRepository.deleteAll();
         gameCategoryRepository.deleteAll();
         employeeAccountRepository.deleteAll();
+        managerAccountRepository.deleteAll();
     }
 
     @Test
@@ -71,37 +83,131 @@ public class GameRequestIntegrationTests {
         // Arrange
         GameRequestDto request = new GameRequestDto();
         request.setName(VALID_NAME);
-        request.setPrice(VALID_PRICE);
-        request.setQuantityInStock(VALID_STOCK);
         request.setDescription(VALID_DESCRIPTION);
         request.setImageUrl(VALID_IMAGE_URL);
-        request.setCategoryId(VALID_CATEGORY_ID);
+        request.setPrice(VALID_PRICE);
+        request.setQuantityInStock(VALID_QUANTITY_IN_STOCK);
+        request.setStaffId(VALID_EMPLOYEE_ID);
 
         // Act
         ResponseEntity<GameRequestDto> response = client.postForEntity(
-                "/requests", request, GameRequestDto.class);
+                "/games/request", request, GameRequestDto.class);
 
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         GameRequestDto responseBody = response.getBody();
-        assertNotNull(responseBody);
+        assertNotNull(responseBody, "Response body should not be null");
         assertEquals(VALID_NAME, responseBody.getName());
+        assertEquals(VALID_EMPLOYEE_ID, responseBody.getStaffId());
         assertEquals(GameRequest.RequestStatus.SUBMITTED, responseBody.getRequestStatus());
     }
 
     @Test
     @Order(2)
-    public void testEditGameRequest() {
+    public void testApproveGameRequestAsManager() {
         // Arrange
-        GameRequestDto createRequest = new GameRequestDto(VALID_NAME, VALID_PRICE, VALID_STOCK,
-                VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_CATEGORY_ID);
+        GameRequestDto createRequest = new GameRequestDto();
+        createRequest.setName(VALID_NAME);
+        createRequest.setDescription(VALID_DESCRIPTION);
+        createRequest.setImageUrl(VALID_IMAGE_URL);
+        createRequest.setPrice(VALID_PRICE);
+        createRequest.setQuantityInStock(VALID_QUANTITY_IN_STOCK);
+        createRequest.setStaffId(VALID_EMPLOYEE_ID); // Submitted by employee
+
         ResponseEntity<GameRequestDto> createResponse = client.postForEntity(
                 "/games/request", createRequest, GameRequestDto.class);
-        assertNotNull(createResponse.getBody(), "Response body should not be null");
-        GameRequestDto createdRequest = createResponse.getBody();
-        assertNotNull(createdRequest, "Created request should not be null");
-        Integer requestId = createdRequest.getId();
+        assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game request creation failed");
+
+        GameRequestDto responseBody = createResponse.getBody();
+        assertNotNull(responseBody, "Response body should not be null");
+        Integer requestId = responseBody.getId();
+
+        RequestNoteDto approvalNote = new RequestNoteDto();
+        approvalNote.setContent("Approved with note");
+        approvalNote.setStaffWriterId(VALID_MANAGER_ID); // Note written by manager
+
+        // Act
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<RequestNoteDto> entity = new HttpEntity<>(approvalNote, headers);
+
+        ResponseEntity<GameRequestDto> response = client.exchange(
+                "/games/request/" + requestId + "/approval?approval=true&managerId=" + VALID_MANAGER_ID,
+                HttpMethod.PUT,
+                entity,
+                GameRequestDto.class);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Game request approval failed");
+        GameRequestDto approvedRequest = response.getBody();
+        assertNotNull(approvedRequest);
+        assertEquals("APPROVED", approvedRequest.getRequestStatus().toString());
+    }
+
+    @Test
+    @Order(3)
+    public void testApproveGameRequestAsEmployeeShouldFail() {
+        // Arrange
+        GameRequestDto createRequest = new GameRequestDto();
+        createRequest.setName("Another Test Game Request");
+        createRequest.setDescription(VALID_DESCRIPTION);
+        createRequest.setImageUrl(VALID_IMAGE_URL);
+        createRequest.setPrice(VALID_PRICE);
+        createRequest.setQuantityInStock(VALID_QUANTITY_IN_STOCK);
+        createRequest.setStaffId(VALID_EMPLOYEE_ID); // Submitted by employee
+
+        ResponseEntity<GameRequestDto> createResponse = client.postForEntity(
+                "/games/request", createRequest, GameRequestDto.class);
+        assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game request creation failed");
+
+        GameRequestDto responseBody = createResponse.getBody();
+        assertNotNull(responseBody, "Response body should not be null");
+        Integer requestId = responseBody.getId();
+
+        RequestNoteDto approvalNote = new RequestNoteDto();
+        approvalNote.setContent("Attempted approval by employee");
+        approvalNote.setStaffWriterId(VALID_EMPLOYEE_ID); // Note written by employee
+
+        // Act & Assert
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<RequestNoteDto> entity = new HttpEntity<>(approvalNote, headers);
+
+        try {
+            client.exchange(
+                    "/games/request/" + requestId + "/approval?approval=true&managerId=" + VALID_EMPLOYEE_ID,
+                    HttpMethod.PUT,
+                    entity,
+                    GameRequestDto.class);
+            fail("Expected HttpClientErrorException to be thrown");
+        } catch (HttpClientErrorException ex) {
+            assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode(), "Expected FORBIDDEN status");
+            assertTrue(ex.getResponseBodyAsString().contains("Only managers can approve or reject requests"));
+        }
+    }
+
+    @Test
+    @Order(4)
+    public void testEditGameRequest() {
+        // Arrange
+        GameRequestDto createRequest = new GameRequestDto();
+        createRequest.setName(VALID_NAME);
+        createRequest.setDescription(VALID_DESCRIPTION);
+        createRequest.setImageUrl(VALID_IMAGE_URL);
+        createRequest.setPrice(VALID_PRICE);
+        createRequest.setQuantityInStock(VALID_QUANTITY_IN_STOCK);
+        createRequest.setStaffId(VALID_EMPLOYEE_ID);
+
+        ResponseEntity<GameRequestDto> createResponse = client.postForEntity(
+                "/games/request", createRequest, GameRequestDto.class);
+        assertNotNull(createResponse, "Response should not be null");
+        GameRequestDto responseBody = createResponse.getBody();
+        assertNotNull(responseBody, "Response body should not be null");
+        Integer requestId = responseBody.getId();
 
         GameRequestDto updateRequest = new GameRequestDto();
         updateRequest.setName("Updated Game Request");
@@ -109,7 +215,7 @@ public class GameRequestIntegrationTests {
         // Act
         ResponseEntity<GameRequestDto> response = client.exchange(
                 "/games/request/" + requestId,
-                HttpMethod.PUT,
+                HttpMethod.POST,
                 new HttpEntity<>(updateRequest),
                 GameRequestDto.class);
 
@@ -122,17 +228,23 @@ public class GameRequestIntegrationTests {
     }
 
     @Test
-    @Order(3)
+    @Order(5)
     public void testAddNoteToGameRequest() {
         // Arrange
-        GameRequestDto createRequest = new GameRequestDto(VALID_NAME, VALID_PRICE, VALID_STOCK,
-                VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_CATEGORY_ID);
+        GameRequestDto createRequest = new GameRequestDto();
+        createRequest.setName(VALID_NAME);
+        createRequest.setDescription(VALID_DESCRIPTION);
+        createRequest.setImageUrl(VALID_IMAGE_URL);
+        createRequest.setPrice(VALID_PRICE);
+        createRequest.setQuantityInStock(VALID_QUANTITY_IN_STOCK);
+        createRequest.setStaffId(VALID_EMPLOYEE_ID);
+
         ResponseEntity<GameRequestDto> createResponse = client.postForEntity(
                 "/games/request", createRequest, GameRequestDto.class);
-        assertNotNull(createResponse.getBody(), "Response body should not be null");
-        GameRequestDto createdRequest = createResponse.getBody();
-        assertNotNull(createdRequest, "Created request should not be null");
-        Integer requestId = createdRequest.getId();
+        assertNotNull(createResponse, "Response should not be null");
+        GameRequestDto responseBody = createResponse.getBody();
+        assertNotNull(responseBody, "Response body should not be null");
+        Integer requestId = responseBody.getId();
 
         RequestNoteDto noteRequest = new RequestNoteDto();
         noteRequest.setContent("Test note content");
@@ -147,24 +259,30 @@ public class GameRequestIntegrationTests {
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        RequestNoteDto responseBody = response.getBody();
-        assertNotNull(responseBody);
-        assertEquals("Test note content", responseBody.getContent());
-        assertEquals(VALID_EMPLOYEE_ID, responseBody.getStaffWriterId());
+        RequestNoteDto noteResponseBody = response.getBody();
+        assertNotNull(noteResponseBody);
+        assertEquals("Test note content", noteResponseBody.getContent());
+        assertEquals(VALID_EMPLOYEE_ID, noteResponseBody.getStaffWriterId());
     }
 
     @Test
-    @Order(4)
+    @Order(6)
     public void testDeleteNoteFromGameRequest() {
         // Arrange
-        GameRequestDto createRequest = new GameRequestDto(VALID_NAME, VALID_PRICE, VALID_STOCK,
-                VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_CATEGORY_ID);
+        GameRequestDto createRequest = new GameRequestDto();
+        createRequest.setName(VALID_NAME);
+        createRequest.setDescription(VALID_DESCRIPTION);
+        createRequest.setImageUrl(VALID_IMAGE_URL);
+        createRequest.setPrice(VALID_PRICE);
+        createRequest.setQuantityInStock(VALID_QUANTITY_IN_STOCK);
+        createRequest.setStaffId(VALID_EMPLOYEE_ID);
+
         ResponseEntity<GameRequestDto> createResponse = client.postForEntity(
                 "/games/request", createRequest, GameRequestDto.class);
-        assertNotNull(createResponse.getBody(), "Response body should not be null");
-        GameRequestDto createdRequest = createResponse.getBody();
-        assertNotNull(createdRequest, "Created request should not be null");
-        Integer requestId = createdRequest.getId();
+        assertNotNull(createResponse, "Response should not be null");
+        GameRequestDto responseBody = createResponse.getBody();
+        assertNotNull(responseBody, "Response body should not be null");
+        Integer requestId = responseBody.getId();
 
         RequestNoteDto noteRequest = new RequestNoteDto();
         noteRequest.setContent("Test note to delete");
@@ -191,57 +309,31 @@ public class GameRequestIntegrationTests {
     }
 
     @Test
-    @Order(5)
-    public void testApproveGameRequest() {
-        // Arrange
-        GameRequestDto createRequest = new GameRequestDto(VALID_NAME, VALID_PRICE, VALID_STOCK,
-                VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_CATEGORY_ID);
-        ResponseEntity<GameRequestDto> createResponse = client.postForEntity(
-                "/games/request", createRequest, GameRequestDto.class);
-        assertNotNull(createResponse.getBody(), "Response body should not be null");
-        GameRequestDto createdRequest = createResponse.getBody();
-        assertNotNull(createdRequest, "Created request should not be null");
-        Integer requestId = createdRequest.getId();
-
-        RequestNoteDto approvalNote = new RequestNoteDto();
-        approvalNote.setContent("Approved with note");
-        approvalNote.setStaffWriterId(VALID_EMPLOYEE_ID);
-
-        // Act
-        ResponseEntity<GameRequestDto> response = client.exchange(
-                "/games/request/" + requestId + "/approval?approval=true",
-                HttpMethod.PUT,
-                new HttpEntity<>(approvalNote),
-                GameRequestDto.class);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        GameRequestDto approvedRequest = response.getBody();
-        assertNotNull(approvedRequest);
-        assertEquals("APPROVED", approvedRequest.getRequestStatus().toString());
-    }
-
-    @Test
-    @Order(6)
+    @Order(7)
     public void testRejectGameRequest() {
         // Arrange
-        GameRequestDto createRequest = new GameRequestDto(VALID_NAME, VALID_PRICE, VALID_STOCK,
-                VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_CATEGORY_ID);
+        GameRequestDto createRequest = new GameRequestDto();
+        createRequest.setName(VALID_NAME);
+        createRequest.setDescription(VALID_DESCRIPTION);
+        createRequest.setImageUrl(VALID_IMAGE_URL);
+        createRequest.setPrice(VALID_PRICE);
+        createRequest.setQuantityInStock(VALID_QUANTITY_IN_STOCK);
+        createRequest.setStaffId(VALID_EMPLOYEE_ID);
+
         ResponseEntity<GameRequestDto> createResponse = client.postForEntity(
                 "/games/request", createRequest, GameRequestDto.class);
-        assertNotNull(createResponse.getBody(), "Response body should not be null");
-        GameRequestDto createdRequest = createResponse.getBody();
-        assertNotNull(createdRequest, "Created request should not be null");
-        Integer requestId = createdRequest.getId();
+        assertNotNull(createResponse, "Response should not be null");
+        GameRequestDto responseBody = createResponse.getBody();
+        assertNotNull(responseBody, "Response body should not be null");
+        Integer requestId = responseBody.getId();
 
         RequestNoteDto rejectionNote = new RequestNoteDto();
         rejectionNote.setContent("Rejected with note");
-        rejectionNote.setStaffWriterId(VALID_EMPLOYEE_ID);
+        rejectionNote.setStaffWriterId(VALID_MANAGER_ID);
 
         // Act
         ResponseEntity<GameRequestDto> response = client.exchange(
-                "/games/request/" + requestId + "/approval?approval=false",
+                "/games/request/" + requestId + "/approval?approval=false&managerId=" + VALID_MANAGER_ID,
                 HttpMethod.PUT,
                 new HttpEntity<>(rejectionNote),
                 GameRequestDto.class);
@@ -255,17 +347,23 @@ public class GameRequestIntegrationTests {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void testDeleteGameRequest() {
         // Arrange
-        GameRequestDto createRequest = new GameRequestDto(VALID_NAME, VALID_PRICE, VALID_STOCK,
-                VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_CATEGORY_ID);
+        GameRequestDto createRequest = new GameRequestDto();
+        createRequest.setName(VALID_NAME);
+        createRequest.setDescription(VALID_DESCRIPTION);
+        createRequest.setImageUrl(VALID_IMAGE_URL);
+        createRequest.setPrice(VALID_PRICE);
+        createRequest.setQuantityInStock(VALID_QUANTITY_IN_STOCK);
+        createRequest.setStaffId(VALID_EMPLOYEE_ID);
+
         ResponseEntity<GameRequestDto> createResponse = client.postForEntity(
                 "/games/request", createRequest, GameRequestDto.class);
-        assertNotNull(createResponse.getBody(), "Response body should not be null");
-        GameRequestDto createdRequest = createResponse.getBody();
-        assertNotNull(createdRequest, "Created request should not be null");
-        Integer requestId = createdRequest.getId();
+        assertNotNull(createResponse, "Response should not be null");
+        GameRequestDto responseBody = createResponse.getBody();
+        assertNotNull(responseBody, "Response body should not be null");
+        Integer requestId = responseBody.getId();
 
         // Act
         ResponseEntity<Void> response = client.exchange(

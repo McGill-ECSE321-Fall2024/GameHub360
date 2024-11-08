@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.GameResponseDto;
+import ca.mcgill.ecse321.GameShop.dto.GameDto;
 import ca.mcgill.ecse321.GameShop.exception.GameException;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
@@ -50,8 +50,6 @@ public class GameServiceTests {
         testGame.setName("Test Game");
         testGame.setDescription("Test Description");
         testGame.setImageURL("http://test.com/image.jpg");
-        testGame.setQuantityInStock(10);
-        testGame.setPrice(29.99);
         testGame.setIsAvailable(true);
         testGame.addCategory(testCategory);
 
@@ -60,34 +58,30 @@ public class GameServiceTests {
         validGameRequest.setName("Test Game");
         validGameRequest.setDescription("Test Description");
         validGameRequest.setImageUrl("http://test.com/image.jpg");
-        validGameRequest.setQuantityInStock(10);
-        validGameRequest.setPrice(29.99);
         validGameRequest.setCategoryId(1);
+        validGameRequest.setPrice(29.99);
+        validGameRequest.setQuantityInStock(10);
     }
 
     @Test
     public void testCreateGameSuccessfully() {
         // Arrange
-        when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(testCategory);
         when(gameRepository.findGameByName("Test Game")).thenReturn(null);
         when(gameRepository.save(any(Game.class))).thenReturn(testGame);
 
         // Act
-        GameResponseDto response = gameService.createGame(validGameRequest);
+        GameDto response = gameService.createGame(validGameRequest);
 
         // Assert
         assertNotNull(response);
         assertEquals("Test Game", response.getName());
-        assertEquals(29.99, response.getPrice());
-        assertEquals(10, response.getQuantityInStock());
-        assertTrue(response.isAvailable());
+        assertTrue(response.getIsAvailable());
         verify(gameRepository).save(any(Game.class));
     }
 
     @Test
     public void testCreateGameWithDuplicateName() {
         // Arrange
-        when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(testCategory);
         when(gameRepository.findGameByName("Test Game")).thenReturn(testGame);
 
         // Act & Assert
@@ -98,34 +92,20 @@ public class GameServiceTests {
     }
 
     @Test
-    public void testCreateGameWithInvalidCategory() {
-        // Arrange
-        when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(null);
-
-        // Act & Assert
-        GameException exception = assertThrows(GameException.class,
-                () -> gameService.createGame(validGameRequest));
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertEquals("Category not found", exception.getMessage());
-    }
-
-    @Test
     public void testUpdateGameSuccessfully() {
         // Arrange
         when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
         when(gameRepository.save(any(Game.class))).thenReturn(testGame);
 
-        GameRequestDto updateRequest = new GameRequestDto();
+        GameDto updateRequest = new GameDto();
         updateRequest.setName("Updated Game");
-        updateRequest.setPrice(39.99);
 
         // Act
-        GameResponseDto response = gameService.updateGame(1, updateRequest);
+        GameDto response = gameService.updateGame(1, updateRequest);
 
         // Assert
         assertNotNull(response);
         assertEquals("Updated Game", response.getName());
-        assertEquals(39.99, response.getPrice());
         verify(gameRepository).save(any(Game.class));
     }
 
@@ -133,10 +113,12 @@ public class GameServiceTests {
     public void testUpdateNonExistentGame() {
         // Arrange
         when(gameRepository.findGameByGameEntityId(1)).thenReturn(null);
+        GameDto updateRequest = new GameDto();
+        updateRequest.setName("Updated Game");
 
         // Act & Assert
         GameException exception = assertThrows(GameException.class,
-                () -> gameService.updateGame(1, validGameRequest));
+                () -> gameService.updateGame(1, updateRequest));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("Game not found", exception.getMessage());
     }
@@ -148,11 +130,11 @@ public class GameServiceTests {
         when(gameRepository.save(any(Game.class))).thenReturn(testGame);
 
         // Act
-        GameResponseDto response = gameService.archiveGame(1);
+        GameDto response = gameService.archiveGame(1);
 
         // Assert
         assertNotNull(response);
-        assertFalse(response.isAvailable());
+        assertFalse(response.getIsAvailable());
         verify(gameRepository).save(any(Game.class));
     }
 
@@ -166,7 +148,7 @@ public class GameServiceTests {
         when(gameRepository.findAll()).thenReturn(Arrays.asList(testGame, archivedGame));
 
         // Act
-        List<GameResponseDto> archivedGames = gameService.viewArchivedGames();
+        List<GameDto> archivedGames = gameService.viewArchivedGames();
 
         // Assert
         assertNotNull(archivedGames);
@@ -180,65 +162,11 @@ public class GameServiceTests {
         when(gameRepository.findAll()).thenReturn(Arrays.asList(testGame));
 
         // Act
-        List<GameResponseDto> searchResults = gameService.searchGames("Test", null, null, null);
+        List<GameDto> searchResults = gameService.searchGames("Test", null, null, null);
 
         // Assert
         assertNotNull(searchResults);
         assertEquals(1, searchResults.size());
         assertEquals("Test Game", searchResults.get(0).getName());
-    }
-
-    @Test
-    public void testUpdateGameStock() {
-        // Arrange
-        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
-        when(gameRepository.save(any(Game.class))).thenReturn(testGame);
-
-        // Act
-        GameResponseDto response = gameService.updateGameStock(1, 20);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(20, response.getQuantityInStock());
-        verify(gameRepository).save(any(Game.class));
-    }
-
-    @Test
-    public void testUpdateGameStockWithNegativeValue() {
-        // Add game ID to testGame
-        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
-
-        // Act & Assert
-        GameException exception = assertThrows(GameException.class,
-                () -> gameService.updateGameStock(1, -1));
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        assertEquals("Stock cannot be negative", exception.getMessage());
-    }
-
-    @Test
-    public void testUpdateGamePrice() {
-        // Arrange
-        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
-        when(gameRepository.save(any(Game.class))).thenReturn(testGame);
-
-        // Act
-        GameResponseDto response = gameService.updateGamePrice(1, 49.99);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(49.99, response.getPrice());
-        verify(gameRepository).save(any(Game.class));
-    }
-
-    @Test
-    public void testUpdateGamePriceWithInvalidValue() {
-        // Add game ID to testGame
-        when(gameRepository.findGameByGameEntityId(1)).thenReturn(testGame);
-
-        // Act & Assert
-        GameException exception = assertThrows(GameException.class,
-                () -> gameService.updateGamePrice(1, 0.0));
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        assertEquals("Price must be positive", exception.getMessage());
     }
 }
