@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -50,22 +49,18 @@ public class GameRequestIntegrationTests {
 
     @BeforeAll
     public void setUp() {
-        // Clear repositories
         gameRequestRepository.deleteAll();
         gameCategoryRepository.deleteAll();
         employeeAccountRepository.deleteAll();
         managerAccountRepository.deleteAll();
 
-        // Create test category
         GameCategory category = new GameCategory(true, "Action Games");
         category.setCategoryType(GameCategory.CategoryType.GENRE);
         VALID_CATEGORY_ID = gameCategoryRepository.save(category).getCategoryId();
 
-        // Create test employee
         EmployeeAccount employee = new EmployeeAccount("testEmployee", "password123", false);
         VALID_EMPLOYEE_ID = employeeAccountRepository.save(employee).getStaffId();
 
-        // Create test manager
         ManagerAccount manager = new ManagerAccount("testManager", "password123");
         VALID_MANAGER_ID = managerAccountRepository.save(manager).getStaffId();
     }
@@ -191,14 +186,12 @@ public class GameRequestIntegrationTests {
 
         HttpEntity<GameRequestApprovalDto> entity = new HttpEntity<>(approvalDto, headers);
 
-        // Change the URL to use employeeId instead of managerId
         ResponseEntity<GameRequestDto> response = client.exchange(
                 "/games/request/" + requestId + "/approval?approval=true&employeeId=" + VALID_EMPLOYEE_ID,
                 HttpMethod.PUT,
                 entity,
                 GameRequestDto.class);
         
-        // Assert the response status directly
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Expected BAD_REQUEST status");
     }
 

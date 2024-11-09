@@ -41,11 +41,9 @@ public class GameServiceTests {
 
     @BeforeEach
     public void setUp() {
-        // Set up test category
         testCategory = new GameCategory(true, "Test Category");
         testCategory.setCategoryType(GameCategory.CategoryType.GENRE);
 
-        // Set up test game
         testGame = new Game();
         testGame.setName("Test Game");
         testGame.setDescription("Test Description");
@@ -53,7 +51,6 @@ public class GameServiceTests {
         testGame.setIsAvailable(true);
         testGame.addCategory(testCategory);
 
-        // Set up valid game request
         validGameRequest = new GameRequestDto();
         validGameRequest.setName("Test Game");
         validGameRequest.setDescription("Test Description");

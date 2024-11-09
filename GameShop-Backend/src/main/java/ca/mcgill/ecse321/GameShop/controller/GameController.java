@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller for managing games in the Game Shop.
+ */
 @RestController
 @RequestMapping("/games")
 @CrossOrigin(origins = "*")
@@ -21,61 +24,93 @@ public class GameController {
     private GameService gameService;
 
     /**
-     * Create a new game directly
+     * Creates a new game.
+     *
+     * @param gameDto the game data transfer object containing game details
+     * @return the created game as a GameDto wrapped in a ResponseEntity
      */
     @PostMapping
     public ResponseEntity<GameDto> createGame(
             @Validated(ValidationGroups.Post.class) @RequestBody GameRequestDto gameDto) {
-        return ResponseEntity.ok(gameService.createGame(gameDto));
+        GameDto createdGame = gameService.createGame(gameDto);
+        return ResponseEntity.ok(createdGame);
     }
 
     /**
-     * Update an existing game
+     * Updates an existing game.
+     *
+     * @param gameId  the ID of the game to update
+     * @param gameDto the game data transfer object containing updated game details
+     * @return the updated game as a GameDto wrapped in a ResponseEntity
      */
     @PutMapping("/{gameId}")
     public ResponseEntity<GameDto> updateGame(
-            @PathVariable("gameId") Integer gameId,
+            @PathVariable Integer gameId,
             @Validated(ValidationGroups.Update.class) @RequestBody GameDto gameDto) {
-        return ResponseEntity.ok(gameService.updateGame(gameId, gameDto));
+        GameDto updatedGame = gameService.updateGame(gameId, gameDto);
+        return ResponseEntity.ok(updatedGame);
     }
 
     /**
-     * Archive a game
+     * Archives a game.
+     *
+     * @param gameId the ID of the game to archive
+     * @return the archived game as a GameDto wrapped in a ResponseEntity
      */
     @PutMapping("/archive/{gameId}")
-    public ResponseEntity<GameDto> archiveGame(@PathVariable("gameId") Integer gameId) {
-        return ResponseEntity.ok(gameService.archiveGame(gameId));
+    public ResponseEntity<GameDto> archiveGame(@PathVariable Integer gameId) {
+        GameDto archivedGame = gameService.archiveGame(gameId);
+        return ResponseEntity.ok(archivedGame);
     }
 
     /**
-     * View all archived games
+     * Retrieves all archived games.
+     *
+     * @return a list of archived games as GameDto objects wrapped in a ResponseEntity
      */
     @GetMapping("/archive")
     public ResponseEntity<List<GameDto>> viewArchivedGames() {
-        return ResponseEntity.ok(gameService.viewArchivedGames());
+        List<GameDto> archivedGames = gameService.viewArchivedGames();
+        return ResponseEntity.ok(archivedGames);
     }
 
     /**
-     * Reactivate an archived game
+     * Reactivates an archived game.
+     *
+     * @param gameId the ID of the game to reactivate
+     * @return the reactivated game as a GameDto wrapped in a ResponseEntity
      */
     @PutMapping("/archive/{gameId}/reactivate")
-    public ResponseEntity<GameDto> reactivateArchivedGame(@PathVariable("gameId") Integer gameId) {
-        return ResponseEntity.ok(gameService.reactivateArchivedGame(gameId));
+    public ResponseEntity<GameDto> reactivateArchivedGame(@PathVariable Integer gameId) {
+        GameDto reactivatedGame = gameService.reactivateArchivedGame(gameId);
+        return ResponseEntity.ok(reactivatedGame);
     }
 
     /**
-     * Browse all available games
+     * Browses all available games with optional filters.
+     *
+     * @param category the category to filter by (optional)
+     * @param minPrice the minimum price to filter by (optional)
+     * @param maxPrice the maximum price to filter by (optional)
+     * @return a list of available games as GameDto objects wrapped in a ResponseEntity
      */
     @GetMapping
     public ResponseEntity<List<GameDto>> browseGames(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice) {
-        return ResponseEntity.ok(gameService.browseGames(category, minPrice, maxPrice));
+        List<GameDto> games = gameService.browseGames(category, minPrice, maxPrice);
+        return ResponseEntity.ok(games);
     }
 
     /**
-     * Search games
+     * Searches for games based on a query and optional filters.
+     *
+     * @param query    the search query
+     * @param category the category to filter by (optional)
+     * @param minPrice the minimum price to filter by (optional)
+     * @param maxPrice the maximum price to filter by (optional)
+     * @return a list of games matching the search criteria as GameDto objects wrapped in a ResponseEntity
      */
     @GetMapping("/search")
     public ResponseEntity<List<GameDto>> searchGames(
@@ -83,36 +118,52 @@ public class GameController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice) {
-        return ResponseEntity.ok(gameService.searchGames(query, category, minPrice, maxPrice));
+        List<GameDto> games = gameService.searchGames(query, category, minPrice, maxPrice);
+        return ResponseEntity.ok(games);
     }
 
     /**
-     * Add game to category
+     * Adds a game to a category.
+     *
+     * @param gameId    the ID of the game
+     * @param categoryId the ID of the category
+     * @return the updated game as a GameDto wrapped in a ResponseEntity
      */
     @PutMapping("/{gameId}/categories/{categoryId}")
     public ResponseEntity<GameDto> addGameToCategory(
-            @PathVariable("gameId") Integer gameId,
-            @PathVariable("categoryId") Integer categoryId) {
-        return ResponseEntity.ok(gameService.addGameToCategory(gameId, categoryId));
+            @PathVariable Integer gameId,
+            @PathVariable Integer categoryId) {
+        GameDto updatedGame = gameService.addGameToCategory(gameId, categoryId);
+        return ResponseEntity.ok(updatedGame);
     }
 
     /**
-     * Update game stock
+     * Updates the stock of a game.
+     *
+     * @param gameId the ID of the game
+     * @param stock  the new stock quantity
+     * @return the updated game as a GameDto wrapped in a ResponseEntity
      */
     @PutMapping("/{gameId}/stock")
     public ResponseEntity<GameDto> updateGameStock(
-            @PathVariable("gameId") Integer gameId,
-            @RequestParam("stock") Integer stock) {
-        return ResponseEntity.ok(gameService.updateGameStock(gameId, stock));
+            @PathVariable Integer gameId,
+            @RequestParam Integer stock) {
+        GameDto updatedGame = gameService.updateGameStock(gameId, stock);
+        return ResponseEntity.ok(updatedGame);
     }
 
     /**
-     * Update game price
+     * Updates the price of a game.
+     *
+     * @param gameId the ID of the game
+     * @param price  the new price
+     * @return the updated game as a GameDto wrapped in a ResponseEntity
      */
     @PutMapping("/{gameId}/price")
     public ResponseEntity<GameDto> updateGamePrice(
-            @PathVariable("gameId") Integer gameId,
-            @RequestParam("price") Double price) {
-        return ResponseEntity.ok(gameService.updateGamePrice(gameId, price));
+            @PathVariable Integer gameId,
+            @RequestParam Double price) {
+        GameDto updatedGame = gameService.updateGamePrice(gameId, price);
+        return ResponseEntity.ok(updatedGame);
     }
 }

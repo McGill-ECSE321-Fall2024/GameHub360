@@ -40,25 +40,23 @@ public class GameRequestService {
     private ManagerAccountRepository managerAccountRepository;
 
     /**
-     * Create a new game request
+     * Create a new game request.
+     * 
+     * @param requestDto the game request data transfer object containing request details
+     * @return the created game request as a GameRequestDto
      */
     @Transactional
     public GameRequestDto createGameRequest(GameRequestDto requestDto) {
-        // Validate employee exists
-        EmployeeAccount employee = employeeAccountRepository
-                .findEmployeeAccountByStaffId(requestDto.getStaffId());
+        EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(requestDto.getStaffId());
         if (employee == null) {
             throw new GameException(HttpStatus.NOT_FOUND, "Employee not found");
         }
 
-        // Validate category exists
-        GameCategory category = gameCategoryRepository
-                .findGameCategoryByCategoryId(requestDto.getCategoryId());
+        GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(requestDto.getCategoryId());
         if (category == null) {
             throw new GameException(HttpStatus.NOT_FOUND, "Category not found");
         }
 
-        // Create new request
         GameRequest request = new GameRequest();
         request.setName(requestDto.getName());
         request.setDescription(requestDto.getDescription());
@@ -72,7 +70,11 @@ public class GameRequestService {
     }
 
     /**
-     * Update an existing game request
+     * Update an existing game request.
+     * 
+     * @param requestId the ID of the game request to update
+     * @param requestDto the game request data transfer object containing updated request details
+     * @return the updated game request as a GameRequestDto
      */
     @Transactional
     public GameRequestDto updateGameRequest(Integer requestId, GameRequestDto requestDto) {
@@ -85,13 +87,15 @@ public class GameRequestService {
             throw new GameException(HttpStatus.BAD_REQUEST, "Cannot update processed request");
         }
 
-        // Update fields
-        if (requestDto.getName() != null)
+        if (requestDto.getName() != null) {
             request.setName(requestDto.getName());
-        if (requestDto.getDescription() != null)
+        }
+        if (requestDto.getDescription() != null) {
             request.setDescription(requestDto.getDescription());
-        if (requestDto.getImageUrl() != null)
+        }
+        if (requestDto.getImageUrl() != null) {
             request.setImageURL(requestDto.getImageUrl());
+        }
         if (requestDto.getCategoryId() != null) {
             GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(requestDto.getCategoryId());
             if (category == null) {
@@ -104,7 +108,9 @@ public class GameRequestService {
     }
 
     /**
-     * Delete a game request
+     * Delete a game request.
+     * 
+     * @param requestId the ID of the game request to delete
      */
     @Transactional
     public void deleteGameRequest(Integer requestId) {
@@ -121,7 +127,11 @@ public class GameRequestService {
     }
 
     /**
-     * Add a note to a game request
+     * Add a note to a game request.
+     * 
+     * @param requestId the ID of the game request to add a note to
+     * @param noteDto the request note data transfer object containing note details
+     * @return the created request note as a RequestNoteDto
      */
     @Transactional
     public RequestNoteDto addNote(Integer requestId, RequestNoteDto noteDto) {
@@ -130,7 +140,6 @@ public class GameRequestService {
             throw new GameException(HttpStatus.NOT_FOUND, "Game request not found");
         }
 
-        // Staff writer can be either EmployeeAccount or ManagerAccount
         StaffAccount writer = employeeAccountRepository.findEmployeeAccountByStaffId(noteDto.getStaffWriterId());
         if (writer == null) {
             writer = managerAccountRepository.findManagerAccountByStaffId(noteDto.getStaffWriterId());
@@ -149,7 +158,10 @@ public class GameRequestService {
     }
 
     /**
-     * Delete a note from a game request
+     * Delete a note from a game request.
+     * 
+     * @param requestId the ID of the game request to delete a note from
+     * @param noteId the ID of the note to delete
      */
     @Transactional
     public void deleteNote(Integer requestId, Integer noteId) {
@@ -163,12 +175,16 @@ public class GameRequestService {
     }
 
     /**
-     * Process (approve/reject) a game request - only managers can do this
+     * Process (approve/reject) a game request - only managers can do this.
+     * 
+     * @param requestId the ID of the game request to process
+     * @param managerId the ID of the manager processing the request
+     * @param approval true if the request is approved, false if rejected
+     * @param approvalDto the game request approval data transfer object containing approval details
+     * @return the processed game request as a GameRequestDto
      */
     @Transactional
-    public GameRequestDto processRequest(Integer requestId, Integer managerId, boolean approval,
-            GameRequestApprovalDto approvalDto) {
-        // Verify the manager exists
+    public GameRequestDto processRequest(Integer requestId, Integer managerId, boolean approval, GameRequestApprovalDto approvalDto) {
         ManagerAccount manager = managerAccountRepository.findManagerAccountByStaffId(managerId);
         if (manager == null) {
             throw new GameException(HttpStatus.FORBIDDEN, "Only managers can process game requests");
@@ -183,14 +199,12 @@ public class GameRequestService {
             throw new GameException(HttpStatus.BAD_REQUEST, "Request already processed");
         }
 
-        // Add note if provided
         if (approvalDto != null && approvalDto.getNote() != null) {
             approvalDto.getNote().setStaffWriterId(managerId);
             addNote(requestId, approvalDto.getNote());
         }
 
         if (approval) {
-            // Validate price and quantity for approval
             if (approvalDto == null || approvalDto.getPrice() == null || approvalDto.getPrice() <= 0) {
                 throw new GameException(HttpStatus.BAD_REQUEST, "Valid price must be provided for approval");
             }
@@ -198,7 +212,6 @@ public class GameRequestService {
                 throw new GameException(HttpStatus.BAD_REQUEST, "Valid quantity must be provided for approval");
             }
 
-            // Create new game from request with manager-specified price and quantity
             Game game = new Game();
             game.setName(request.getName());
             game.setDescription(request.getDescription());
@@ -219,7 +232,9 @@ public class GameRequestService {
     }
 
     /**
-     * Get all game requests
+     * Get all game requests.
+     * 
+     * @return a list of all game requests as GameRequestDto objects
      */
     @Transactional
     public List<GameRequestDto> getAllRequests() {
@@ -229,7 +244,10 @@ public class GameRequestService {
     }
 
     /**
-     * Get a specific game request
+     * Get a specific game request.
+     * 
+     * @param requestId the ID of the game request to retrieve
+     * @return the retrieved game request as a GameRequestDto
      */
     @Transactional
     public GameRequestDto getRequest(Integer requestId) {
@@ -241,7 +259,10 @@ public class GameRequestService {
     }
 
     /**
-     * Helper method to convert GameRequest to GameRequestDto
+     * Helper method to convert GameRequest to GameRequestDto.
+     * 
+     * @param request the game request to convert
+     * @return the converted game request as a GameRequestDto
      */
     private GameRequestDto convertToDto(GameRequest request) {
         GameRequestDto dto = new GameRequestDto();
