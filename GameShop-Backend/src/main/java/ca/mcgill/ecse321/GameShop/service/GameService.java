@@ -2,7 +2,7 @@ package ca.mcgill.ecse321.GameShop.service;
 
 import ca.mcgill.ecse321.GameShop.dto.GameDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
-import ca.mcgill.ecse321.GameShop.exception.GameException;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
@@ -35,7 +35,7 @@ public class GameService {
     public GameDto createGame(GameRequestDto gameRequestDto) {
         // Check if a game with the same name exists
         if (gameRepository.findGameByName(gameRequestDto.getName()) != null) {
-            throw new GameException(HttpStatus.BAD_REQUEST, "Game with this name already exists");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Game with this name already exists");
         }
 
         // Create new game
@@ -61,14 +61,14 @@ public class GameService {
     public GameDto updateGame(Integer gameId, GameDto gameDto) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
         // Update fields if provided
         if (gameDto.getName() != null) {
             Game existingGame = gameRepository.findGameByName(gameDto.getName());
             if (existingGame != null && existingGame.getGameEntityId() != gameId) {
-                throw new GameException(HttpStatus.BAD_REQUEST, "Game with this name already exists");
+                throw new GameShopException(HttpStatus.BAD_REQUEST, "Game with this name already exists");
             }
             game.setName(gameDto.getName());
         }
@@ -95,7 +95,7 @@ public class GameService {
     public GameDto archiveGame(Integer gameId) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
         game.setIsAvailable(false);
@@ -125,11 +125,11 @@ public class GameService {
     public GameDto reactivateArchivedGame(Integer gameId) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
         if (game.getIsAvailable()) {
-            throw new GameException(HttpStatus.BAD_REQUEST, "Game is already active");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Game is already active");
         }
 
         game.setIsAvailable(true);
@@ -192,16 +192,16 @@ public class GameService {
     public GameDto addGameToCategory(Integer gameId, Integer categoryId) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
         GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
         if (category == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Category not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Category not found");
         }
 
         if (game.getCategories().contains(category)) {
-            throw new GameException(HttpStatus.BAD_REQUEST, "Game already in this category");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Game already in this category");
         }
 
         game.addCategory(category);
@@ -219,11 +219,11 @@ public class GameService {
     public GameDto updateGameStock(Integer gameId, Integer stock) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
         if (stock < 0) {
-            throw new GameException(HttpStatus.BAD_REQUEST, "Stock cannot be negative");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Stock cannot be negative");
         }
 
         game.setQuantityInStock(stock);
@@ -241,11 +241,11 @@ public class GameService {
     public GameDto updateGamePrice(Integer gameId, Double price) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
         if (price <= 0) {
-            throw new GameException(HttpStatus.BAD_REQUEST, "Price must be positive");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Price must be positive");
         }
 
         game.setPrice(price);

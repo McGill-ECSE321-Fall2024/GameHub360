@@ -3,7 +3,7 @@ package ca.mcgill.ecse321.GameShop.service;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
-import ca.mcgill.ecse321.GameShop.exception.GameException;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.*;
 import ca.mcgill.ecse321.GameShop.repository.*;
 
@@ -49,12 +49,12 @@ public class GameRequestService {
     public GameRequestDto createGameRequest(GameRequestDto requestDto) {
         EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(requestDto.getStaffId());
         if (employee == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Employee not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found");
         }
 
         GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(requestDto.getCategoryId());
         if (category == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Category not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Category not found");
         }
 
         GameRequest request = new GameRequest();
@@ -80,11 +80,11 @@ public class GameRequestService {
     public GameRequestDto updateGameRequest(Integer requestId, GameRequestDto requestDto) {
         GameRequest request = gameRequestRepository.findGameRequestByGameEntityId(requestId);
         if (request == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game request not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game request not found");
         }
 
         if (request.getRequestStatus() != GameRequest.RequestStatus.SUBMITTED) {
-            throw new GameException(HttpStatus.BAD_REQUEST, "Cannot update processed request");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Cannot update processed request");
         }
 
         if (requestDto.getName() != null) {
@@ -99,7 +99,7 @@ public class GameRequestService {
         if (requestDto.getCategoryId() != null) {
             GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(requestDto.getCategoryId());
             if (category == null) {
-                throw new GameException(HttpStatus.NOT_FOUND, "Category not found");
+                throw new GameShopException(HttpStatus.NOT_FOUND, "Category not found");
             }
             request.setCategories(category);
         }
@@ -116,11 +116,11 @@ public class GameRequestService {
     public void deleteGameRequest(Integer requestId) {
         GameRequest request = gameRequestRepository.findGameRequestByGameEntityId(requestId);
         if (request == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game request not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game request not found");
         }
 
         if (request.getRequestStatus() != GameRequest.RequestStatus.SUBMITTED) {
-            throw new GameException(HttpStatus.BAD_REQUEST, "Cannot delete processed request");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Cannot delete processed request");
         }
 
         gameRequestRepository.delete(request);
@@ -137,14 +137,14 @@ public class GameRequestService {
     public RequestNoteDto addNote(Integer requestId, RequestNoteDto noteDto) {
         GameRequest request = gameRequestRepository.findGameRequestByGameEntityId(requestId);
         if (request == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game request not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game request not found");
         }
 
         StaffAccount writer = employeeAccountRepository.findEmployeeAccountByStaffId(noteDto.getStaffWriterId());
         if (writer == null) {
             writer = managerAccountRepository.findManagerAccountByStaffId(noteDto.getStaffWriterId());
             if (writer == null) {
-                throw new GameException(HttpStatus.NOT_FOUND, "Staff member not found");
+                throw new GameShopException(HttpStatus.NOT_FOUND, "Staff member not found");
             }
         }
 
@@ -168,7 +168,7 @@ public class GameRequestService {
         RequestNote note = requestNoteRepository.findRequestNoteByNoteId(noteId);
         if (note == null || note.getGameRequest() == null
                 || note.getGameRequest().getGameEntityId() != requestId) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Note not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Note not found");
         }
 
         requestNoteRepository.delete(note);
@@ -187,16 +187,16 @@ public class GameRequestService {
     public GameRequestDto processRequest(Integer requestId, Integer managerId, boolean approval, GameRequestApprovalDto approvalDto) {
         ManagerAccount manager = managerAccountRepository.findManagerAccountByStaffId(managerId);
         if (manager == null) {
-            throw new GameException(HttpStatus.FORBIDDEN, "Only managers can process game requests");
+            throw new GameShopException(HttpStatus.FORBIDDEN, "Only managers can process game requests");
         }
 
         GameRequest request = gameRequestRepository.findGameRequestByGameEntityId(requestId);
         if (request == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game request not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game request not found");
         }
 
         if (request.getRequestStatus() != GameRequest.RequestStatus.SUBMITTED) {
-            throw new GameException(HttpStatus.BAD_REQUEST, "Request already processed");
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Request already processed");
         }
 
         if (approvalDto != null && approvalDto.getNote() != null) {
@@ -206,10 +206,10 @@ public class GameRequestService {
 
         if (approval) {
             if (approvalDto == null || approvalDto.getPrice() == null || approvalDto.getPrice() <= 0) {
-                throw new GameException(HttpStatus.BAD_REQUEST, "Valid price must be provided for approval");
+                throw new GameShopException(HttpStatus.BAD_REQUEST, "Valid price must be provided for approval");
             }
             if (approvalDto.getQuantityInStock() == null || approvalDto.getQuantityInStock() < 0) {
-                throw new GameException(HttpStatus.BAD_REQUEST, "Valid quantity must be provided for approval");
+                throw new GameShopException(HttpStatus.BAD_REQUEST, "Valid quantity must be provided for approval");
             }
 
             Game game = new Game();
@@ -253,7 +253,7 @@ public class GameRequestService {
     public GameRequestDto getRequest(Integer requestId) {
         GameRequest request = gameRequestRepository.findGameRequestByGameEntityId(requestId);
         if (request == null) {
-            throw new GameException(HttpStatus.NOT_FOUND, "Game request not found");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game request not found");
         }
         return convertToDto(request);
     }
