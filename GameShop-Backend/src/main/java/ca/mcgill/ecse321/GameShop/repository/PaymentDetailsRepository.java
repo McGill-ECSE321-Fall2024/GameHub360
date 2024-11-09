@@ -7,4 +7,7 @@ import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
 public interface PaymentDetailsRepository extends CrudRepository<PaymentDetails, Integer> {
     // Find payment details by payment details id
     public PaymentDetails findPaymentDetailsByPaymentDetailsId(Integer paymentDetailsId);
+
+    // Find payment details by payment id
+    public PaymentDetails findPaymentDetailsByPaymentId(int paymentInformationId);
 }
