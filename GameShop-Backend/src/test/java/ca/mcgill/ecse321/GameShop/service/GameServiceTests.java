@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameDto;
-import ca.mcgill.ecse321.GameShop.exception.GameException;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
@@ -82,7 +82,7 @@ public class GameServiceTests {
         when(gameRepository.findGameByName("Test Game")).thenReturn(testGame);
 
         // Act & Assert
-        GameException exception = assertThrows(GameException.class,
+        GameShopException exception = assertThrows(GameShopException.class,
                 () -> gameService.createGame(validGameRequest));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("Game with this name already exists", exception.getMessage());
@@ -114,7 +114,7 @@ public class GameServiceTests {
         updateRequest.setName("Updated Game");
 
         // Act & Assert
-        GameException exception = assertThrows(GameException.class,
+        GameShopException exception = assertThrows(GameShopException.class,
                 () -> gameService.updateGame(1, updateRequest));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("Game not found", exception.getMessage());

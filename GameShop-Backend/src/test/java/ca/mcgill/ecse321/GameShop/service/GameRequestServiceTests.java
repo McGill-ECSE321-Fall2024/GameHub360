@@ -7,7 +7,7 @@ import static org.mockito.Mockito.*;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteDto;
-import ca.mcgill.ecse321.GameShop.exception.GameException;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.*;
 import ca.mcgill.ecse321.GameShop.repository.*;
 
@@ -109,7 +109,7 @@ public class GameRequestServiceTests {
         when(employeeAccountRepository.findEmployeeAccountByStaffId(any())).thenReturn(testEmployee);
 
         // Act & Assert
-        GameException exception = assertThrows(GameException.class,
+        GameShopException exception = assertThrows(GameShopException.class,
                 () -> gameRequestService.createGameRequest(validRequestDto));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("Category not found", exception.getMessage());
@@ -140,7 +140,7 @@ public class GameRequestServiceTests {
         when(gameRequestRepository.findGameRequestByGameEntityId(1)).thenReturn(testRequest);
 
         // Act & Assert
-        GameException exception = assertThrows(GameException.class,
+        GameShopException exception = assertThrows(GameShopException.class,
                 () -> gameRequestService.updateGameRequest(1, validRequestDto));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("Cannot update processed request", exception.getMessage());
@@ -235,7 +235,7 @@ public class GameRequestServiceTests {
         when(managerAccountRepository.findManagerAccountByStaffId(1)).thenReturn(new ManagerAccount());
 
         // Act & Assert
-        GameException exception = assertThrows(GameException.class,
+        GameShopException exception = assertThrows(GameShopException.class,
                 () -> gameRequestService.processRequest(1, 1, true, null));
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals("Request already processed", exception.getMessage());
@@ -275,7 +275,7 @@ public class GameRequestServiceTests {
         when(gameRequestRepository.findGameRequestByGameEntityId(1)).thenReturn(null);
 
         // Act & Assert
-        GameException exception = assertThrows(GameException.class,
+        GameShopException exception = assertThrows(GameShopException.class,
                 () -> gameRequestService.getRequest(1));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("Game request not found", exception.getMessage());
