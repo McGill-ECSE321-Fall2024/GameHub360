@@ -46,7 +46,7 @@ public class CustomerOrderService {
     @Transactional
     public CustomerOrder createCustomerOrder(CustomerOrderRequestDto requestDto) {
         CustomerAccount orderedBy = customerAccountRepository.findCustomerAccountByCustomerId(requestDto.getOrderedById());
-        PaymentDetails paymentInformation = paymentDetailsRepository.findPaymentDetailsByPaymentId(requestDto.getPaymentInformationId());
+        PaymentDetails paymentInformation = paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(requestDto.getPaymentInformationId());
         Date orderDate = requestDto.getOrderDate();
 
         if (orderedBy == null) {

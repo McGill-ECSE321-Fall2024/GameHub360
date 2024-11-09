@@ -8,6 +8,4 @@ public interface PaymentDetailsRepository extends CrudRepository<PaymentDetails,
     // Find payment details by payment details id
     public PaymentDetails findPaymentDetailsByPaymentDetailsId(Integer paymentDetailsId);
 
-    // Find payment details by payment id
-    public PaymentDetails findPaymentDetailsByPaymentId(int paymentInformationId);
 }
