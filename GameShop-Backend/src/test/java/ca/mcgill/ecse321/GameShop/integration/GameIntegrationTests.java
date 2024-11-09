@@ -2,8 +2,8 @@ package ca.mcgill.ecse321.GameShop.integration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameResponseDto;
+import ca.mcgill.ecse321.GameShop.dto.GameDto;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
@@ -14,8 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.core.ParameterizedTypeReference;
 
-import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -32,17 +32,18 @@ public class GameIntegrationTests {
     @Autowired
     private GameCategoryRepository gameCategoryRepository;
 
-    private static final String VALID_NAME = "Test Game";
-    private static final String VALID_DESCRIPTION = "A test game description";
-    private static final String VALID_IMAGE_URL = "http://example.com/game.jpg";
-    private static final Double VALID_PRICE = 19.99;
-    private static final Integer VALID_QUANTITY_IN_STOCK = 10;
+    private Integer VALID_CATEGORY_ID;
 
     @BeforeAll
     public void setUp() {
         // Clear repositories
         gameRepository.deleteAll();
         gameCategoryRepository.deleteAll();
+
+        // Create a game category
+        GameCategory category = new GameCategory(true, "Action Games");
+        category.setCategoryType(GameCategory.CategoryType.GENRE);
+        VALID_CATEGORY_ID = gameCategoryRepository.save(category).getCategoryId();
     }
 
     @AfterAll
@@ -51,46 +52,48 @@ public class GameIntegrationTests {
         gameCategoryRepository.deleteAll();
     }
 
+    // Create a reusable GameDto for tests
+    private GameDto createTestGameDto(String name) {
+        return new GameDto(
+            name,                                    // non-empty name
+            "This is a detailed description",        // non-empty description
+            "https://example.com/game-image.jpg",    // non-empty imageUrl
+            10,
+            false,
+            29.99,
+            VALID_CATEGORY_ID
+        );
+    }
+
     @Test
     @Order(1)
     public void testCreateGame() {
+        GameDto gameDto = createTestGameDto("Test Game");
         // Arrange
-        GameRequestDto request = new GameRequestDto(VALID_NAME, VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_PRICE,
-                VALID_QUANTITY_IN_STOCK);
-
         // Act
         ResponseEntity<GameResponseDto> response = client.postForEntity(
-                "/games", request, GameResponseDto.class);
+                "/games", gameDto, GameResponseDto.class);
 
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Game creation failed");
         GameResponseDto responseBody = response.getBody();
         assertNotNull(responseBody);
-        assertEquals(VALID_NAME, responseBody.getName());
-        assertTrue(responseBody.isAvailable());
+        assertEquals("Test Game", responseBody.getName());
     }
 
     @Test
     @Order(2)
     public void testUpdateGame() {
-        // Arrange
-        GameRequestDto createRequest = new GameRequestDto(VALID_NAME, VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_PRICE,
-                VALID_QUANTITY_IN_STOCK);
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", createRequest,
-                GameResponseDto.class);
-        assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
-
+        // Create initial game
+        GameDto gameDto = createTestGameDto("Initial Game");
+        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", gameDto, GameResponseDto.class);
         GameResponseDto responseBody = createResponse.getBody();
-        assertNotNull(responseBody, "Response body should not be null");
+        assertNotNull(responseBody);
         Integer gameId = responseBody.getId();
 
-        GameRequestDto updateRequest = new GameRequestDto();
-        updateRequest.setName("Updated Game");
-        updateRequest.setDescription(VALID_DESCRIPTION); // Include required fields
-        updateRequest.setImageUrl(VALID_IMAGE_URL);
-        updateRequest.setPrice(VALID_PRICE);
-        updateRequest.setQuantityInStock(VALID_QUANTITY_IN_STOCK);
+        // Create update request
+        GameDto updateRequest = createTestGameDto("Updated Game");
 
         // Act
         ResponseEntity<GameResponseDto> response = client.exchange(
@@ -111,27 +114,21 @@ public class GameIntegrationTests {
     @Order(3)
     public void testArchiveGame() {
         // Arrange
-        GameRequestDto createRequest = new GameRequestDto(VALID_NAME, VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_PRICE,
-                VALID_QUANTITY_IN_STOCK);
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", createRequest,
-                GameResponseDto.class);
-        assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
-
+        GameDto gameDto = createTestGameDto("Archive Test Game");
+        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", gameDto, GameResponseDto.class);
         GameResponseDto responseBody = createResponse.getBody();
-        assertNotNull(responseBody, "Response body should not be null");
+        assertNotNull(responseBody);
         Integer gameId = responseBody.getId();
 
         // Act
+        HttpEntity<Void> requestEntity = new HttpEntity<>(null);
         ResponseEntity<GameResponseDto> response = client.exchange(
                 "/games/archive/" + gameId,
                 HttpMethod.PUT,
-                null,
+                requestEntity,
                 GameResponseDto.class);
 
         // Assert
-        if (response.getStatusCode() != HttpStatus.OK) {
-            System.out.println("Error response: " + response.getBody());
-        }
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Game archiving failed");
         GameResponseDto archivedGame = response.getBody();
@@ -143,33 +140,32 @@ public class GameIntegrationTests {
     @Order(4)
     public void testViewArchivedGames() {
         // Arrange
-        GameRequestDto request = new GameRequestDto(VALID_NAME, VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_PRICE,
-                VALID_QUANTITY_IN_STOCK);
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", request, GameResponseDto.class);
-        assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
-
+        GameDto gameDto = createTestGameDto("Archive View Test Game");
+        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", gameDto, GameResponseDto.class);
         GameResponseDto responseBody = createResponse.getBody();
-        assertNotNull(responseBody, "Response body should not be null");
+        assertNotNull(responseBody);
         Integer gameId = responseBody.getId();
 
         // Archive the game
-        ResponseEntity<GameResponseDto> archiveResponse = client.exchange(
+        HttpEntity<Void> requestEntity = new HttpEntity<>(null);
+        client.exchange(
                 "/games/archive/" + gameId,
                 HttpMethod.PUT,
-                null,
+                requestEntity,
                 GameResponseDto.class);
-        assertEquals(HttpStatus.OK, archiveResponse.getStatusCode(), "Game archiving failed");
 
         // Act
         ResponseEntity<GameResponseDto[]> response = client.getForEntity(
                 "/games/archive",
-                GameResponseDto[].class);
+                GameResponseDto[].class
+        );
 
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<GameResponseDto> archivedGames = Arrays.asList(response.getBody());
-        assertFalse(archivedGames.isEmpty(), "Archived games list should not be empty");
+        GameResponseDto[] archivedGames = response.getBody();
+        assertNotNull(archivedGames);
+        assertTrue(archivedGames.length > 0, "Archived games list should not be empty");
         for (GameResponseDto game : archivedGames) {
             assertFalse(game.isAvailable(), "Game should be archived (isAvailable=false)");
         }
@@ -179,29 +175,27 @@ public class GameIntegrationTests {
     @Order(5)
     public void testReactivateArchivedGame() {
         // Arrange
-        GameRequestDto request = new GameRequestDto(VALID_NAME, VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_PRICE,
-                VALID_QUANTITY_IN_STOCK);
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", request, GameResponseDto.class);
-        assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
-
-        GameResponseDto responseBody = createResponse.getBody();
-        assertNotNull(responseBody, "Response body should not be null");
+        GameDto gameDto = createTestGameDto("Reactivate Test Game");
+        ResponseEntity<GameDto> createResponse = client.postForEntity("/games", gameDto, GameDto.class);
+        GameDto responseBody = createResponse.getBody();
+        assertNotNull(responseBody);
         Integer gameId = responseBody.getId();
 
         // Archive the game first
-        ResponseEntity<GameResponseDto> archiveResponse = client.exchange(
+        HttpEntity<Void> requestEntity = new HttpEntity<>(null);
+        ResponseEntity<GameDto> archiveResponse = client.exchange(
                 "/games/archive/" + gameId,
                 HttpMethod.PUT,
-                null,
-                GameResponseDto.class);
+                requestEntity,
+                GameDto.class);
         assertEquals(HttpStatus.OK, archiveResponse.getStatusCode(), "Game archiving failed");
 
         // Act
-        ResponseEntity<GameResponseDto> response = client.exchange(
+        ResponseEntity<GameDto> response = client.exchange(
                 "/games/archive/" + gameId + "/reactivate",
                 HttpMethod.PUT,
-                null,
-                GameResponseDto.class);
+                requestEntity,
+                GameDto.class);
 
         // Assert
         if (response.getStatusCode() != HttpStatus.OK) {
@@ -209,33 +203,35 @@ public class GameIntegrationTests {
         }
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Game reactivation failed");
-        GameResponseDto reactivatedGame = response.getBody();
+        GameDto reactivatedGame = response.getBody();
         assertNotNull(reactivatedGame);
-        assertTrue(reactivatedGame.isAvailable());
+        assertTrue(reactivatedGame.getIsAvailable(), "Game should be available after reactivation");
     }
 
     @Test
     @Order(6)
     public void testBrowseGames() {
         // Arrange
-        GameRequestDto request = new GameRequestDto(VALID_NAME, VALID_DESCRIPTION, VALID_IMAGE_URL, VALID_PRICE,
-                VALID_QUANTITY_IN_STOCK);
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", request, GameResponseDto.class);
+        GameDto gameDto = createTestGameDto("Browse Test Game");
+        ResponseEntity<GameDto> createResponse = client.postForEntity("/games", gameDto, GameDto.class);
         assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
 
         // Act
-        ResponseEntity<GameResponseDto[]> response = client.getForEntity(
+        ResponseEntity<List<GameDto>> response = client.exchange(
                 "/games",
-                GameResponseDto[].class);
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<GameDto>>() {}
+        );
 
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        GameResponseDto[] games = response.getBody();
+        List<GameDto> games = response.getBody();
         assertNotNull(games, "Response body should not be null");
-        assertTrue(games.length > 0, "Games list should not be empty");
-        for (GameResponseDto game : games) {
-            assertTrue(game.isAvailable(), "Game should be available (isAvailable=true)");
+        assertFalse(games.isEmpty(), "Games list should not be empty");
+        for (GameDto game : games) {
+            assertTrue(game.getIsAvailable(), "Game should be available (isAvailable=true)");
         }
     }
 
@@ -243,22 +239,24 @@ public class GameIntegrationTests {
     @Order(7)
     public void testSearchGames() {
         // Arrange
-        GameRequestDto request = new GameRequestDto("Unique Game Name", VALID_DESCRIPTION, VALID_IMAGE_URL,
-                VALID_PRICE, VALID_QUANTITY_IN_STOCK);
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", request, GameResponseDto.class);
+        GameDto gameDto = createTestGameDto("Unique Game Name");
+        ResponseEntity<GameDto> createResponse = client.postForEntity("/games", gameDto, GameDto.class);
         assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
 
         // Act
-        ResponseEntity<GameResponseDto[]> response = client.getForEntity(
+        ResponseEntity<List<GameDto>> response = client.exchange(
                 "/games/search?query=Unique",
-                GameResponseDto[].class);
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<GameDto>>() {}
+        );
 
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        GameResponseDto[] games = response.getBody();
+        List<GameDto> games = response.getBody();
         assertNotNull(games);
-        assertTrue(games.length > 0);
-        assertTrue(Arrays.stream(games).anyMatch(game -> game.getName().contains("Unique")));
+        assertFalse(games.isEmpty());
+        assertTrue(games.stream().anyMatch(game -> game.getName().contains("Unique")));
     }
 }

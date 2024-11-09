@@ -33,7 +33,7 @@ public class GameRequestController {
      */
     @PostMapping("/{requestId}")
     public ResponseEntity<GameRequestDto> editGameRequest(
-            @PathVariable Integer requestId,
+            @PathVariable("requestId") Integer requestId,
             @RequestBody GameRequestDto request) {
         return ResponseEntity.ok(gameRequestService.updateGameRequest(requestId, request));
     }
@@ -42,7 +42,7 @@ public class GameRequestController {
      * Delete a game request
      */
     @DeleteMapping("/{requestId}")
-    public ResponseEntity<Void> deleteGameRequest(@PathVariable Integer requestId) {
+    public ResponseEntity<Void> deleteGameRequest(@PathVariable("requestId") Integer requestId) {
         gameRequestService.deleteGameRequest(requestId);
         return ResponseEntity.ok().build();
     }
@@ -52,7 +52,7 @@ public class GameRequestController {
      */
     @PostMapping("/{requestId}/note")
     public ResponseEntity<RequestNoteDto> addNote(
-            @PathVariable Integer requestId,
+            @PathVariable("requestId") Integer requestId,
             @RequestBody RequestNoteDto note) {
         return ResponseEntity.ok(gameRequestService.addNote(requestId, note));
     }
@@ -62,8 +62,8 @@ public class GameRequestController {
      */
     @DeleteMapping("/{requestId}/note/{noteId}")
     public ResponseEntity<Void> deleteNote(
-            @PathVariable Integer requestId,
-            @PathVariable Integer noteId) {
+            @PathVariable("requestId") Integer requestId,
+            @PathVariable("noteId") Integer noteId) {
         gameRequestService.deleteNote(requestId, noteId);
         return ResponseEntity.ok().build();
     }
@@ -73,9 +73,9 @@ public class GameRequestController {
      */
     @PutMapping("/{requestId}/approval")
     public ResponseEntity<GameRequestDto> processRequest(
-            @PathVariable Integer requestId,
-            @RequestParam Integer managerId,
-            @RequestParam boolean approval,
+            @PathVariable("requestId") Integer requestId,
+            @RequestParam("managerId") Integer managerId,
+            @RequestParam("approval") boolean approval,
             @RequestBody(required = false) GameRequestApprovalDto noteDto) {
         GameRequestDto response = gameRequestService.processRequest(requestId, managerId, approval, noteDto);
         return ResponseEntity.ok(response);
@@ -93,7 +93,7 @@ public class GameRequestController {
      * Get a specific game request
      */
     @GetMapping("/{requestId}")
-    public ResponseEntity<GameRequestDto> getRequest(@PathVariable Integer requestId) {
+    public ResponseEntity<GameRequestDto> getRequest(@PathVariable("requestId") Integer requestId) {
         return ResponseEntity.ok(gameRequestService.getRequest(requestId));
     }
 }
