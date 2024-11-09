@@ -27,16 +27,18 @@ public class GameDto {
     private List<CustomerAccount> wishLists;
     private List<OrderGame> orders;
     private List<Promotion> promotions;
+    private Integer categoryId;
 
     // Constructor for create/update operations
     public GameDto(String name, String description, String imageUrl, int quantityInStock, boolean isAvailable,
-            double price) {
+            double price, Integer categoryId) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
         this.quantityInStock = quantityInStock;
         this.isAvailable = isAvailable;
         this.price = price;
+        this.categoryId = categoryId;
         this.wishLists = new ArrayList<>();
         this.orders = new ArrayList<>();
         this.promotions = new ArrayList<>();
@@ -47,6 +49,8 @@ public class GameDto {
         this.wishLists = new ArrayList<>();
         this.orders = new ArrayList<>();
         this.promotions = new ArrayList<>();
+        this.categoryId = null;
+        this.isAvailable = true;
     }
 
     // Constructor that takes a Game object as a parameter
@@ -58,9 +62,12 @@ public class GameDto {
         this.quantityInStock = game.getQuantityInStock();
         this.isAvailable = game.getIsAvailable();
         this.price = game.getPrice();
-        this.wishLists = new ArrayList<>(game.getWishLists());
-        this.orders = new ArrayList<>(game.getOrders());
-        this.promotions = new ArrayList<>(game.getPromotions());
+        this.wishLists = new ArrayList<>();
+        this.orders = new ArrayList<>();
+        this.promotions = new ArrayList<>();
+        if (!game.getCategories().isEmpty()) {
+            this.categoryId = game.getCategories().get(0).getCategoryId();
+        }
     }
 
     // Getters and setters
@@ -142,5 +149,13 @@ public class GameDto {
 
     public void setPromotions(List<Promotion> promotions) {
         this.promotions = promotions;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 }

@@ -34,7 +34,7 @@ public class GameController {
      */
     @PutMapping("/{gameId}")
     public ResponseEntity<GameDto> updateGame(
-            @PathVariable Integer gameId,
+            @PathVariable("gameId") Integer gameId,
             @Validated(ValidationGroups.Update.class) @RequestBody GameDto gameDto) {
         return ResponseEntity.ok(gameService.updateGame(gameId, gameDto));
     }
@@ -43,7 +43,7 @@ public class GameController {
      * Archive a game
      */
     @PutMapping("/archive/{gameId}")
-    public ResponseEntity<GameDto> archiveGame(@PathVariable Integer gameId) {
+    public ResponseEntity<GameDto> archiveGame(@PathVariable("gameId") Integer gameId) {
         return ResponseEntity.ok(gameService.archiveGame(gameId));
     }
 
@@ -59,7 +59,7 @@ public class GameController {
      * Reactivate an archived game
      */
     @PutMapping("/archive/{gameId}/reactivate")
-    public ResponseEntity<GameDto> reactivateArchivedGame(@PathVariable Integer gameId) {
+    public ResponseEntity<GameDto> reactivateArchivedGame(@PathVariable("gameId") Integer gameId) {
         return ResponseEntity.ok(gameService.reactivateArchivedGame(gameId));
     }
 
@@ -91,8 +91,8 @@ public class GameController {
      */
     @PutMapping("/{gameId}/categories/{categoryId}")
     public ResponseEntity<GameDto> addGameToCategory(
-            @PathVariable Integer gameId,
-            @PathVariable Integer categoryId) {
+            @PathVariable("gameId") Integer gameId,
+            @PathVariable("categoryId") Integer categoryId) {
         return ResponseEntity.ok(gameService.addGameToCategory(gameId, categoryId));
     }
 
@@ -101,8 +101,8 @@ public class GameController {
      */
     @PutMapping("/{gameId}/stock")
     public ResponseEntity<GameDto> updateGameStock(
-            @PathVariable Integer gameId,
-            @RequestParam Integer stock) {
+            @PathVariable("gameId") Integer gameId,
+            @RequestParam("stock") Integer stock) {
         return ResponseEntity.ok(gameService.updateGameStock(gameId, stock));
     }
 
@@ -111,8 +111,8 @@ public class GameController {
      */
     @PutMapping("/{gameId}/price")
     public ResponseEntity<GameDto> updateGamePrice(
-            @PathVariable Integer gameId,
-            @RequestParam Double price) {
+            @PathVariable("gameId") Integer gameId,
+            @RequestParam("price") Double price) {
         return ResponseEntity.ok(gameService.updateGamePrice(gameId, price));
     }
 }
