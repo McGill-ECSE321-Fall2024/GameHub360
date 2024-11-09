@@ -57,14 +57,11 @@ public class GameRequestServiceTests {
 
     @BeforeEach
     public void setUp() {
-        // Set up test category
         testCategory = new GameCategory(true, "Test Category");
         testCategory.setCategoryType(GameCategory.CategoryType.GENRE);
 
-        // Set up test employee
         testEmployee = new EmployeeAccount("testEmployee", "password", true);
 
-        // Set up test request
         testRequest = new GameRequest();
         testRequest.setRequestPlacer(testEmployee);
         testRequest.setName("Test Request");
@@ -75,14 +72,12 @@ public class GameRequestServiceTests {
         testRequest.setCategories(testCategory);
         testRequest.setRequestPlacer(testEmployee);
 
-        // Set up test note
         testNote = new RequestNote();
         testNote.setContent("Test Note");
         testNote.setNoteDate(Date.valueOf(LocalDate.now()));
         testNote.setNotesWriter(testEmployee);
         testNote.setGameRequest(testRequest);
 
-        // Set up valid request DTO
         validRequestDto = new GameRequestDto();
         validRequestDto.setName("Test Request");
         validRequestDto.setDescription("Test Description");
@@ -111,6 +106,7 @@ public class GameRequestServiceTests {
     public void testCreateGameRequestWithInvalidCategory() {
         // Arrange
         when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(null);
+        when(employeeAccountRepository.findEmployeeAccountByStaffId(any())).thenReturn(testEmployee);
 
         // Act & Assert
         GameException exception = assertThrows(GameException.class,
@@ -176,7 +172,6 @@ public class GameRequestServiceTests {
         RequestNote mockNote = mock(RequestNote.class);
         GameRequest mockRequest = mock(GameRequest.class);
 
-        // Set up mock behaviors
         when(mockNote.getGameRequest()).thenReturn(mockRequest);
         when(mockRequest.getGameEntityId()).thenReturn(1);
         when(requestNoteRepository.findRequestNoteByNoteId(1)).thenReturn(mockNote);
@@ -201,7 +196,6 @@ public class GameRequestServiceTests {
         when(gameRequestRepository.save(any(GameRequest.class))).thenReturn(testRequest);
         when(managerAccountRepository.findManagerAccountByStaffId(1)).thenReturn(new ManagerAccount());
 
-        // Create approval DTO with price and quantity
         GameRequestApprovalDto approvalDto = new GameRequestApprovalDto();
         approvalDto.setPrice(29.99);
         approvalDto.setQuantityInStock(10);
@@ -221,7 +215,6 @@ public class GameRequestServiceTests {
         when(managerAccountRepository.findManagerAccountByStaffId(1)).thenReturn(new ManagerAccount());
         when(gameRequestRepository.save(any(GameRequest.class))).thenReturn(testRequest);
 
-        // Create GameRequestApprovalDto
         GameRequestApprovalDto approvalDto = new GameRequestApprovalDto();
         approvalDto.setRejectionReason("Rejection reason");
 

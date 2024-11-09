@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.GameShop.service;
 
 import ca.mcgill.ecse321.GameShop.dto.GameDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.GameResponseDto;
 import ca.mcgill.ecse321.GameShop.exception.GameException;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
@@ -27,11 +26,14 @@ public class GameService {
     private GameCategoryRepository gameCategoryRepository;
 
     /**
-     * Create a new game directly
+     * Create a new game directly.
+     * 
+     * @param gameRequestDto the game request data transfer object containing game details
+     * @return the created game as a GameDto
      */
     @Transactional
     public GameDto createGame(GameRequestDto gameRequestDto) {
-        // Check if game with the same name exists
+        // Check if a game with the same name exists
         if (gameRepository.findGameByName(gameRequestDto.getName()) != null) {
             throw new GameException(HttpStatus.BAD_REQUEST, "Game with this name already exists");
         }
@@ -49,7 +51,11 @@ public class GameService {
     }
 
     /**
-     * Update an existing game
+     * Update an existing game.
+     * 
+     * @param gameId the ID of the game to update
+     * @param gameDto the game data transfer object containing updated game details
+     * @return the updated game as a GameDto
      */
     @Transactional
     public GameDto updateGame(Integer gameId, GameDto gameDto) {
@@ -80,7 +86,10 @@ public class GameService {
     }
 
     /**
-     * Archive a game
+     * Archive a game.
+     * 
+     * @param gameId the ID of the game to archive
+     * @return the archived game as a GameDto
      */
     @Transactional
     public GameDto archiveGame(Integer gameId) {
@@ -94,7 +103,9 @@ public class GameService {
     }
 
     /**
-     * View all archived games
+     * View all archived games.
+     * 
+     * @return a list of archived games as GameDto objects
      */
     @Transactional
     public List<GameDto> viewArchivedGames() {
@@ -105,7 +116,10 @@ public class GameService {
     }
 
     /**
-     * Reactivate an archived game
+     * Reactivate an archived game.
+     * 
+     * @param gameId the ID of the game to reactivate
+     * @return the reactivated game as a GameDto
      */
     @Transactional
     public GameDto reactivateArchivedGame(Integer gameId) {
@@ -123,23 +137,34 @@ public class GameService {
     }
 
     /**
-     * Browse games with optional filters
+     * Browse games based on optional filters: category, minimum price, and maximum price.
+     * 
+     * @param category the category to filter games by (optional)
+     * @param minPrice the minimum price to filter games by (optional)
+     * @param maxPrice the maximum price to filter games by (optional)
+     * @return a list of GameDto objects that match the provided filters
      */
     @Transactional
     public List<GameDto> browseGames(String category, Double minPrice, Double maxPrice) {
-        return gameRepository.findAll().stream()
+        List<Game> games = gameRepository.findAll().stream()
                 .filter(Game::getIsAvailable)
                 .filter(game -> category == null ||
                         game.getCategories().stream()
                                 .anyMatch(cat -> cat.getName().equalsIgnoreCase(category)))
                 .filter(game -> minPrice == null || game.getPrice() >= minPrice)
                 .filter(game -> maxPrice == null || game.getPrice() <= maxPrice)
-                .map(GameDto::new)
                 .collect(Collectors.toList());
+        return games.stream().map(GameDto::new).collect(Collectors.toList());
     }
 
     /**
-     * Search games with filters
+     * Search for games based on a query and optional filters: category, minimum price, and maximum price.
+     * 
+     * @param query the search query to filter games by name or description (required)
+     * @param category the category to filter games by (optional)
+     * @param minPrice the minimum price to filter games by (optional)
+     * @param maxPrice the maximum price to filter games by (optional)
+     * @return a list of GameDto objects that match the provided search query and filters
      */
     @Transactional
     public List<GameDto> searchGames(String query, String category, Double minPrice, Double maxPrice) {
@@ -157,7 +182,11 @@ public class GameService {
     }
 
     /**
-     * Add game to category
+     * Add a game to a category.
+     * 
+     * @param gameId the ID of the game to add to the category
+     * @param categoryId the ID of the category to add the game to
+     * @return the updated game as a GameDto
      */
     @Transactional
     public GameDto addGameToCategory(Integer gameId, Integer categoryId) {
@@ -180,52 +209,46 @@ public class GameService {
     }
 
     /**
-     * Update game stock
+     * Update the stock of a game.
+     * 
+     * @param gameId the ID of the game to update
+     * @param stock the new stock quantity
+     * @return the updated game as a GameDto
      */
     @Transactional
     public GameDto updateGameStock(Integer gameId, Integer stock) {
-        // Find the game first
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
             throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
-        // Validate stock
         if (stock < 0) {
             throw new GameException(HttpStatus.BAD_REQUEST, "Stock cannot be negative");
         }
 
-        // Update and save
-        try {
-            game.setQuantityInStock(stock);
-            return new GameDto(gameRepository.save(game));
-        } catch (Exception e) {
-            throw new GameException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating game stock: " + e.getMessage());
-        }
+        game.setQuantityInStock(stock);
+        return new GameDto(gameRepository.save(game));
     }
 
     /**
-     * Update game price
+     * Update the price of a game.
+     * 
+     * @param gameId the ID of the game to update
+     * @param price the new price
+     * @return the updated game as a GameDto
      */
     @Transactional
     public GameDto updateGamePrice(Integer gameId, Double price) {
-        // Find the game first
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
             throw new GameException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
-        // Validate price
         if (price <= 0) {
             throw new GameException(HttpStatus.BAD_REQUEST, "Price must be positive");
         }
 
-        // Update and save
-        try {
-            game.setPrice(price);
-            return new GameDto(gameRepository.save(game));
-        } catch (Exception e) {
-            throw new GameException(HttpStatus.INTERNAL_SERVER_ERROR, "Error updating game price: " + e.getMessage());
-        }
+        game.setPrice(price);
+        return new GameDto(gameRepository.save(game));
     }
 }
