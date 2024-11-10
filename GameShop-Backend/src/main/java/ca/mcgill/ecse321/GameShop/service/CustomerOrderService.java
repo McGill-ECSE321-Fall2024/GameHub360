@@ -2,25 +2,23 @@ package ca.mcgill.ecse321.GameShop.service;
 
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
+import ca.mcgill.ecse321.GameShop.model.CustomerOrder.OrderStatus;
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
-import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.repository.CustomerOrderRepository;
 import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
 import ca.mcgill.ecse321.GameShop.repository.PaymentDetailsRepository;
-import ca.mcgill.ecse321.GameShop.repository.GameRepository;
 import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
-import ca.mcgill.ecse321.GameShop.dto.CustomerOrderResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.CustomerOrderRequestDto;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.sql.Date;
-import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
 public class CustomerOrderService {
@@ -73,4 +71,48 @@ public class CustomerOrderService {
         }
 
         return customerOrderRepository.save(order);
-}}
+    }
+
+    /**
+     * return a customer order
+     * @param orderId 
+     * @return CustomerOrder 
+     * @throws GameShopException
+     */
+    @Transactional
+    public CustomerOrder returnCustomerOrder(int orderId) {
+        CustomerOrder order = customerOrderRepository.findById(orderId).orElse(null);
+        if (order == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Order not found");
+        }
+
+        if (order.getOrderStatus() == OrderStatus.RETURNED) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Order has already been returned");
+        }
+        order.setOrderStatus(OrderStatus.RETURNED);
+
+        return customerOrderRepository.save(order);
+    }
+
+    /**
+     * Monitor Order statuses 
+     * 
+     * @param orderId
+     * @return CustomerOrder 
+     * @throws GameShopException    
+     */
+    @Transactional
+    public CustomerOrder monitorOrderStatuses(int orderId) {
+        List<CustomerOrder> orders = (List<CustomerOrder>) customerOrderRepository.findAll();
+        CustomerOrder order = orders.stream()
+                                    .filter(o -> o.getOrderId() == orderId)
+                                    .findFirst()
+                                    .orElse(null);
+        if (order == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Order not found");
+        }
+
+        return order;
+    }
+
+}

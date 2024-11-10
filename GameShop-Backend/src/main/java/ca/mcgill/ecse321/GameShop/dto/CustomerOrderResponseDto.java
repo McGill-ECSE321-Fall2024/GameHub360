@@ -6,6 +6,7 @@ import java.util.List;
 import ca.mcgill.ecse321.GameShop.model.CustomerOrder.OrderStatus;
 import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
+import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
 import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
 
 public class CustomerOrderResponseDto {
@@ -26,6 +27,10 @@ public class CustomerOrderResponseDto {
         this.orderedGames = orderedGames;
         this.orderedBy = orderedBy;
         this.paymentInformation = paymentInformation;
+    }
+
+    public CustomerOrderResponseDto(CustomerOrder customerOrder) {
+        this(customerOrder.getOrderId(), customerOrder.getOrderStatus(), customerOrder.getOrderDate(), customerOrder.getOrderedGames(), customerOrder.getOrderedBy(), customerOrder.getPaymentInformation());
     }
 
     public int getOrderId() {
