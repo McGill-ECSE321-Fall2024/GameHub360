@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,10 +44,7 @@ public class EmployeeController {
     public EmployeeResponseDto createEmployee(
             @Validated({ ValidationGroups.Post.class }) @RequestBody EmployeeRequestDto employeeRequestDto) {
         EmployeeAccount employee = employeeService.createEmployee(employeeRequestDto);
-        // Log activity for account creation
-        String contentMessage = "Employee account created for ID: " + employee.getStaffId() + " on "
-                + LocalDateTime.now();
-        activityLogService.logActivity(contentMessage, employee);
+
         return new EmployeeResponseDto(employee);
     }
 
@@ -66,10 +62,7 @@ public class EmployeeController {
             @PathVariable("employeeId") Integer employeeId,
             @Validated({ ValidationGroups.Update.class }) @RequestBody EmployeeRequestDto employeeRequestDto) {
         EmployeeAccount employee = employeeService.updateEmployee(employeeId, employeeRequestDto);
-        // Log activity for update
-        String contentMessage = "Employee account updated for ID: " + employee.getStaffId() + " on "
-                + LocalDateTime.now();
-        activityLogService.logActivity(contentMessage, employee);
+
         return new EmployeeResponseDto(employee);
     }
 
@@ -96,10 +89,6 @@ public class EmployeeController {
     @PutMapping("/{employeeId}/deactivate")
     public EmployeeResponseDto deactivateEmployee(@PathVariable("employeeId") Integer employeeId) {
         EmployeeAccount employee = employeeService.deactivateEmployee(employeeId);
-        // Log activity for deactivation
-        String contentMessage = "Employee account deactivated for ID: " + employee.getStaffId() + " on "
-                + LocalDateTime.now();
-        activityLogService.logActivity(contentMessage, employee);
 
         return new EmployeeResponseDto(employee);
     }

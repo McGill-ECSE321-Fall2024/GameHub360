@@ -26,6 +26,9 @@ public class EmployeeServiceTests {
     @Mock
     private EmployeeAccountRepository employeeAccountRepository;
 
+    @Mock
+    private ActivityLogService activityLogService;
+
     @InjectMocks
     private EmployeeService employeeService;
 

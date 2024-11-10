@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.GameShop.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class EmployeeService {
 
     @Autowired
     private EmployeeAccountRepository employeeAccountRepository;
+
+    @Autowired
+    private ActivityLogService activityLogService;
 
     /**
      * Authenticates an employee by verifying email and password.
@@ -68,7 +73,13 @@ public class EmployeeService {
         employee.setName(employeeRequestDto.getName());
         employee.setPhoneNumber(employeeRequestDto.getPhoneNumber());
 
-        return employeeAccountRepository.save(employee);
+        EmployeeAccount createdEmployee = employeeAccountRepository.save(employee);
+        // Log activity for account creation
+        String contentMessage = "Employee account created for ID: " + createdEmployee.getStaffId() + " on "
+                + LocalDateTime.now();
+        activityLogService.logActivity(contentMessage, createdEmployee);
+
+        return createdEmployee;
     }
 
     /**
@@ -109,7 +120,12 @@ public class EmployeeService {
             employee.setIsActive(employeeRequestDto.getIsActive());
         }
 
-        return employeeAccountRepository.save(employee);
+        EmployeeAccount updatedEmployee = employeeAccountRepository.save(employee);
+        // Log activity for update
+        String contentMessage = "Employee account updated for ID: " + updatedEmployee.getStaffId() + " on "
+                + LocalDateTime.now();
+        activityLogService.logActivity(contentMessage, updatedEmployee);
+        return updatedEmployee;
     }
 
     /**
@@ -130,7 +146,13 @@ public class EmployeeService {
         }
         // Deactivate employee
         employee.setIsActive(false);
-        return employeeAccountRepository.save(employee);
+        EmployeeAccount deactivatedEmployee = employeeAccountRepository.save(employee);
+
+        // Log activity for deactivation
+        String contentMessage = "Employee account deactivated for ID: " + employee.getStaffId() + " on "
+                + LocalDateTime.now();
+        activityLogService.logActivity(contentMessage, employee);
+        return deactivatedEmployee;
     }
 
     /**
