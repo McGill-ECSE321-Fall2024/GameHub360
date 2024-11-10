@@ -20,7 +20,8 @@ public class CustomerOrderResponseDto {
     public CustomerOrderResponseDto() {
     }
 
-    public CustomerOrderResponseDto(int orderId, OrderStatus orderStatus, Date orderDate, List<OrderGame> orderedGames, CustomerAccount orderedBy, PaymentDetails paymentInformation) {
+    public CustomerOrderResponseDto(int orderId, OrderStatus orderStatus, Date orderDate, List<OrderGame> orderedGames,
+            CustomerAccount orderedBy, PaymentDetails paymentInformation) {
         this.orderId = orderId;
         this.orderStatus = orderStatus;
         this.orderDate = orderDate;
@@ -30,7 +31,8 @@ public class CustomerOrderResponseDto {
     }
 
     public CustomerOrderResponseDto(CustomerOrder customerOrder) {
-        this(customerOrder.getOrderId(), customerOrder.getOrderStatus(), customerOrder.getOrderDate(), customerOrder.getOrderedGames(), customerOrder.getOrderedBy(), customerOrder.getPaymentInformation());
+        this(customerOrder.getOrderId(), customerOrder.getOrderStatus(), customerOrder.getOrderDate(),
+                customerOrder.getOrderedGames(), customerOrder.getOrderedBy(), customerOrder.getPaymentInformation());
     }
 
     public int getOrderId() {

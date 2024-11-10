@@ -12,7 +12,8 @@ public class CustomerOrderRequestDto {
     public CustomerOrderRequestDto() {
     }
 
-    public CustomerOrderRequestDto(Date orderDate, List<Integer> orderedGameIds, int orderedById, int paymentInformationId) {
+    public CustomerOrderRequestDto(Date orderDate, List<Integer> orderedGameIds, int orderedById,
+            int paymentInformationId) {
         this.orderDate = orderDate;
         this.orderedGameIds = orderedGameIds;
         this.orderedById = orderedById;

@@ -7,18 +7,23 @@ public class ReviewRequestDto {
     private GameReviewRating rating;
     private String comment;
     private Date reviewDate;
-    private int orderGameId;  // to link the review to the specific OrderGame
+    private int orderGameId;
+    private int reviewedById;
+    private int replyId;
 
     // Default constructor
     public ReviewRequestDto() {
     }
 
     // Constructor with all fields
-    public ReviewRequestDto(GameReviewRating rating, String comment, Date reviewDate, int orderGameId) {
+    public ReviewRequestDto(GameReviewRating rating, String comment, Date reviewDate, int orderGameId, int reviewedById,
+            int replyId) {
         this.rating = rating;
         this.comment = comment;
         this.reviewDate = reviewDate;
         this.orderGameId = orderGameId;
+        this.reviewedById = reviewedById;
+        this.replyId = replyId;
     }
 
     // Getters and setters
@@ -53,4 +58,21 @@ public class ReviewRequestDto {
     public void setOrderGameId(int orderGameId) {
         this.orderGameId = orderGameId;
     }
+
+    public int getReviewedById() {
+        return reviewedById;
+    }
+
+    public void setReviewedById(int reviewedById) {
+        this.reviewedById = reviewedById;
+    }
+
+    public int getReplyId() {
+        return replyId;
+    }
+
+    public void setReplyId(int replyId) {
+        this.replyId = replyId;
+    }
+
 }

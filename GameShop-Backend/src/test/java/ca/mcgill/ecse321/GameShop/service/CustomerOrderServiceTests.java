@@ -60,7 +60,7 @@ public class CustomerOrderServiceTests {
         // Arrange
         CustomerAccount customer = new CustomerAccount("exmaple@mcgill.com", "password123");
         GameCategory gameCategory = new GameCategory(true, "Action");
-        
+
         Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
 
         // Create the CustomerOrder object
@@ -70,17 +70,18 @@ public class CustomerOrderServiceTests {
 
         List<Integer> orderedGameIds = List.of(orderGame1.getOrderGameId());
 
-       CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), orderedGameIds, customer.getCustomerId() ,paymentDetails.getPaymentDetailsId());
+        CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), orderedGameIds,
+                customer.getCustomerId(), paymentDetails.getPaymentDetailsId());
 
-       // Mock repository behavior
-       when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(any(Integer.class))).thenReturn(paymentDetails);
-       when(gameRepository.findGameByGameEntityId(any(Integer.class))).thenReturn(game1);
-       when(OrderGameRepository.save(any(OrderGame.class))).thenReturn(orderGame1);
-       when(OrderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);
+        // Mock repository behavior
+        when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(any(Integer.class)))
+                .thenReturn(paymentDetails);
+        when(gameRepository.findGameByGameEntityId(any(Integer.class))).thenReturn(game1);
+        when(OrderGameRepository.save(any(OrderGame.class))).thenReturn(orderGame1);
+        when(OrderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);
         when(customerAccountRepository.findCustomerAccountByCustomerId(any(Integer.class))).thenReturn(customer);
         when(customerOrderRepository.save(any(CustomerOrder.class))).thenReturn(customerOrder);
 
-        
         // Act
         CustomerOrder response = customerOrderService.createCustomerOrder(requestDto);
 
@@ -91,7 +92,7 @@ public class CustomerOrderServiceTests {
         assertEquals(Date.valueOf(LocalDate.now()), response.getOrderDate());
         verify(customerOrderRepository, times(1)).save(any(CustomerOrder.class));
 
-}
+    }
 
     @Test
     public void testCreateCustomerOrderWithInvalidCustomer() {
@@ -108,10 +109,12 @@ public class CustomerOrderServiceTests {
 
         List<Integer> orderedGameIds = List.of(orderGame1.getOrderGameId());
 
-         CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), orderedGameIds, customer.getCustomerId() ,paymentDetails.getPaymentDetailsId());
+        CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), orderedGameIds,
+                customer.getCustomerId(), paymentDetails.getPaymentDetailsId());
 
         // Mock repository behavior
-        when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(any(Integer.class))).thenReturn(paymentDetails);
+        when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(any(Integer.class)))
+                .thenReturn(paymentDetails);
         when(gameRepository.findGameByGameEntityId(any(Integer.class))).thenReturn(game1);
         when(OrderGameRepository.save(any(OrderGame.class))).thenReturn(orderGame1);
         when(OrderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);
@@ -119,7 +122,8 @@ public class CustomerOrderServiceTests {
         when(customerOrderRepository.save(any(CustomerOrder.class))).thenReturn(customerOrder);
 
         // Act
-        GameShopException e = assertThrows(GameShopException.class, () -> customerOrderService.createCustomerOrder(requestDto));
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> customerOrderService.createCustomerOrder(requestDto));
 
         // Assert
         assertEquals("Customer not found", e.getMessage());
@@ -141,7 +145,8 @@ public class CustomerOrderServiceTests {
 
         List<Integer> orderedGameIds = List.of(orderGame1.getOrderGameId());
 
-        CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), orderedGameIds, customer.getCustomerId() ,paymentDetails.getPaymentDetailsId());
+        CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), orderedGameIds,
+                customer.getCustomerId(), paymentDetails.getPaymentDetailsId());
 
         // Mock repository behavior
         when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(any(Integer.class))).thenReturn(null);
@@ -152,7 +157,8 @@ public class CustomerOrderServiceTests {
         when(customerOrderRepository.save(any(CustomerOrder.class))).thenReturn(customerOrder);
 
         // Act
-        GameShopException e = assertThrows(GameShopException.class, () -> customerOrderService.createCustomerOrder(requestDto));
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> customerOrderService.createCustomerOrder(requestDto));
 
         // Assert
         assertEquals("Payment information not found", e.getMessage());
@@ -160,90 +166,90 @@ public class CustomerOrderServiceTests {
 
     }
 
+    @Test
+    public void testReturnCustomerOrder() {
+        // Arrange
+        CustomerAccount customer = new CustomerAccount("johndoe@gmail.com", "password123");
+
+        // Create the CustomerOrder object
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        customerOrder.setOrderStatus(OrderStatus.DELIVERED);
+
+        // Mock repository behavior
+        when(customerOrderRepository.findById(any(Integer.class))).thenReturn(Optional.of(customerOrder));
+        when(customerOrderRepository.save(any(CustomerOrder.class))).thenReturn(customerOrder);
+
+        // Act
+        CustomerOrder response = customerOrderService.returnCustomerOrder(customerOrder.getOrderId());
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(OrderStatus.RETURNED, response.getOrderStatus());
+        verify(customerOrderRepository, times(1)).findById(customerOrder.getOrderId());
+        verify(customerOrderRepository, times(1)).save(customerOrder);
+    }
 
     @Test
-public void testReturnCustomerOrder() {
-    // Arrange
-    CustomerAccount customer = new CustomerAccount("johndoe@gmail.com", "password123");
+    public void testReturnCustomerOrderWithInvalidOrder() {
+        // Arrange
+        CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), List.of(1), 1,
+                1);
 
+        // Mock repository behavior
+        when(customerOrderRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
 
-    // Create the CustomerOrder object
-    PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
-    CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
-    customerOrder.setOrderStatus(OrderStatus.DELIVERED);
+        // Act
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> customerOrderService.returnCustomerOrder(requestDto.getOrderedById()));
 
-    // Mock repository behavior
-    when(customerOrderRepository.findById(any(Integer.class))).thenReturn(Optional.of(customerOrder));
-    when(customerOrderRepository.save(any(CustomerOrder.class))).thenReturn(customerOrder);
+        // Assert
+        assertEquals("Order not found", e.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
 
-    // Act
-    CustomerOrder response = customerOrderService.returnCustomerOrder(customerOrder.getOrderId());
+    }
 
-    // Assert
-    assertNotNull(response);
-    assertEquals(OrderStatus.RETURNED, response.getOrderStatus());
-    verify(customerOrderRepository, times(1)).findById(customerOrder.getOrderId());
-    verify(customerOrderRepository, times(1)).save(customerOrder);
+    @Test
+    public void testReturnCustomerOrderWithAlreadyReturnedOrder() {
+        // Arrange
+        CustomerAccount customer = new CustomerAccount("exmaple@mcgill.com", "password123");
+
+        // Create the CustomerOrder object
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        customerOrder.setOrderStatus(OrderStatus.RETURNED);
+
+        // Mock repository behavior
+        when(customerOrderRepository.findById(any(Integer.class))).thenReturn(Optional.of(customerOrder));
+
+        // Act
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> customerOrderService.returnCustomerOrder(customerOrder.getOrderId()));
+
+        // Assert
+        assertEquals("Order has already been returned", e.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+    }
+
+    @Test
+    public void testMonitorOrderStatuses() {
+        // Arrange
+        CustomerAccount customer = new CustomerAccount("example@gmail.com", "password123");
+
+        // Create the CustomerOrder object
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        customerOrder.setOrderStatus(OrderStatus.DELIVERED);
+
+        // Mock repository behavior
+        when(customerOrderRepository.findAll()).thenReturn(List.of(customerOrder));
+
+        // Act
+        CustomerOrder response = customerOrderService.monitorOrderStatuses(customerOrder.getOrderId());
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(OrderStatus.DELIVERED, response.getOrderStatus());
+        verify(customerOrderRepository, times(1)).findAll();
+    }
 }
-
-@Test
-public void testReturnCustomerOrderWithInvalidOrder() {
-    // Arrange
-    CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), List.of(1), 1, 1);
-
-    // Mock repository behavior
-    when(customerOrderRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
-
-    // Act
-    GameShopException e = assertThrows(GameShopException.class, () -> customerOrderService.returnCustomerOrder(requestDto.getOrderedById()));
-
-    // Assert
-    assertEquals("Order not found", e.getMessage());
-    assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-
-}
-
-@Test
-public void testReturnCustomerOrderWithAlreadyReturnedOrder() {
-    // Arrange
-    CustomerAccount customer = new CustomerAccount("exmaple@mcgill.com", "password123");
-
-    // Create the CustomerOrder object
-    PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
-    CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
-    customerOrder.setOrderStatus(OrderStatus.RETURNED);
-
-    // Mock repository behavior
-    when(customerOrderRepository.findById(any(Integer.class))).thenReturn(Optional.of(customerOrder));
-
-    // Act
-    GameShopException e = assertThrows(GameShopException.class, () -> customerOrderService.returnCustomerOrder(customerOrder.getOrderId()));
-
-    // Assert
-    assertEquals("Order has already been returned", e.getMessage());
-    assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-}
-
-@Test
-public void testMonitorOrderStatuses() {
-    // Arrange
-    CustomerAccount customer = new CustomerAccount("example@gmail.com", "password123");
-
-    // Create the CustomerOrder object
-    PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
-    CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
-    customerOrder.setOrderStatus(OrderStatus.DELIVERED);
-
-    // Mock repository behavior
-    when(customerOrderRepository.findAll()).thenReturn(List.of(customerOrder));
-
-    // Act
-    CustomerOrder response = customerOrderService.monitorOrderStatuses(customerOrder.getOrderId());
-
-    // Assert
-    assertNotNull(response);
-    assertEquals(OrderStatus.DELIVERED, response.getOrderStatus());
-    verify(customerOrderRepository, times(1)).findAll();
-}
-}
-

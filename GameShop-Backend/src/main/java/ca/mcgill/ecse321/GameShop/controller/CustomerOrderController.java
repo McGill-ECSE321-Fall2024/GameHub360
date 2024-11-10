@@ -25,17 +25,20 @@ public class CustomerOrderController {
     /**
      * Endpoint to create a new customer order.
      *
-     * @param customerOrderRequestDto The request object containing the customer order's details.
+     * @param customerOrderRequestDto The request object containing the customer
+     *                                order's details.
      * @return A response containing the newly created customer order's details.
      */
     @PostMapping("/")
-    public CustomerOrderResponseDto createCustomerOrder(@Validated({ ValidationGroups.Post.class }) @RequestBody CustomerOrderRequestDto customerOrderRequestDto) {
+    public CustomerOrderResponseDto createCustomerOrder(
+            @Validated({ ValidationGroups.Post.class }) @RequestBody CustomerOrderRequestDto customerOrderRequestDto) {
         CustomerOrder customerOrder = customerOrderService.createCustomerOrder(customerOrderRequestDto);
         return new CustomerOrderResponseDto(customerOrder);
     }
 
     /**
      * endpoint to return an order by its id
+     * 
      * @param orderId
      * @return CustomerOrderResponseDto
      */
@@ -47,6 +50,7 @@ public class CustomerOrderController {
 
     /**
      * endpoint to get an order by its id
+     * 
      * @param orderId
      * @return CustomerOrderResponseDto
      */
