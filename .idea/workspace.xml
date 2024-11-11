@@ -5,7 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="42e7dcb1-e7d8-4e96-973d-ca748bf474ae" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/CustomerAccountListDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/OrderHistoryDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentCardListDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/WishlistDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/controller/CustomerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentDetailsRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentDetailsRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentDetailsResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentDetailsResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/service/CustomerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/service/CustomerService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/integration/CustomerIntegrationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/integration/CustomerIntegrationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/service/CustomerServiceTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/service/CustomerServiceTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -145,7 +155,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="CustomerIntegrationTests.testRemoveFromWishlist_NotFound" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="CustomerIntegrationTests.testGetAllPaymentCards_NotFound" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
@@ -158,7 +168,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;ca.mcgill.ecse321.GameShop.integration.CustomerIntegrationTests.testRemoveFromWishlist_NotFound&quot;" />
+            <option value="&quot;ca.mcgill.ecse321.GameShop.integration.CustomerIntegrationTests.testGetAllPaymentCards_NotFound&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -254,7 +264,7 @@
         <item itemvalue="Gradle.CustomerIntegrationTests" />
         <item itemvalue="Gradle.CustomerIntegrationTests.testViewWishlist_NotFound" />
         <item itemvalue="Gradle.CustomerIntegrationTests.testViewWishlist_Success" />
-        <item itemvalue="Gradle.CustomerIntegrationTests.testRemoveFromWishlist_NotFound" />
+        <item itemvalue="Gradle.CustomerIntegrationTests.testGetAllPaymentCards_NotFound" />
       </list>
     </recent_temporary>
   </component>
@@ -279,7 +289,7 @@
       <workItem from="1730934798870" duration="6196000" />
       <workItem from="1730993370676" duration="7545000" />
       <workItem from="1731079008757" duration="33396000" />
-      <workItem from="1731287094992" duration="11174000" />
+      <workItem from="1731287094992" duration="18637000" />
     </task>
     <servers />
   </component>

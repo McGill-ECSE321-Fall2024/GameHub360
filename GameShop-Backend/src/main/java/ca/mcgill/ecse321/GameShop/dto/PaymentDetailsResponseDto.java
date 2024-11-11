@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PaymentDetailsResponseDto {
+    // Attributes
     private int paymentDetailsId;
     private String cardName;
     private String postalCode;
     private int expMonth;
     private int expYear;
     private Integer customerId; // ID of the associated CustomerAccount
-    private List<Integer> paidOrderIds; // IDs of associated CustomerOrders
+    private List<Integer> paidOrdersIds; // IDs of associated CustomerOrders
 
     // Constructor that initializes fields from the PaymentDetails model
     public PaymentDetailsResponseDto(PaymentDetails paymentDetails) {
@@ -23,8 +24,8 @@ public class PaymentDetailsResponseDto {
         this.expMonth = paymentDetails.getExpMonth();
         this.expYear = paymentDetails.getExpYear();
         this.customerId = paymentDetails.getCardOwner().getCustomerId();
-        this.paidOrderIds = paymentDetails.getPaidOrders().stream()
-                .map(CustomerOrder::getOrderId) // Assuming CustomerOrder has getOrderId()
+        this.paidOrdersIds = paymentDetails.getPaidOrders().stream()
+                .map(CustomerOrder::getOrderId)
                 .collect(Collectors.toList());
     }
 
@@ -56,7 +57,7 @@ public class PaymentDetailsResponseDto {
         return customerId;
     }
 
-    public List<Integer> getPaidOrderIds() {
-        return paidOrderIds;
+    public List<Integer> getPaidOrdersIds() {
+        return paidOrdersIds;
     }
 }

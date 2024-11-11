@@ -4,7 +4,6 @@ import java.util.List;
 
 import ca.mcgill.ecse321.GameShop.dto.CustomerRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.PaymentDetailsRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.PaymentDetailsResponseDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
@@ -89,12 +88,10 @@ public class CustomerService {
         }
 
         // Validate and potentially update password
-        if (customerRequestDto.getPassword() != null && !customerRequestDto.getPassword().isEmpty()) {
-            if (!PasswordUtils.isValidPassword(customerRequestDto.getPassword())) {
-                throw new GameShopException(HttpStatus.BAD_REQUEST, "Password does not meet security requirements.");
-            }
-            customer.setPassword(EncryptionUtils.encrypt(customerRequestDto.getPassword()));
+        if (!PasswordUtils.isValidPassword(customerRequestDto.getPassword())) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Password does not meet security requirements.");
         }
+        customer.setPassword(EncryptionUtils.encrypt(customerRequestDto.getPassword()));
 
         // Update optional fields: name and phone number
         if (customerRequestDto.getName() != null) {
@@ -163,6 +160,7 @@ public class CustomerService {
      *
      * @param customerId The ID of the customer.
      * @return A list of CustomerOrder objects representing the customer's order history.
+     * @throws GameShopException if the customer with customerId is not found.
      */
     @Transactional
     public List<CustomerOrder> getOrderHistoryByCustomerId(Integer customerId) {
@@ -179,6 +177,7 @@ public class CustomerService {
      * @param customerId The ID of the customer.
      * @param cardId     The ID of the payment card.
      * @return The specific PaymentDetails object.
+     * @throws GameShopException if the customer or the card with customerId and cardId respectively are not found
      */
     @Transactional
     public PaymentDetails getPaymentCardById(Integer customerId, Integer cardId) {
@@ -198,6 +197,7 @@ public class CustomerService {
      *
      * @param customerId The ID of the customer.
      * @return A list of PaymentDetails associated with the customer.
+     * @throws GameShopException if the customer with customerId is not found
      */
     @Transactional
     public List<PaymentDetails> getAllPaymentCardsByCustomerId(Integer customerId) {
@@ -214,6 +214,7 @@ public class CustomerService {
      * @param customerId               The ID of the customer.
      * @param paymentDetailsRequestDto The payment details data for creation or update.
      * @return PaymentDetails representing the created/updated payment card.
+     * @throws GameShopException if customer with customerId is not found
      */
     @Transactional
     public PaymentDetails createOrUpdatePaymentCard(Integer customerId, PaymentDetailsRequestDto paymentDetailsRequestDto) {

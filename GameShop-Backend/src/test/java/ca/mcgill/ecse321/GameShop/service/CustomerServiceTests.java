@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class CustomerServiceTests {
     // Tests for createCustomer service method
 
     @Test
-    public void testCreateCustomerSuccess() {
+    public void testCreateCustomerSuccessfully() {
         // Arrange
         CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "ValidP@ss123", "Alice", "123-456-7890");
         CustomerAccount customer = new CustomerAccount("customer@example.com", "ValidP@ss123");
@@ -123,7 +122,7 @@ public class CustomerServiceTests {
     // Tests for updateCustomer service method
 
     @Test
-    public void testUpdateCustomerSuccess() {
+    public void testUpdateCustomerSuccessfully() {
         // Arrange
         Integer customerId = 1;
         CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "NewStr0ngP@ssw0rd", "Alice Updated", "123-456-7890");
@@ -205,7 +204,7 @@ public class CustomerServiceTests {
     // Tests for getAllCustomers service method
 
     @Test
-    public void testGetAllCustomers() {
+    public void testGetAllCustomersSuccessfully() {
         // Arrange: Prepare a list of mock CustomerAccount objects
         CustomerAccount customer1 = new CustomerAccount("customer1@example.com", "password1");
         CustomerAccount customer2 = new CustomerAccount("customer2@example.com", "password2");
@@ -226,7 +225,7 @@ public class CustomerServiceTests {
     // Tests for getCustomerById service method
 
     @Test
-    public void testGetCustomerByIdSuccess() {
+    public void testGetCustomerByIdSuccessfully() {
         // Arrange
         Integer customerId = 1;
         CustomerAccount customer = new CustomerAccount("customer@example.com", "password");
@@ -261,7 +260,7 @@ public class CustomerServiceTests {
     // Tests for login service method
 
     @Test
-    public void testLoginSuccess() {
+    public void testLoginSuccessfully() {
         // Arrange
         CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "password123");
         CustomerAccount customer = new CustomerAccount("customer@example.com", EncryptionUtils.encrypt("password123"));
@@ -307,7 +306,7 @@ public class CustomerServiceTests {
     // Tests for getOrderHistoryByCustomerId service method
 
     @Test
-    public void testSuccessfulOrderHistoryRetrieval() {
+    public void testOrderHistoryRetrievalSuccessfully() {
         // Arrange
         Integer customerId = 1;
         CustomerAccount customer = new CustomerAccount(); // Create a real CustomerAccount instance
@@ -332,7 +331,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testMissingCustomerInOrderHistoryRetrieval() {
+    public void testOrderHistoryRetrievalCustomerNotFound() {
         // Arrange
         Integer customerId = 2;
 
@@ -352,7 +351,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testNoOrdersInOrderHistoryRetrieval() {
+    public void testOrderHistoryRetrievalNoOrdersFound() {
         // Arrange
         Integer customerId = 3;
         CustomerAccount customer = new CustomerAccount();
@@ -374,7 +373,7 @@ public class CustomerServiceTests {
     // Tests for getPaymentCardById service method
 
     @Test
-    public void testGetPaymentCardById_Success() {
+    public void testGetPaymentCardByIdSuccessfully() {
         // Arrange
         Integer customerId = 1;
         Integer cardId = 101;
@@ -397,7 +396,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testGetPaymentCardById_CustomerNotFound() {
+    public void testGetPaymentCardByIdCustomerNotFound() {
         // Arrange
         Integer customerId = 1;
         Integer cardId = 101;
@@ -417,7 +416,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testGetPaymentCardById_CardNotFound() {
+    public void testGetPaymentCardByIdCardNotFound() {
         // Arrange
         Integer customerId = 1;
         Integer cardId = 101;
@@ -441,7 +440,7 @@ public class CustomerServiceTests {
     // Tests for getAllPaymentCardsByCustomerId service method
 
     @Test
-    public void testGetAllPaymentCardsByCustomerId_Success() {
+    public void testGetAllPaymentCardsByCustomerIdSuccessfully() {
         // Arrange
         Integer customerId = 1;
         CustomerAccount customer = new CustomerAccount();
@@ -462,7 +461,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testGetAllPaymentCardsByCustomerId_CustomerNotFound() {
+    public void testGetAllPaymentCardsByCustomerIdCustomerNotFound() {
         // Arrange
         Integer customerId = 1;
 
@@ -481,7 +480,7 @@ public class CustomerServiceTests {
     // Tests for createOrUpdatePaymentCard service method
 
     @Test
-    public void testCreateOrUpdatePaymentCard_Success() {
+    public void testCreateOrUpdatePaymentCardSuccessfully() {
         // Arrange
         Integer customerId = 1;
         PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025, customerId);
@@ -502,7 +501,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testCreateOrUpdatePaymentCard_CustomerNotFound() {
+    public void testCreateOrUpdatePaymentCardCustomerNotFound() {
         // Arrange
         Integer customerId = 1;
         PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025, customerId);
@@ -524,7 +523,7 @@ public class CustomerServiceTests {
     // Tests for addToWishlist service method
 
     @Test
-    public void testAddToWishlist_Success() {
+    public void testAddToWishlistSuccessfully() {
         // Arrange
         Integer customerId = 1;
         Integer gameId = 101;
@@ -545,7 +544,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testAddToWishlist_CustomerNotFound() {
+    public void testAddToWishlistCustomerNotFound() {
         // Arrange
         Integer customerId = 1;
         Integer gameId = 101;
@@ -563,7 +562,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testAddToWishlist_GameNotFound() {
+    public void testAddToWishlistGameNotFound() {
         // Arrange
         Integer customerId = 1;
         Integer gameId = 101;
@@ -585,7 +584,7 @@ public class CustomerServiceTests {
     // Tests for removeFromWishlist service method
 
     @Test
-    public void testRemoveFromWishlist_Success() {
+    public void testRemoveFromWishlistSuccessfully() {
         // Arrange
         Integer customerId = 1;
         Integer gameId = 101;
@@ -607,7 +606,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testRemoveFromWishlist_CustomerNotFound() {
+    public void testRemoveFromWishlistCustomerNotFound() {
         // Arrange
         Integer customerId = 1;
         Integer gameId = 101;
@@ -625,7 +624,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testRemoveFromWishlist_GameNotFound() {
+    public void testRemoveFromWishlistGameNotFound() {
         // Arrange
         Integer customerId = 1;
         Integer gameId = 101;
@@ -647,7 +646,7 @@ public class CustomerServiceTests {
     // Tests for viewWishlist service method
 
     @Test
-    public void testViewWishlist_Success() {
+    public void testViewWishlistSuccessfully() {
         // Arrange
         Integer customerId = 1;
         CustomerAccount customer = new CustomerAccount();
@@ -666,7 +665,7 @@ public class CustomerServiceTests {
     }
 
     @Test
-    public void testViewWishlist_CustomerNotFound() {
+    public void testViewWishlistCustomerNotFound() {
         // Arrange
         Integer customerId = 1;
 

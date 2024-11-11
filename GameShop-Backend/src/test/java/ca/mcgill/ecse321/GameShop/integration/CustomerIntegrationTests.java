@@ -40,7 +40,6 @@ public class CustomerIntegrationTests {
     private static final String VALID_EMAIL = "customer@example.com";
     private static final String VALID_PASSWORD = "Secure@Pass1";
     private static final String INVALID_PASSWORD = "wrongpass";
-    private static final String NON_EXISTENT_EMAIL = "unknown@example.com";
     private static final String VALID_NAME = "Jane Smith";
     private static final String VALID_PHONE = "111-222-3333";
     private static final String INVALID_PHONE = "123";
@@ -192,12 +191,13 @@ public class CustomerIntegrationTests {
     @Order(7)
     public void testGetAllCustomers_Success() {
         // Arrange & Act
-        ResponseEntity<CustomerResponseDto[]> response = client.getForEntity("/customers", CustomerResponseDto[].class);
+        ResponseEntity<CustomerAccountListDto> response = client.getForEntity("/customers", CustomerAccountListDto.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().length);
+        assertNotNull(response.getBody().getCustomers());
+        assertEquals(1, response.getBody().getCustomers().size());
     }
 
     // -- tests for getCustomerById() --
@@ -261,26 +261,32 @@ public class CustomerIntegrationTests {
         assertEquals("Invalid email or password.", errorResponse.getError());
     }
 
-    // -- tests for getOrderHistoryByCustomerId() --
+    // -- tests for viewOrderHistory() --
 
     @Test
     @Order(12)
     public void testViewOrderHistory_Success() {
-        // Arrange & Act
+        // Arrange
         String url = "/customers/" + validCustomerId + "/orders";
-        ResponseEntity<OrderResponseDto[]> response = client.getForEntity(url, OrderResponseDto[].class);
+
+        // Act
+        ResponseEntity<OrderHistoryDto> response = client.getForEntity(url, OrderHistoryDto.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(0, response.getBody().length);
         assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getOrders());
+        assertEquals(0, response.getBody().getOrders().size());
     }
 
     @Test
     @Order(13)
     public void testViewOrderHistory_NotFound() {
-        // Arrange & Act
-        ResponseEntity<ErrorResponseDto> response = client.getForEntity("/customers/9999/orders", ErrorResponseDto.class);
+        // Arrange
+        String url = "/customers/9999/orders";
+
+        // Act
+        ResponseEntity<ErrorResponseDto> response = client.getForEntity(url, ErrorResponseDto.class);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -333,12 +339,13 @@ public class CustomerIntegrationTests {
 
         // Act
         String getAllUrl = "/customers/" + validCustomerId + "/cards";
-        ResponseEntity<PaymentDetailsResponseDto[]> response = client.getForEntity(getAllUrl, PaymentDetailsResponseDto[].class);
+        ResponseEntity<PaymentCardListDto> response = client.getForEntity(getAllUrl, PaymentCardListDto.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().length);
         assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getPaymentCards());
+        assertEquals(1, response.getBody().getPaymentCards().size());
     }
 
     @Test
@@ -459,31 +466,34 @@ public class CustomerIntegrationTests {
         String url = "/customers/" + validCustomerId + "/wishlist/" + validGameId;
         client.postForEntity(url, null, GameResponseDto.class); // Add game to wishlist
         String url2 = "/customers/" + validCustomerId + "/wishlist/" + validGameId2;
-        client.postForEntity(url2, null, GameResponseDto.class); // Add game to wishlist
+        client.postForEntity(url2, null, GameResponseDto.class); // Add another game to wishlist
 
         // Act
         String viewWishlistUrl = "/customers/" + validCustomerId + "/wishlist";
-        ResponseEntity<GameResponseDto[]> response = client.getForEntity(viewWishlistUrl, GameResponseDto[].class);
+        ResponseEntity<WishlistDto> response = client.getForEntity(viewWishlistUrl, WishlistDto.class);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(2, response.getBody().length);
         assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getGames());
+        assertEquals(2, response.getBody().getGames().size());
     }
 
     @Test
     @Order(25)
     public void testViewWishlist_NotFound() {
         // Arrange
-        String url = "/customers/" + 9999 + "/wishlist";
+        String url = "/customers/9999/wishlist";
 
         // Act
-        ResponseEntity<String> response = client.getForEntity(url, String.class);
+        ResponseEntity<ErrorResponseDto> response = client.getForEntity(url, ErrorResponseDto.class);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().contains("Customer not found")); // Assuming your exception message includes this text
+        ErrorResponseDto errorResponse = response.getBody();
+        assertNotNull(errorResponse);
+        assertTrue(errorResponse.getError().contains("Customer not found")); // Assuming the error message includes this text
     }
+
 }
 

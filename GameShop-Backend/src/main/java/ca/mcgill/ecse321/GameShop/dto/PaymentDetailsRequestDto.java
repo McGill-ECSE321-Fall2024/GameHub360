@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
 public class PaymentDetailsRequestDto {
+    // Attributes
     private String cardName;
     private String postalCode;
     private int cardNumber;

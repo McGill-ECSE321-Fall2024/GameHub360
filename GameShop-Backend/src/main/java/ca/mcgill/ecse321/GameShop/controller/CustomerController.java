@@ -55,13 +55,14 @@ public class CustomerController {
     /**
      * Endpoint to retrieve all customer accounts.
      *
-     * @return A list of CustomerResponseDto representing all customer accounts.
+     * @return A CustomerAccountListDto containing a list of CustomerResponseDto representing all customer accounts.
      */
     @GetMapping
-    public List<CustomerResponseDto> getAllCustomers() {
-        return customerService.getAllCustomers().stream()
+    public CustomerAccountListDto getAllCustomers() {
+        List<CustomerResponseDto> customers = customerService.getAllCustomers().stream()
                 .map(CustomerResponseDto::new)
                 .collect(Collectors.toList());
+        return new CustomerAccountListDto(customers);
     }
 
     /**
@@ -92,13 +93,14 @@ public class CustomerController {
      * Endpoint to retrieve order history for a specific customer.
      *
      * @param customerId The ID of the customer.
-     * @return A list of OrderResponseDto representing the order history of the customer.
+     * @return An OrderHistoryDto containing a list of OrderResponseDto representing the order history of the customer.
      */
     @GetMapping("/{customerId}/orders")
-    public List<OrderResponseDto> viewOrderHistory(@PathVariable Integer customerId) {
-        return customerService.getOrderHistoryByCustomerId(customerId).stream()
+    public OrderHistoryDto viewOrderHistory(@PathVariable Integer customerId) {
+        List<OrderResponseDto> orders = customerService.getOrderHistoryByCustomerId(customerId).stream()
                 .map(OrderResponseDto::new)
                 .collect(Collectors.toList());
+        return new OrderHistoryDto(orders);
     }
 
     /**
@@ -118,14 +120,15 @@ public class CustomerController {
      * Endpoint to retrieve all payment cards for a specific customer.
      *
      * @param customerId The ID of the customer.
-     * @return A list of PaymentDetailsResponseDto representing the customer's payment cards.
+     * @return A PaymentCardListDto containing a list of PaymentDetailsResponseDto representing the customer's payment cards.
      */
     @GetMapping("/{customerId}/cards")
-    public List<PaymentDetailsResponseDto> getAllPaymentCards(@PathVariable Integer customerId) {
+    public PaymentCardListDto getAllPaymentCards(@PathVariable Integer customerId) {
         List<PaymentDetails> paymentDetailsList = customerService.getAllPaymentCardsByCustomerId(customerId);
-        return paymentDetailsList.stream()
+        List<PaymentDetailsResponseDto> paymentCards = paymentDetailsList.stream()
                 .map(PaymentDetailsResponseDto::new)
                 .collect(Collectors.toList());
+        return new PaymentCardListDto(paymentCards);
     }
 
     /**
@@ -171,13 +174,14 @@ public class CustomerController {
      * Retrieves all games in the customer's wishlist.
      *
      * @param customerId The ID of the customer.
-     * @return A list of GameResponseDto representing the games in the wishlist.
+     * @return A WishlistDto containing a list of GameResponseDto representing the games in the wishlist.
      */
     @GetMapping("/{customerId}/wishlist")
-    public List<GameResponseDto> viewWishlist(@PathVariable Integer customerId) {
+    public WishlistDto viewWishlist(@PathVariable Integer customerId) {
         List<Game> wishlist = customerService.viewWishlist(customerId);
-        return wishlist.stream()
+        List<GameResponseDto> games = wishlist.stream()
                 .map(GameResponseDto::new)
                 .collect(Collectors.toList());
+        return new WishlistDto(games);
     }
 }
