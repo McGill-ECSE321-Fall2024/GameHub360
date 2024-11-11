@@ -1,16 +1,26 @@
 package ca.mcgill.ecse321.GameShop.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ca.mcgill.ecse321.GameShop.dto.PaymentDetailsRequestDto;
+import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
+import ca.mcgill.ecse321.GameShop.repository.CustomerOrderRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.repository.PaymentDetailsRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -22,14 +32,18 @@ import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
 import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
-import ca.mcgill.ecse321.GameShop.utils.PasswordUtils;
-import ca.mcgill.ecse321.GameShop.utils.PhoneUtils;
 
 @SpringBootTest
 public class CustomerServiceTests {
 
     @Mock
     private CustomerAccountRepository customerAccountRepository;
+    @Mock
+    private CustomerOrderRepository customerOrderRepository;
+    @Mock
+    private PaymentDetailsRepository paymentDetailsRepository;
+    @Mock
+    private GameRepository gameRepository;
 
     @InjectMocks
     private CustomerService customerService;
@@ -288,5 +302,383 @@ public class CustomerServiceTests {
         // Assert
         assertEquals("Invalid email or password.", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    }
+
+    // Tests for getOrderHistoryByCustomerId service method
+
+    @Test
+    public void testSuccessfulOrderHistoryRetrieval() {
+        // Arrange
+        Integer customerId = 1;
+        CustomerAccount customer = new CustomerAccount(); // Create a real CustomerAccount instance
+        // Mock the repository to return this instance
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+
+        CustomerOrder order1 = new CustomerOrder();
+        CustomerOrder order2 = new CustomerOrder();
+        List<CustomerOrder> mockOrders = Arrays.asList(order1, order2);
+
+        // Mock the order repository to return the mock orders for the customer
+        when(customerOrderRepository.findByOrderedBy(customer)).thenReturn(mockOrders);
+
+        // Act
+        List<CustomerOrder> response = customerService.getOrderHistoryByCustomerId(customerId);
+
+        // Assert
+        assertEquals(2, response.size());
+        assertEquals(mockOrders, response);
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+        verify(customerOrderRepository, times(1)).findByOrderedBy(customer);
+    }
+
+    @Test
+    public void testMissingCustomerInOrderHistoryRetrieval() {
+        // Arrange
+        Integer customerId = 2;
+
+        // Mock the repository to return null when the customer is not found
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.getOrderHistoryByCustomerId(customerId);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Customer not found.", exception.getMessage());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+        verify(customerOrderRepository, times(0)).findByOrderedBy(any(CustomerAccount.class));
+    }
+
+    @Test
+    public void testNoOrdersInOrderHistoryRetrieval() {
+        // Arrange
+        Integer customerId = 3;
+        CustomerAccount customer = new CustomerAccount();
+        // Mock the repository to return this customer for the provided ID
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+
+        // Mock the order repository to return an empty list for this customer
+        when(customerOrderRepository.findByOrderedBy(customer)).thenReturn(Arrays.asList());
+
+        // Act
+        List<CustomerOrder> response = customerService.getOrderHistoryByCustomerId(customerId);
+
+        // Assert
+        assertEquals(0, response.size());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+        verify(customerOrderRepository, times(1)).findByOrderedBy(customer);
+    }
+
+    // Tests for getPaymentCardById service method
+
+    @Test
+    public void testGetPaymentCardById_Success() {
+        // Arrange
+        Integer customerId = 1;
+        Integer cardId = 101;
+        CustomerAccount customer = new CustomerAccount();
+        PaymentDetails paymentDetails = new PaymentDetails();
+        paymentDetails.setPaymentDetailsId(cardId);
+        paymentDetails.setCardOwner(customer);
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+        when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(cardId)).thenReturn(paymentDetails);
+
+        // Act
+        PaymentDetails result = customerService.getPaymentCardById(customerId, cardId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(cardId, result.getPaymentDetailsId());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+        verify(paymentDetailsRepository, times(1)).findPaymentDetailsByPaymentDetailsId(cardId);
+    }
+
+    @Test
+    public void testGetPaymentCardById_CustomerNotFound() {
+        // Arrange
+        Integer customerId = 1;
+        Integer cardId = 101;
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.getPaymentCardById(customerId, cardId);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Customer not found.", exception.getMessage());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+        verify(paymentDetailsRepository, times(0)).findPaymentDetailsByPaymentDetailsId(cardId);
+    }
+
+    @Test
+    public void testGetPaymentCardById_CardNotFound() {
+        // Arrange
+        Integer customerId = 1;
+        Integer cardId = 101;
+        CustomerAccount customer = new CustomerAccount();
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+        when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(cardId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.getPaymentCardById(customerId, cardId);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Card not found.", exception.getMessage());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+        verify(paymentDetailsRepository, times(1)).findPaymentDetailsByPaymentDetailsId(cardId);
+    }
+
+    // Tests for getAllPaymentCardsByCustomerId service method
+
+    @Test
+    public void testGetAllPaymentCardsByCustomerId_Success() {
+        // Arrange
+        Integer customerId = 1;
+        CustomerAccount customer = new CustomerAccount();
+        PaymentDetails payment1 = new PaymentDetails();
+        PaymentDetails payment2 = new PaymentDetails();
+        customer.addPaymentCard(payment1);
+        customer.addPaymentCard(payment2);
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+
+        // Act
+        List<PaymentDetails> result = customerService.getAllPaymentCardsByCustomerId(customerId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+    }
+
+    @Test
+    public void testGetAllPaymentCardsByCustomerId_CustomerNotFound() {
+        // Arrange
+        Integer customerId = 1;
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.getAllPaymentCardsByCustomerId(customerId);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Customer not found.", exception.getMessage());
+    }
+
+    // Tests for createOrUpdatePaymentCard service method
+
+    @Test
+    public void testCreateOrUpdatePaymentCard_Success() {
+        // Arrange
+        Integer customerId = 1;
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025, customerId);
+        CustomerAccount customer = new CustomerAccount();
+        customer.setName("John Doe");
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+        when(paymentDetailsRepository.save(any(PaymentDetails.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        PaymentDetails result = customerService.createOrUpdatePaymentCard(customerId, requestDto);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(customer.getName(), result.getCardName());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+        verify(paymentDetailsRepository, times(1)).save(any(PaymentDetails.class));
+    }
+
+    @Test
+    public void testCreateOrUpdatePaymentCard_CustomerNotFound() {
+        // Arrange
+        Integer customerId = 1;
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025, customerId);
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.createOrUpdatePaymentCard(customerId, requestDto);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Customer not found.", exception.getMessage());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+        verify(paymentDetailsRepository, times(0)).save(any(PaymentDetails.class));
+    }
+
+    // Tests for addToWishlist service method
+
+    @Test
+    public void testAddToWishlist_Success() {
+        // Arrange
+        Integer customerId = 1;
+        Integer gameId = 101;
+        CustomerAccount customer = new CustomerAccount();
+        Game game = new Game();
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+        when(gameRepository.findGameByGameEntityId(gameId)).thenReturn(game);
+
+        // Act
+        Game result = customerService.addToWishlist(customerId, gameId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(game, result);
+        assertTrue(customer.getWishListedGames().contains(game));
+        verify(customerAccountRepository, times(1)).save(any(CustomerAccount.class));
+    }
+
+    @Test
+    public void testAddToWishlist_CustomerNotFound() {
+        // Arrange
+        Integer customerId = 1;
+        Integer gameId = 101;
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.addToWishlist(customerId, gameId);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Customer not found.", exception.getMessage());
+    }
+
+    @Test
+    public void testAddToWishlist_GameNotFound() {
+        // Arrange
+        Integer customerId = 1;
+        Integer gameId = 101;
+        CustomerAccount customer = new CustomerAccount();
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+        when(gameRepository.findGameByGameEntityId(gameId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.addToWishlist(customerId, gameId);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Game not found.", exception.getMessage());
+    }
+
+    // Tests for removeFromWishlist service method
+
+    @Test
+    public void testRemoveFromWishlist_Success() {
+        // Arrange
+        Integer customerId = 1;
+        Integer gameId = 101;
+        CustomerAccount customer = new CustomerAccount();
+        Game game = new Game();
+        customer.addWishListedGame(game);
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+        when(gameRepository.findGameByGameEntityId(gameId)).thenReturn(game);
+
+        // Act
+        Game result = customerService.removeFromWishlist(customerId, gameId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(game, result);
+        assertFalse(customer.getWishListedGames().contains(game));
+        verify(customerAccountRepository, times(1)).save(customer);
+    }
+
+    @Test
+    public void testRemoveFromWishlist_CustomerNotFound() {
+        // Arrange
+        Integer customerId = 1;
+        Integer gameId = 101;
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.removeFromWishlist(customerId, gameId);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Customer not found.", exception.getMessage());
+    }
+
+    @Test
+    public void testRemoveFromWishlist_GameNotFound() {
+        // Arrange
+        Integer customerId = 1;
+        Integer gameId = 101;
+        CustomerAccount customer = new CustomerAccount();
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+        when(gameRepository.findGameByGameEntityId(gameId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.removeFromWishlist(customerId, gameId);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Game not found.", exception.getMessage());
+    }
+
+    // Tests for viewWishlist service method
+
+    @Test
+    public void testViewWishlist_Success() {
+        // Arrange
+        Integer customerId = 1;
+        CustomerAccount customer = new CustomerAccount();
+        customer.addWishListedGame(new Game());
+        customer.addWishListedGame(new Game());
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+
+        // Act
+        List<Game> result = customerService.viewWishlist(customerId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customerId);
+    }
+
+    @Test
+    public void testViewWishlist_CustomerNotFound() {
+        // Arrange
+        Integer customerId = 1;
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
+
+        // Act
+        GameShopException exception = assertThrows(GameShopException.class, () -> {
+            customerService.viewWishlist(customerId);
+        });
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Customer not found.", exception.getMessage());
     }
 }

@@ -1,9 +1,9 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
-import ca.mcgill.ecse321.GameShop.dto.CustomerResponseDto;
-import ca.mcgill.ecse321.GameShop.dto.CustomerRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.ValidationGroups;
+import ca.mcgill.ecse321.GameShop.dto.*;
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
 import ca.mcgill.ecse321.GameShop.service.CustomerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,15 +89,95 @@ public class CustomerController {
     }
 
     /**
-     * Endpoint to retrieve the order history of a specific customer.
+     * Endpoint to retrieve order history for a specific customer.
      *
-     * @param customerId The ID of the customer whose order history is being requested.
-     * @return A list of CustomerOrderDto objects representing the customer's order history.
+     * @param customerId The ID of the customer.
+     * @return A list of OrderResponseDto representing the order history of the customer.
      */
-//    @GetMapping("/{customerId}/orders")
-//    public List<CustomerOrderDto> getOrderHistory(@PathVariable Integer customerId) {
-//        return customerService.getOrderHistory(customerId).stream()
-//                .map(CustomerOrderDto::new)
-//                .collect(Collectors.toList());
-//    }
+    @GetMapping("/{customerId}/orders")
+    public List<OrderResponseDto> viewOrderHistory(@PathVariable Integer customerId) {
+        return customerService.getOrderHistoryByCustomerId(customerId).stream()
+                .map(OrderResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Endpoint to retrieve a specific payment card for a customer.
+     *
+     * @param customerId The ID of the customer.
+     * @param cardId     The ID of the payment card.
+     * @return PaymentDetailsResponseDto representing the payment card details.
+     */
+    @GetMapping("/{customerId}/card/{cardId}")
+    public PaymentDetailsResponseDto getPaymentCardById(@PathVariable Integer customerId, @PathVariable Integer cardId) {
+        PaymentDetails paymentDetails = customerService.getPaymentCardById(customerId, cardId);
+        return new PaymentDetailsResponseDto(paymentDetails);
+    }
+
+    /**
+     * Endpoint to retrieve all payment cards for a specific customer.
+     *
+     * @param customerId The ID of the customer.
+     * @return A list of PaymentDetailsResponseDto representing the customer's payment cards.
+     */
+    @GetMapping("/{customerId}/cards")
+    public List<PaymentDetailsResponseDto> getAllPaymentCards(@PathVariable Integer customerId) {
+        List<PaymentDetails> paymentDetailsList = customerService.getAllPaymentCardsByCustomerId(customerId);
+        return paymentDetailsList.stream()
+                .map(PaymentDetailsResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Endpoint to create or update a payment card for a specific customer.
+     *
+     * @param customerId               The ID of the customer.
+     * @param paymentDetailsRequestDto The payment details data for creation or update.
+     * @return PaymentDetailsResponseDto representing the created/updated payment details.
+     */
+    @PostMapping("/{customerId}/payment")
+    public PaymentDetailsResponseDto updatePaymentCards(@PathVariable Integer customerId,
+                                                        @RequestBody PaymentDetailsRequestDto paymentDetailsRequestDto) {
+        PaymentDetails paymentDetails = customerService.createOrUpdatePaymentCard(customerId, paymentDetailsRequestDto);
+        return new PaymentDetailsResponseDto(paymentDetails);
+    }
+
+    /**
+     * Adds a game to the customer's wishlist.
+     *
+     * @param customerId The ID of the customer.
+     * @param gameId     The ID of the game to add.
+     * @return GameResponseDto representing the added game.
+     */
+    @PostMapping("/{customerId}/wishlist/{gameId}")
+    public GameResponseDto addToWishlist(@PathVariable Integer customerId, @PathVariable Integer gameId) {
+        Game game = customerService.addToWishlist(customerId, gameId);
+        return new GameResponseDto(game);
+    }
+
+    /**
+     * Removes a game from the customer's wishlist.
+     *
+     * @param customerId The ID of the customer.
+     * @param gameId     The ID of the game to remove.
+     */
+    @DeleteMapping("/{customerId}/wishlist/{gameId}")
+    public GameResponseDto removeFromWishlist(@PathVariable Integer customerId, @PathVariable Integer gameId) {
+        Game game = customerService.removeFromWishlist(customerId, gameId);
+        return new GameResponseDto(game);
+    }
+
+    /**
+     * Retrieves all games in the customer's wishlist.
+     *
+     * @param customerId The ID of the customer.
+     * @return A list of GameResponseDto representing the games in the wishlist.
+     */
+    @GetMapping("/{customerId}/wishlist")
+    public List<GameResponseDto> viewWishlist(@PathVariable Integer customerId) {
+        List<Game> wishlist = customerService.viewWishlist(customerId);
+        return wishlist.stream()
+                .map(GameResponseDto::new)
+                .collect(Collectors.toList());
+    }
 }

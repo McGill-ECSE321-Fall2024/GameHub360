@@ -1,12 +1,19 @@
 package ca.mcgill.ecse321.GameShop.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import ca.mcgill.ecse321.GameShop.dto.CustomerRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.PaymentDetailsRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.PaymentDetailsResponseDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
+import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
 import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.CustomerOrderRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.repository.PaymentDetailsRepository;
 import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
 import ca.mcgill.ecse321.GameShop.utils.PasswordUtils;
 import ca.mcgill.ecse321.GameShop.utils.PhoneUtils;
@@ -21,6 +28,12 @@ public class CustomerService {
     
     @Autowired
     private CustomerAccountRepository customerAccountRepository;
+    @Autowired
+    private CustomerOrderRepository customerOrderRepository;
+    @Autowired
+    private PaymentDetailsRepository paymentDetailsRepository;
+    @Autowired
+    private GameRepository gameRepository;
     
     /**
      * Creates a new customer account.
@@ -104,6 +117,7 @@ public class CustomerService {
      *
      * @return A list of CustomerAccount objects representing all customer accounts.
      */
+    @Transactional
     public List<CustomerAccount> getAllCustomers() {
         return (List<CustomerAccount>) customerAccountRepository.findAll();
     }
@@ -115,6 +129,7 @@ public class CustomerService {
      * @return The CustomerAccount object corresponding to the given ID.
      * @throws GameShopException if no customer is found with the specified ID.
      */
+    @Transactional
     public CustomerAccount getCustomerById(Integer customerId) {
         CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
         if (customer == null) {
@@ -130,6 +145,7 @@ public class CustomerService {
      * @return The CustomerAccount object of the authenticated customer.
      * @throws GameShopException if the email is not found or if the password does not match.
      */
+    @Transactional
     public CustomerAccount login(CustomerRequestDto customerRequestDto) {
         // Retrieve the customer by email
         CustomerAccount customer = customerAccountRepository.findCustomerAccountByEmail(customerRequestDto.getEmail());
@@ -140,5 +156,149 @@ public class CustomerService {
         }
 
         return customer;
+    }
+
+    /**
+     * Retrieves the order history for a specific customer by their ID.
+     *
+     * @param customerId The ID of the customer.
+     * @return A list of CustomerOrder objects representing the customer's order history.
+     */
+    @Transactional
+    public List<CustomerOrder> getOrderHistoryByCustomerId(Integer customerId) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+        return customerOrderRepository.findByOrderedBy(customer);
+    }
+
+    /**
+     * Retrieves a specific payment card for a customer by customer ID and card ID.
+     *
+     * @param customerId The ID of the customer.
+     * @param cardId     The ID of the payment card.
+     * @return The specific PaymentDetails object.
+     */
+    @Transactional
+    public PaymentDetails getPaymentCardById(Integer customerId, Integer cardId) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+        PaymentDetails card = paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(cardId);
+        if (card == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Card not found.");
+        }
+        return card;
+    }
+
+    /**
+     * Retrieves all payment cards for a specific customer by their ID.
+     *
+     * @param customerId The ID of the customer.
+     * @return A list of PaymentDetails associated with the customer.
+     */
+    @Transactional
+    public List<PaymentDetails> getAllPaymentCardsByCustomerId(Integer customerId) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+        return customer.getPaymentCards();
+    }
+
+    /**
+     * Creates or updates a payment card for a specific customer by their ID.
+     *
+     * @param customerId               The ID of the customer.
+     * @param paymentDetailsRequestDto The payment details data for creation or update.
+     * @return PaymentDetails representing the created/updated payment card.
+     */
+    @Transactional
+    public PaymentDetails createOrUpdatePaymentCard(Integer customerId, PaymentDetailsRequestDto paymentDetailsRequestDto) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+
+        PaymentDetails paymentDetails = new PaymentDetails(paymentDetailsRequestDto.getCardName(),
+                paymentDetailsRequestDto.getPostalCode(),
+                paymentDetailsRequestDto.getCardNumber(),
+                paymentDetailsRequestDto.getExpMonth(),
+                paymentDetailsRequestDto.getExpYear(),
+                customer);
+
+        // Save the customer; cascade will save payment details as well
+        customerAccountRepository.save(customer);
+
+        return paymentDetails;
+    }
+
+    /**
+     * Adds a game to the customer's wishlist.
+     *
+     * @param customerId The ID of the customer.
+     * @param gameId     The ID of the game to add to the wishlist.
+     * @return The added Game object.
+     * @throws GameShopException If the customer or game is not found.
+     */
+    @Transactional
+    public Game addToWishlist(Integer customerId, Integer gameId) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+
+        if (game == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found.");
+        }
+        customer.addWishListedGame(game);
+        customerAccountRepository.save(customer);
+        return game;
+    }
+
+    /**
+     * Removes a game from the customer's wishlist.
+     *
+     * @param customerId The ID of the customer.
+     * @param gameId     The ID of the game to remove from the wishlist.
+     * @throws GameShopException If the customer or game is not found.
+     */
+    @Transactional
+    public Game removeFromWishlist(Integer customerId, Integer gameId) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+
+        if (game == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found.");
+        }
+        customer.removeWishListedGame(game);
+        customerAccountRepository.save(customer);
+        return game;
+    }
+
+    /**
+     * Retrieves the customer's wishlist.
+     *
+     * @param customerId The ID of the customer.
+     * @return A list of Game objects in the customer's wishlist.
+     * @throws GameShopException If the customer is not found.
+     */
+    @Transactional
+    public List<Game> viewWishlist(Integer customerId) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+
+        return customer.getWishListedGames();
     }
 }
