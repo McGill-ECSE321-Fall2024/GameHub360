@@ -1,8 +1,10 @@
 package ca.mcgill.ecse321.GameShop.integration;
 
 import ca.mcgill.ecse321.GameShop.dto.*;
+import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
 
+import ca.mcgill.ecse321.GameShop.repository.GameRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -32,6 +34,8 @@ public class CustomerIntegrationTests {
 
     @Autowired
     private CustomerAccountRepository customerAccountRepository;
+    @Autowired
+    private GameRepository gameRepository;
 
     private static final String VALID_EMAIL = "customer@example.com";
     private static final String VALID_PASSWORD = "Secure@Pass1";
@@ -46,6 +50,8 @@ public class CustomerIntegrationTests {
     private static final int VALID_EXP_YEAR = 24;
 
     private Integer validCustomerId;
+    private Integer validGameId;
+    private Integer validGameId2;
 
     @BeforeEach
     public void setUp() {
@@ -55,6 +61,20 @@ public class CustomerIntegrationTests {
         CustomerRequestDto request = new CustomerRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE);
         ResponseEntity<CustomerResponseDto> response = client.postForEntity("/customers/", request, CustomerResponseDto.class);
         validCustomerId = response.getBody().getCustomerId();
+
+        // Create a Games to use in tests
+        Game game = new Game();
+        game.setName("Sample Game");
+        game.setPrice(59.99);
+        Game game2 = new Game();
+        game2.setName("Sample Game 2");
+        game2.setPrice(59.99);
+        // Save the game to the database
+        Game savedGame = gameRepository.save(game);
+        Game savedGame2 = gameRepository.save(game2);
+        // Set the valid game ID for use in tests
+        validGameId = savedGame.getGameEntityId(); // Assuming getGameId() returns the ID
+        validGameId2 = savedGame2.getGameEntityId(); // Assuming getGameId() returns the ID
     }
 
     @AfterEach
@@ -244,20 +264,20 @@ public class CustomerIntegrationTests {
 
     // -- tests for getPaymentCardById() --
 
-//    @Test
-//    @Order(14)
-//    public void testGetPaymentCardById_Success() {
-//        // First, create a payment card for the customer
-//        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
-//        String paymentUrl = "/customers/" + validCustomerId + "/payment";
-//        ResponseEntity<PaymentDetailsResponseDto> createResponse = client.postForEntity(paymentUrl, paymentRequest, PaymentDetailsResponseDto.class);
-//
-////        String getUrl = "/customers/" + validCustomerId + "/card/" + createResponse.getBody().getPaymentDetailsId();
-////        ResponseEntity<PaymentDetailsResponseDto> response = client.getForEntity(getUrl, PaymentDetailsResponseDto.class);
-////
-////        assertEquals(HttpStatus.OK, response.getStatusCode());
-////        assertEquals(VALID_NAME, response.getBody().getCardName());
-//    }
+    @Test
+    @Order(14)
+    public void testGetPaymentCardById_Success() {
+        // First, create a payment card for the customer
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        String paymentUrl = "/customers/" + validCustomerId + "/payment";
+        ResponseEntity<PaymentDetailsResponseDto> createResponse = client.postForEntity(paymentUrl, paymentRequest, PaymentDetailsResponseDto.class);
+
+        String getUrl = "/customers/" + validCustomerId + "/card/" + createResponse.getBody().getPaymentDetailsId();
+        ResponseEntity<PaymentDetailsResponseDto> response = client.getForEntity(getUrl, PaymentDetailsResponseDto.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(VALID_NAME, response.getBody().getCardName());
+    }
 
     @Test
     @Order(15)
@@ -270,6 +290,143 @@ public class CustomerIntegrationTests {
         assertEquals("Card not found.", errorResponse.getError());
     }
 
-    //
+    // -- tests for getAllPaymentCards() --
+
+    @Test
+    @Order(16)
+    public void testGetAllPaymentCards_Success() {
+        // Create a payment card for the customer
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        String paymentUrl = "/customers/" + validCustomerId + "/payment";
+        client.postForEntity(paymentUrl, paymentRequest, PaymentDetailsResponseDto.class);
+
+        String getAllUrl = "/customers/" + validCustomerId + "/cards";
+        ResponseEntity<PaymentDetailsResponseDto[]> response = client.getForEntity(getAllUrl, PaymentDetailsResponseDto[].class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().length);
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    @Order(17)
+    public void testGetAllPaymentCards_NotFound() {
+        ResponseEntity<ErrorResponseDto> response = client.getForEntity("/customers/9999/cards", ErrorResponseDto.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        ErrorResponseDto errorResponse = response.getBody();
+        assertNotNull(errorResponse);
+        assertEquals("Customer not found.", errorResponse.getError());
+    }
+
+    // -- tests for updatePaymentCards() --
+
+    @Test
+    @Order(18)
+    public void testCreateOrUpdatePaymentCard_Success() {
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        String url = "/customers/" + validCustomerId + "/payment";
+
+        ResponseEntity<PaymentDetailsResponseDto> response = client.postForEntity(url, paymentRequest, PaymentDetailsResponseDto.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(VALID_NAME, response.getBody().getCardName());
+    }
+
+    @Test
+    @Order(19)
+    public void testCreateOrUpdatePaymentCard_NotFound() {
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        String url = "/customers/9999/payment";
+
+        ResponseEntity<ErrorResponseDto> response = client.postForEntity(url, paymentRequest, ErrorResponseDto.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        ErrorResponseDto errorResponse = response.getBody();
+        assertNotNull(errorResponse);
+        assertEquals("Customer not found.", errorResponse.getError());
+    }
+
+    // -- tests for addToWishlist() --
+
+    @Test
+    @Order(20)
+    public void testAddToWishlist_Success() {
+        String url = "/customers/" + validCustomerId + "/wishlist/" + validGameId;
+        ResponseEntity<GameResponseDto> response = client.postForEntity(url, null, GameResponseDto.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getBody().getName(), "Sample Game");
+        assertEquals(response.getBody().getPrice(), 59.99);
+    }
+
+    @Test
+    @Order(21)
+    public void testAddToWishlist_NotFound() {
+        String url = "/customers/" + validCustomerId + "/wishlist/" + 9999;
+        ResponseEntity<ErrorResponseDto> response = client.postForEntity(url, null, ErrorResponseDto.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        ErrorResponseDto errorResponse = response.getBody();
+        assertNotNull(errorResponse);
+        assertEquals("Game not found.", errorResponse.getError());
+    }
+
+    // -- tests for removeFromWishlist() --
+
+    @Test
+    @Order(22)
+    public void testRemoveFromWishlist_Success() {
+        String url = "/customers/" + validCustomerId + "/wishlist/" + validGameId;
+        client.postForEntity(url, null, GameResponseDto.class); // Add first to then remove
+
+        ResponseEntity<GameResponseDto> response = client.exchange(url, HttpMethod.DELETE, null, GameResponseDto.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @Order(23)
+    public void testRemoveFromWishlist_NotFound() {
+        ResponseEntity<ErrorResponseDto> response = client.exchange("/customers/9999/wishlist/" + validGameId, HttpMethod.DELETE, null, ErrorResponseDto.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        ErrorResponseDto errorResponse = response.getBody();
+        assertNotNull(errorResponse);
+        assertEquals("Customer not found.", errorResponse.getError());
+    }
+
+    // -- tests for viewWishlist() --
+
+    @Test
+    @Order(24)
+    public void testViewWishlist_Success() {
+        String url = "/customers/" + validCustomerId + "/wishlist/" + validGameId;
+        client.postForEntity(url, null, GameResponseDto.class); // Add game to wishlist
+        String url2 = "/customers/" + validCustomerId + "/wishlist/" + validGameId2;
+        client.postForEntity(url2, null, GameResponseDto.class); // Add game to wishlist
+
+        String viewWishlistUrl = "/customers/" + validCustomerId + "/wishlist";
+        ResponseEntity<GameResponseDto[]> response = client.getForEntity(viewWishlistUrl, GameResponseDto[].class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().length);
+        assertNotNull(response.getBody());
+    }
+
+    @Test
+    @Order(25)
+    public void testViewWishlist_NotFound() {
+        // Arrange
+        String url = "/customers/" + 9999 + "/wishlist";
+
+        // Act
+        ResponseEntity<String> response = client.getForEntity(url, String.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().contains("Customer not found")); // Assuming your exception message includes this text
+    }
 }
 

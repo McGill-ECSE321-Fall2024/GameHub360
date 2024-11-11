@@ -229,7 +229,10 @@ public class CustomerService {
                 paymentDetailsRequestDto.getExpYear(),
                 customer);
 
-        // Save the customer; cascade will save payment details as well
+        // THIS LINE MUST BE REVIEWED
+        paymentDetailsRepository.save(paymentDetails);
+        // THIS LINE MUST BE REVIEWED
+
         customerAccountRepository.save(customer);
 
         return paymentDetails;

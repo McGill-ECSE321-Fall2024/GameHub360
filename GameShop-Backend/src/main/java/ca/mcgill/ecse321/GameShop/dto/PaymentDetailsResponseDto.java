@@ -28,6 +28,9 @@ public class PaymentDetailsResponseDto {
                 .collect(Collectors.toList());
     }
 
+    public PaymentDetailsResponseDto() {
+    }
+
     // Getters only, as this is a response DTO
     public int getPaymentDetailsId() {
         return paymentDetailsId;
