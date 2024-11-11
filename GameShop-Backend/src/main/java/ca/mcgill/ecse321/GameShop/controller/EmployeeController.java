@@ -102,13 +102,13 @@ public class EmployeeController {
     @GetMapping("/activities")
     public ActivityLogListDto getAllEmployeesActivityLogs() {
         // Create a list of activity log response dtos
-        List<ActivityLogResponseDto> ActivityLogsDto = new ArrayList<ActivityLogResponseDto>();
+        List<ActivityLogResponseDto> activityLogsDto = new ArrayList<ActivityLogResponseDto>();
 
         // for each activity log, create a response dto and add to list of dtos
         for (ActivityLog log : activityLogService.getAllEmployeesActivityLogs()) {
-            ActivityLogsDto.add(new ActivityLogResponseDto(log));
+            activityLogsDto.add(new ActivityLogResponseDto(log));
         }
-        return new ActivityLogListDto(ActivityLogsDto);
+        return new ActivityLogListDto(activityLogsDto);
     }
 
     /**
@@ -121,14 +121,14 @@ public class EmployeeController {
     @GetMapping("/{employeeId}/activities")
     public ActivityLogListDto getEmployeeActivityLogs(@PathVariable("employeeId") Integer employeeId) {
         // Create a list of activity log response dtos
-        List<ActivityLogResponseDto> ActivityLogsDto = new ArrayList<ActivityLogResponseDto>();
+        List<ActivityLogResponseDto> activityLogsDto = new ArrayList<ActivityLogResponseDto>();
         // Get employee by ID
         EmployeeAccount employee = employeeService.getEmployeeById(employeeId);
 
         // for each activity log, create a response dto and add to list of dtos
         for (ActivityLog log : activityLogService.getEmployeeActivityLogs(employee)) {
-            ActivityLogsDto.add(new ActivityLogResponseDto(log));
+            activityLogsDto.add(new ActivityLogResponseDto(log));
         }
-        return new ActivityLogListDto(ActivityLogsDto);
+        return new ActivityLogListDto(activityLogsDto);
     }
 }
