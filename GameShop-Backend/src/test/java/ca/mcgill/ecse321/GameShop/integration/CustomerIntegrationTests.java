@@ -138,11 +138,14 @@ public class CustomerIntegrationTests {
     @Test
     @Order(4)
     public void testUpdateCustomer_Success() {
+        // Arrange
         CustomerRequestDto updateRequest = new CustomerRequestDto(VALID_EMAIL, VALID_PASSWORD, "Updated Name", VALID_PHONE);
         String url = "/customers/" + validCustomerId;
 
+        // Act
         ResponseEntity<CustomerResponseDto> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<>(updateRequest), CustomerResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotEquals(VALID_NAME, response.getBody().getName());
         assertEquals("Updated Name", response.getBody().getName());
@@ -152,11 +155,14 @@ public class CustomerIntegrationTests {
     @Test
     @Order(5)
     public void testUpdateCustomer_NotFound() {
+        // Arrange
         CustomerRequestDto updateRequest = new CustomerRequestDto("notfound@example.com", VALID_PASSWORD, "Another Name", VALID_PHONE);
         String url = "/customers/9999";
 
+        // Act
         ResponseEntity<ErrorResponseDto> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<>(updateRequest), ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -166,11 +172,14 @@ public class CustomerIntegrationTests {
     @Test
     @Order(6)
     public void testUpdateCustomer_BadRequest() {
+        // Arrange
         CustomerRequestDto updateRequest = new CustomerRequestDto(VALID_EMAIL, INVALID_PASSWORD, "Jane Doe", INVALID_PHONE);
         String url = "/customers/" + validCustomerId;
 
+        // Act
         ResponseEntity<ErrorResponseDto> response = client.exchange(url, HttpMethod.PUT, new HttpEntity<>(updateRequest), ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -182,8 +191,10 @@ public class CustomerIntegrationTests {
     @Test
     @Order(7)
     public void testGetAllCustomers_Success() {
+        // Arrange & Act
         ResponseEntity<CustomerResponseDto[]> response = client.getForEntity("/customers", CustomerResponseDto[].class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().length);
@@ -194,9 +205,11 @@ public class CustomerIntegrationTests {
     @Test
     @Order(8)
     public void testGetCustomerById_Success() {
+        // Arrange & Act
         String url = "/customers/" + validCustomerId;
         ResponseEntity<CustomerResponseDto> response = client.getForEntity(url, CustomerResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
         assertEquals(VALID_NAME, response.getBody().getName());
@@ -206,8 +219,10 @@ public class CustomerIntegrationTests {
     @Test
     @Order(9)
     public void testGetCustomerById_NotFound() {
+        // Arrange & Act
         ResponseEntity<ErrorResponseDto> response = client.getForEntity("/customers/9999", ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -219,9 +234,13 @@ public class CustomerIntegrationTests {
     @Test
     @Order(10)
     public void testLoginCustomer_Success() {
+        // Arrange
         CustomerRequestDto loginRequest = new CustomerRequestDto(VALID_EMAIL, VALID_PASSWORD);
+
+        // Act
         ResponseEntity<CustomerResponseDto> response = client.postForEntity("/customers/login", loginRequest, CustomerResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(VALID_EMAIL, response.getBody().getEmail());
     }
@@ -229,9 +248,13 @@ public class CustomerIntegrationTests {
     @Test
     @Order(11)
     public void testLoginCustomer_Unauthorized() {
+        // Arrange
         CustomerRequestDto invalidLogin = new CustomerRequestDto(VALID_EMAIL, INVALID_PASSWORD);
+
+        // Act
         ResponseEntity<ErrorResponseDto> response = client.postForEntity("/customers/login", invalidLogin, ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -243,9 +266,11 @@ public class CustomerIntegrationTests {
     @Test
     @Order(12)
     public void testViewOrderHistory_Success() {
+        // Arrange & Act
         String url = "/customers/" + validCustomerId + "/orders";
         ResponseEntity<OrderResponseDto[]> response = client.getForEntity(url, OrderResponseDto[].class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(0, response.getBody().length);
         assertNotNull(response.getBody());
@@ -254,8 +279,10 @@ public class CustomerIntegrationTests {
     @Test
     @Order(13)
     public void testViewOrderHistory_NotFound() {
+        // Arrange & Act
         ResponseEntity<ErrorResponseDto> response = client.getForEntity("/customers/9999/orders", ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -267,14 +294,16 @@ public class CustomerIntegrationTests {
     @Test
     @Order(14)
     public void testGetPaymentCardById_Success() {
-        // First, create a payment card for the customer
+        // Arrange
         PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
         String paymentUrl = "/customers/" + validCustomerId + "/payment";
         ResponseEntity<PaymentDetailsResponseDto> createResponse = client.postForEntity(paymentUrl, paymentRequest, PaymentDetailsResponseDto.class);
 
+        // Act
         String getUrl = "/customers/" + validCustomerId + "/card/" + createResponse.getBody().getPaymentDetailsId();
         ResponseEntity<PaymentDetailsResponseDto> response = client.getForEntity(getUrl, PaymentDetailsResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(VALID_NAME, response.getBody().getCardName());
     }
@@ -282,8 +311,10 @@ public class CustomerIntegrationTests {
     @Test
     @Order(15)
     public void testGetPaymentCardById_NotFound() {
+        // Arrange & Act
         ResponseEntity<ErrorResponseDto> response = client.getForEntity("/customers/" + validCustomerId + "/card/9999", ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -295,14 +326,16 @@ public class CustomerIntegrationTests {
     @Test
     @Order(16)
     public void testGetAllPaymentCards_Success() {
-        // Create a payment card for the customer
+        // Arrange
         PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
         String paymentUrl = "/customers/" + validCustomerId + "/payment";
         client.postForEntity(paymentUrl, paymentRequest, PaymentDetailsResponseDto.class);
 
+        // Act
         String getAllUrl = "/customers/" + validCustomerId + "/cards";
         ResponseEntity<PaymentDetailsResponseDto[]> response = client.getForEntity(getAllUrl, PaymentDetailsResponseDto[].class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().length);
         assertNotNull(response.getBody());
@@ -311,8 +344,10 @@ public class CustomerIntegrationTests {
     @Test
     @Order(17)
     public void testGetAllPaymentCards_NotFound() {
+        // Arrange & Act
         ResponseEntity<ErrorResponseDto> response = client.getForEntity("/customers/9999/cards", ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -324,11 +359,14 @@ public class CustomerIntegrationTests {
     @Test
     @Order(18)
     public void testCreateOrUpdatePaymentCard_Success() {
+        // Arrange
         PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
         String url = "/customers/" + validCustomerId + "/payment";
 
+        // Act
         ResponseEntity<PaymentDetailsResponseDto> response = client.postForEntity(url, paymentRequest, PaymentDetailsResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(VALID_NAME, response.getBody().getCardName());
     }
@@ -336,11 +374,14 @@ public class CustomerIntegrationTests {
     @Test
     @Order(19)
     public void testCreateOrUpdatePaymentCard_NotFound() {
+        // Arrange
         PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
         String url = "/customers/9999/payment";
 
+        // Act
         ResponseEntity<ErrorResponseDto> response = client.postForEntity(url, paymentRequest, ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -352,9 +393,13 @@ public class CustomerIntegrationTests {
     @Test
     @Order(20)
     public void testAddToWishlist_Success() {
+        // Arrange
         String url = "/customers/" + validCustomerId + "/wishlist/" + validGameId;
+
+        // Act
         ResponseEntity<GameResponseDto> response = client.postForEntity(url, null, GameResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(response.getBody().getName(), "Sample Game");
         assertEquals(response.getBody().getPrice(), 59.99);
@@ -363,9 +408,13 @@ public class CustomerIntegrationTests {
     @Test
     @Order(21)
     public void testAddToWishlist_NotFound() {
+        // Arrange
         String url = "/customers/" + validCustomerId + "/wishlist/" + 9999;
+
+        // Act
         ResponseEntity<ErrorResponseDto> response = client.postForEntity(url, null, ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -377,19 +426,24 @@ public class CustomerIntegrationTests {
     @Test
     @Order(22)
     public void testRemoveFromWishlist_Success() {
+        // Arrange
         String url = "/customers/" + validCustomerId + "/wishlist/" + validGameId;
-        client.postForEntity(url, null, GameResponseDto.class); // Add first to then remove
 
+        // Act
+        client.postForEntity(url, null, GameResponseDto.class); // Add first to then remove
         ResponseEntity<GameResponseDto> response = client.exchange(url, HttpMethod.DELETE, null, GameResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     @Order(23)
     public void testRemoveFromWishlist_NotFound() {
+        // Arrange & Act
         ResponseEntity<ErrorResponseDto> response = client.exchange("/customers/9999/wishlist/" + validGameId, HttpMethod.DELETE, null, ErrorResponseDto.class);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         ErrorResponseDto errorResponse = response.getBody();
         assertNotNull(errorResponse);
@@ -401,14 +455,17 @@ public class CustomerIntegrationTests {
     @Test
     @Order(24)
     public void testViewWishlist_Success() {
+        // Arrange
         String url = "/customers/" + validCustomerId + "/wishlist/" + validGameId;
         client.postForEntity(url, null, GameResponseDto.class); // Add game to wishlist
         String url2 = "/customers/" + validCustomerId + "/wishlist/" + validGameId2;
         client.postForEntity(url2, null, GameResponseDto.class); // Add game to wishlist
 
+        // Act
         String viewWishlistUrl = "/customers/" + validCustomerId + "/wishlist";
         ResponseEntity<GameResponseDto[]> response = client.getForEntity(viewWishlistUrl, GameResponseDto[].class);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().length);
         assertNotNull(response.getBody());
