@@ -121,7 +121,9 @@ public class ReviewIntegrationTests {
         Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId(), 0);
 
         // Act
-        ResponseEntity<ReviewResponseDto> response = client.postForEntity("/{gameId}/reviews", requestDto, ReviewResponseDto.class);
+        //ResponseEntity<ReviewResponseDto> response = client.postForEntity("/{gameId}/reviews", requestDto, ReviewResponseDto.class);
+        ResponseEntity<ReviewResponseDto> response = client.postForEntity(game1.getGameEntityId() + "/reviews", requestDto, ReviewResponseDto.class);
+
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
