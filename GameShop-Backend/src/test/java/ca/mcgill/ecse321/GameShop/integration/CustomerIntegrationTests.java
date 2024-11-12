@@ -1,10 +1,13 @@
 package ca.mcgill.ecse321.GameShop.integration;
 
 import ca.mcgill.ecse321.GameShop.dto.*;
+import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
 import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
 
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;

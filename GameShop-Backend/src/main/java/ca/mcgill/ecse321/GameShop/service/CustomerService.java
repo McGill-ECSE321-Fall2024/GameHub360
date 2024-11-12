@@ -230,10 +230,6 @@ public class CustomerService {
                 paymentDetailsRequestDto.getExpYear(),
                 customer);
 
-        // THIS LINE MUST BE REVIEWED
-        paymentDetailsRepository.save(paymentDetails);
-        // THIS LINE MUST BE REVIEWED
-
         customerAccountRepository.save(customer);
 
         return paymentDetails;
