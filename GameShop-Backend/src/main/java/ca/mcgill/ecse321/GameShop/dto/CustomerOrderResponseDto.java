@@ -2,37 +2,29 @@ package ca.mcgill.ecse321.GameShop.dto;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ca.mcgill.ecse321.GameShop.model.CustomerOrder.OrderStatus;
-import ca.mcgill.ecse321.GameShop.model.OrderGame;
-import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
-import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
 
 public class CustomerOrderResponseDto {
     private int orderId;
     private OrderStatus orderStatus;
     private Date orderDate;
-    private List<OrderGame> orderedGames;
-    private CustomerAccount orderedBy;
-    private PaymentDetails paymentInformation;
+    private List<OrderGameDto> orderedGames;
+    private CustomerAccountDto orderedBy;
+    private PaymentDetailsDto paymentInformation;
 
     public CustomerOrderResponseDto() {
     }
 
-    public CustomerOrderResponseDto(int orderId, OrderStatus orderStatus, Date orderDate, List<OrderGame> orderedGames,
-            CustomerAccount orderedBy, PaymentDetails paymentInformation) {
-        this.orderId = orderId;
-        this.orderStatus = orderStatus;
-        this.orderDate = orderDate;
-        this.orderedGames = orderedGames;
-        this.orderedBy = orderedBy;
-        this.paymentInformation = paymentInformation;
-    }
-
     public CustomerOrderResponseDto(CustomerOrder customerOrder) {
-        this(customerOrder.getOrderId(), customerOrder.getOrderStatus(), customerOrder.getOrderDate(),
-                customerOrder.getOrderedGames(), customerOrder.getOrderedBy(), customerOrder.getPaymentInformation());
+        this.orderId = customerOrder.getOrderId();
+        this.orderStatus = customerOrder.getOrderStatus();
+        this.orderDate = customerOrder.getOrderDate();
+        this.orderedGames = customerOrder.getOrderedGames().stream().map(OrderGameDto::new).collect(Collectors.toList());
+        this.orderedBy = new CustomerAccountDto(customerOrder.getOrderedBy());
+        this.paymentInformation = new PaymentDetailsDto(customerOrder.getPaymentInformation());
     }
 
     public int getOrderId() {
@@ -59,27 +51,27 @@ public class CustomerOrderResponseDto {
         this.orderDate = orderDate;
     }
 
-    public List<OrderGame> getOrderedGames() {
+    public List<OrderGameDto> getOrderedGames() {
         return orderedGames;
     }
 
-    public void setOrderedGames(List<OrderGame> orderedGames) {
+    public void setOrderedGames(List<OrderGameDto> orderedGames) {
         this.orderedGames = orderedGames;
     }
 
-    public CustomerAccount getOrderedBy() {
+    public CustomerAccountDto getOrderedBy() {
         return orderedBy;
     }
 
-    public void setOrderedBy(CustomerAccount orderedBy) {
+    public void setOrderedBy(CustomerAccountDto orderedBy) {
         this.orderedBy = orderedBy;
     }
 
-    public PaymentDetails getPaymentInformation() {
+    public PaymentDetailsDto getPaymentInformation() {
         return paymentInformation;
     }
 
-    public void setPaymentInformation(PaymentDetails paymentInformation) {
+    public void setPaymentInformation(PaymentDetailsDto paymentInformation) {
         this.paymentInformation = paymentInformation;
     }
 }

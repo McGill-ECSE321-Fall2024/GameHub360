@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.mcgill.ecse321.GameShop.dto.ReviewRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
@@ -21,12 +23,18 @@ import ca.mcgill.ecse321.GameShop.model.Review;
 import ca.mcgill.ecse321.GameShop.model.Review.GameReviewRating;
 import ca.mcgill.ecse321.GameShop.model.Reply;
 import ca.mcgill.ecse321.GameShop.model.OrderGame;
+import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
+import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
+import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ReviewRepository;
 import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
-import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.ReplyRepository;
+import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class ReviewServiceTests {
 
     @Mock
@@ -36,179 +44,259 @@ public class ReviewServiceTests {
     private OrderGameRepository orderGameRepository;
 
     @Mock
-    private ManagerAccountRepository managerAccountRepository;
+    private CustomerAccountRepository customerAccountRepository;
+
+    @Mock
+    private ReplyRepository replyRepository;
 
     @InjectMocks
     private ReviewService reviewService;
 
-    private Review review;
-    private OrderGame orderGame;
-    private ManagerAccount manager;
-    private ReviewRequestDto reviewRequestDto;
+    @Test
+    public void testSubmitReview() {
+        // Arrange
+        CustomerAccount customer = new CustomerAccount("exmaple@mcgill.com", "password123");
+        GameCategory gameCategory = new GameCategory(true, "Action");
 
-    @BeforeEach
-    public void setup() {
-        // Setup test data
-        orderGame = new OrderGame();
-        try {
-            java.lang.reflect.Field idField = OrderGame.class.getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(orderGame, 1);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
 
-        // Create review with proper initialization
-        review = new Review();
-        try {
-            // Initialize the reviewReplies list using reflection
-            java.lang.reflect.Field repliesField = Review.class.getDeclaredField("reviewReplies");
-            repliesField.setAccessible(true);
-            repliesField.set(review, new ArrayList<>());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        review.setRating(GameReviewRating.FIVE_STARS);
-        review.setComment("Great game!");
-        review.setReviewDate(new Date(System.currentTimeMillis()));
+        // Create the CustomerOrder object
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        OrderGame orderGame1 = new OrderGame(customerOrder, game1);
 
-        manager = new ManagerAccount();
+        ReviewRequestDto requestDto = new ReviewRequestDto(GameReviewRating.FIVE_STARS, "Great game",
+                Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId(), 0);
 
-        reviewRequestDto = new ReviewRequestDto();
-        reviewRequestDto.setRating(GameReviewRating.FIVE_STARS);
-        reviewRequestDto.setComment("Great game!");
-        reviewRequestDto.setReviewDate(new Date(System.currentTimeMillis()));
+        // Mock repository behavior
+        when(orderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);
+        when(customerAccountRepository.findCustomerAccountByCustomerId(any(Integer.class))).thenReturn(customer);
+        when(replyRepository.findReplyByReplyId(any(Integer.class))).thenReturn(null);
+        when(reviewRepository.save(any(Review.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // Act
+        Review response = reviewService.submitReview(requestDto);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(requestDto.getRating(), response.getRating());
+        assertEquals(requestDto.getComment(), response.getComment());
+        assertEquals(requestDto.getReviewDate(), response.getReviewDate());
+        assertEquals(orderGame1, response.getReviewedGame());
+        verify(orderGameRepository, times(1)).findOrderGameById(orderGame1.getOrderGameId());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customer.getCustomerId());
+        verify(replyRepository, times(0)).findReplyByReplyId(0);
     }
 
     @Test
-    public void testCreateReviewSuccess() {
-        // Make sure orderGame doesn't have a review
-        orderGame.setReview(null);
-        
-        when(orderGameRepository.findOrderGameById(1)).thenReturn(orderGame);
-        when(reviewRepository.save(any(Review.class))).thenReturn(review);
+    public void testSubmitReviewWithInvalidOrderedGame() {
+        // Arrange
+        CustomerAccount customer = new CustomerAccount("example.@gmail.com", "password123");
+        GameCategory gameCategory = new GameCategory(true, "Action");
 
-        Review created = reviewService.createReview(1, reviewRequestDto);
+        Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
 
-        assertNotNull(created);
-        assertEquals(GameReviewRating.FIVE_STARS, created.getRating());
-        assertEquals("Great game!", created.getComment());
-        verify(reviewRepository).save(any(Review.class));
+        // Create the CustomerOrder object
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        OrderGame orderGame1 = new OrderGame(customerOrder, game1);
+
+        ReviewRequestDto requestDto = new ReviewRequestDto(GameReviewRating.FIVE_STARS, "Great game",
+                Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId(), 0);
+
+        // Mock repository behavior
+        when(orderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(null);
+        when(customerAccountRepository.findCustomerAccountByCustomerId(any(Integer.class))).thenReturn(customer);
+        when(replyRepository.findReplyByReplyId(any(Integer.class))).thenReturn(null);
+        when(reviewRepository.save(any(Review.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // Act
+        GameShopException e = assertThrows(GameShopException.class, () -> reviewService.submitReview(requestDto));
+
+        // Assert
+        assertEquals("Ordered game not found", e.getMessage());
+        assertEquals(404, e.getStatus().value());
+        verify(orderGameRepository, times(1)).findOrderGameById(orderGame1.getOrderGameId());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customer.getCustomerId());
+        verify(replyRepository, times(0)).findReplyByReplyId(0);
     }
 
     @Test
-    public void testCreateReviewGameNotFound() {
-        when(orderGameRepository.findOrderGameById(1)).thenReturn(null);
+    public void testSubmitReviewWithInvalidCustomer() {
+        // Arrange
+        CustomerAccount customer = new CustomerAccount("example.@gmail.com", "password123");
+        GameCategory gameCategory = new GameCategory(true, "Action");
 
-        GameShopException exception = assertThrows(GameShopException.class, 
-            () -> reviewService.createReview(1, reviewRequestDto));
-        assertEquals("Game not found.", exception.getMessage());
+        Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
+
+        // Create the CustomerOrder object
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        OrderGame orderGame1 = new OrderGame(customerOrder, game1);
+
+        ReviewRequestDto requestDto = new ReviewRequestDto(GameReviewRating.FIVE_STARS, "Great game",
+                Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId(), 0);
+
+        // Mock repository behavior
+        when(orderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);
+        when(customerAccountRepository.findCustomerAccountByCustomerId(any(Integer.class))).thenReturn(null);
+        when(replyRepository.findReplyByReplyId(any(Integer.class))).thenReturn(null);
+        when(reviewRepository.save(any(Review.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // Act
+        GameShopException e = assertThrows(GameShopException.class, () -> reviewService.submitReview(requestDto));
+
+        // Assert
+        assertEquals("Customer not found", e.getMessage());
+        assertEquals(404, e.getStatus().value());
+        verify(orderGameRepository, times(1)).findOrderGameById(orderGame1.getOrderGameId());
+        verify(customerAccountRepository, times(1)).findCustomerAccountByCustomerId(customer.getCustomerId());
+        verify(replyRepository, times(0)).findReplyByReplyId(0);
     }
 
     @Test
-    public void testCreateReviewGameAlreadyReviewed() {
-        orderGame.setReview(review);
-        when(orderGameRepository.findOrderGameById(1)).thenReturn(orderGame);
+    public void testViewReviews() {
+        // Arrange
+        CustomerAccount customer = new CustomerAccount("example.@gmail.com", "password123");
+        GameCategory gameCategory = new GameCategory(true, "Action");
 
-        GameShopException exception = assertThrows(GameShopException.class, 
-            () -> reviewService.createReview(1, reviewRequestDto));
-        assertEquals("Game already has a review.", exception.getMessage());
+        Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
+
+        // Create the CustomerOrder object
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        OrderGame orderGame1 = new OrderGame(customerOrder, game1);
+        OrderGame orderGame2 = new OrderGame(customerOrder, game1);
+
+        // Mock repository behavior
+        when(reviewRepository.findAll()).thenReturn(List.of(new Review(Date.valueOf(LocalDate.now()), orderGame1),
+                new Review(Date.valueOf(LocalDate.now()), orderGame2)));
+
+        // Act
+        List<Review> response = reviewService.viewReviews();
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(2, response.size());
+        verify(reviewRepository, times(1)).findAll();
     }
 
     @Test
-    public void testGetReviewsByGameSuccess() {
-        orderGame.setReview(review);
-        when(orderGameRepository.findOrderGameById(1)).thenReturn(orderGame);
+    public void testReplyToReview() {
+        // Arrange
+        ManagerAccount manager = new ManagerAccount("Mike@gmail.com", "Pass1");
+        CustomerAccount customer = new CustomerAccount("example.@gmail.com", "password123");
+        GameCategory gameCategory = new GameCategory(true, "Action");
+        Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
 
-        List<Review> reviews = reviewService.getReviewsByGame(1);
+        // Create CustomerOrder and OrderGame
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        OrderGame orderGame1 = new OrderGame(customerOrder, game1);
 
-        assertNotNull(reviews);
-        assertEquals(1, reviews.size());
-        assertEquals(review, reviews.get(0));
+        // Create Review and Reply
+        Review review = new Review(Date.valueOf(LocalDate.now()), orderGame1);
+        Reply reply = new Reply("Thank you for the feedback!", Date.valueOf(LocalDate.now()), review, manager);
+
+        // Mock repository behavior
+        when(reviewRepository.findReviewByReviewId(any(Integer.class))).thenReturn(review);
+        when(reviewRepository.save(any(Review.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // Act
+        Review response = reviewService.replyToReview(review.getReviewId(), reply);
+
+        // Assert
+        assertNotNull(response);
+        assertTrue(response.getReviewReplies().contains(reply));
+        verify(reviewRepository, times(1)).findReviewByReviewId(review.getReviewId());
+        verify(reviewRepository, times(1)).save(review);
     }
 
     @Test
-    public void testGetReviewsByGameNotFound() {
-        when(orderGameRepository.findOrderGameById(1)).thenReturn(null);
+    public void testReplyToReviewWithInvalidReview() {
+        // Arrange
+        ManagerAccount manager = new ManagerAccount("mike@gmail.com", "pas2");
+        CustomerAccount customer = new CustomerAccount("example.@gmail.com", "password123");
+        GameCategory gameCategory = new GameCategory(true, "Action");
+        Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
 
-        GameShopException exception = assertThrows(GameShopException.class, 
-            () -> reviewService.getReviewsByGame(1));
-        assertEquals("Game not found.", exception.getMessage());
+        // Create CustomerOrder and OrderGame
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        OrderGame orderGame1 = new OrderGame(customerOrder, game1);
+
+        // Create Review and Reply
+        Review review = new Review(Date.valueOf(LocalDate.now()), orderGame1);
+        Reply reply = new Reply("Thank you for the feedback!", Date.valueOf(LocalDate.now()), review, manager);
+
+        // Mock repository behavior
+        when(reviewRepository.findReviewByReviewId(any(Integer.class))).thenReturn(null);
+        when(reviewRepository.save(any(Review.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // Act
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> reviewService.replyToReview(review.getReviewId(), reply));
+
+        // Assert
+        assertEquals("Review not found", e.getMessage());
+        assertEquals(404, e.getStatus().value());
+        verify(reviewRepository, times(1)).findReviewByReviewId(review.getReviewId());
+        verify(reviewRepository, times(0)).save(review);
     }
 
     @Test
-    public void testAddReplyToReviewSuccess() {
-        when(reviewRepository.findReviewByReviewId(1)).thenReturn(review);
-        when(managerAccountRepository.findManagerAccountByEmail("manager@email.com")).thenReturn(manager);
+    public void testDeleteReview() {
+        // Arrange
+        CustomerAccount customer = new CustomerAccount("example.@gmail.com", "password123");
+        GameCategory gameCategory = new GameCategory(true, "Action");
+        Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
 
-        Reply reply = reviewService.addReplyToReview(1, "Thank you for your review!", "manager@email.com");
+        // Create CustomerOrder and OrderGame
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        OrderGame orderGame1 = new OrderGame(customerOrder, game1);
 
-        assertNotNull(reply);
-        assertEquals("Thank you for your review!", reply.getContent());
-        assertEquals(manager, reply.getReviewer());
+        // Create Review and Reply
+        Review review = new Review(Date.valueOf(LocalDate.now()), orderGame1);
+
+        // Mock repository behavior
+        when(reviewRepository.findReviewByReviewId(any(Integer.class))).thenReturn(review);
+
+        // Act
+        reviewService.deleteReview(review.getReviewId());
+
+        // Assert
+        verify(reviewRepository, times(1)).findReviewByReviewId(review.getReviewId());
+        verify(reviewRepository, times(1)).delete(review);
     }
 
     @Test
-    public void testAddReplyToReviewNotFound() {
-        when(reviewRepository.findReviewByReviewId(1)).thenReturn(null);
+    public void testDeleteReviewWithInvalidReview() {
+        // Arrange
+        CustomerAccount customer = new CustomerAccount("example.@gmail.com", "password123");
+        GameCategory gameCategory = new GameCategory(true, "Action");
+        Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
 
-        GameShopException exception = assertThrows(GameShopException.class, 
-            () -> reviewService.addReplyToReview(1, "Thank you!", "manager@email.com"));
-        assertEquals("Review not found.", exception.getMessage());
+        // Create CustomerOrder and OrderGame
+        PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
+        OrderGame orderGame1 = new OrderGame(customerOrder, game1);
+
+        // Create Review and Reply
+        Review review = new Review(Date.valueOf(LocalDate.now()), orderGame1);
+
+        // Mock repository behavior
+        when(reviewRepository.findReviewByReviewId(any(Integer.class))).thenReturn(null);
+
+        // Act
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> reviewService.deleteReview(review.getReviewId()));
+
+        // Assert
+        assertEquals("Review not found", e.getMessage());
+        assertEquals(404, e.getStatus().value());
+        verify(reviewRepository, times(1)).findReviewByReviewId(review.getReviewId());
+        verify(reviewRepository, times(0)).delete(review);
     }
 
-    @Test
-    public void testAddReplyManagerNotFound() {
-        when(reviewRepository.findReviewByReviewId(1)).thenReturn(review);
-        when(managerAccountRepository.findManagerAccountByEmail("manager@email.com")).thenReturn(null);
-
-        GameShopException exception = assertThrows(GameShopException.class, 
-            () -> reviewService.addReplyToReview(1, "Thank you!", "manager@email.com"));
-        assertEquals("Manager not found.", exception.getMessage());
-    }
-
-    @Test
-    public void testAddReplyEmptyContent() {
-        when(reviewRepository.findReviewByReviewId(1)).thenReturn(review);
-        when(managerAccountRepository.findManagerAccountByEmail("manager@email.com")).thenReturn(manager);
-
-        GameShopException exception = assertThrows(GameShopException.class, 
-            () -> reviewService.addReplyToReview(1, "", "manager@email.com"));
-        assertEquals("Reply content cannot be empty.", exception.getMessage());
-    }
-
-    @Test
-    public void testDeleteReviewSuccess() {
-        when(reviewRepository.findReviewByReviewId(1)).thenReturn(review);
-
-        assertDoesNotThrow(() -> reviewService.deleteReview(1));
-        verify(reviewRepository).delete(review);
-    }
-
-    @Test
-    public void testDeleteReviewNotFound() {
-        when(reviewRepository.findReviewByReviewId(1)).thenReturn(null);
-
-        GameShopException exception = assertThrows(GameShopException.class, 
-            () -> reviewService.deleteReview(1));
-        assertEquals("Review not found.", exception.getMessage());
-    }
-
-    @Test
-    public void testGetReviewSuccess() {
-        when(reviewRepository.findReviewByReviewId(1)).thenReturn(review);
-
-        Review found = reviewService.getReview(1);
-        assertNotNull(found);
-        assertEquals(review.getReviewId(), found.getReviewId());
-    }
-
-    @Test
-    public void testGetReviewNotFound() {
-        when(reviewRepository.findReviewByReviewId(1)).thenReturn(null);
-
-        GameShopException exception = assertThrows(GameShopException.class, 
-            () -> reviewService.getReview(1));
-        assertEquals("Review not found.", exception.getMessage());
-    }
 }

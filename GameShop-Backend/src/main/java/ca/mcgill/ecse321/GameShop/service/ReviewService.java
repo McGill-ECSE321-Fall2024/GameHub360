@@ -5,10 +5,11 @@ import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Review;
 import ca.mcgill.ecse321.GameShop.model.Reply;
 import ca.mcgill.ecse321.GameShop.model.OrderGame;
-import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
+import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ReviewRepository;
 import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
-import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.ReplyRepository;
+import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.sql.Date;
 
 @Service
 public class ReviewService {
@@ -28,124 +28,95 @@ public class ReviewService {
     private OrderGameRepository orderGameRepository;
 
     @Autowired
-    private ManagerAccountRepository managerAccountRepository;
+    private CustomerAccountRepository customerAccountRepository;
+
+    @Autowired
+    private ReplyRepository replyRepository;
 
     /**
-     * Creates a new review for a specific game
+     * submit a review
      * 
-     * @param gameId The ID of the game being reviewed
-     * @param reviewRequestDto The review details
-     * @return The created Review
-     * @throws GameShopException if the game doesn't exist or if review data is invalid
+     * @param requestDto
+     * @return Review
+     * @throws GameShopException
      */
     @Transactional
-    public Review createReview(int gameId, ReviewRequestDto reviewRequestDto) {
-        OrderGame orderGame = orderGameRepository.findOrderGameById(gameId);
-        if (orderGame == null) {
-            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found.");
+    public Review submitReview(ReviewRequestDto requestDto) {
+        OrderGame orderedGame = orderGameRepository.findOrderGameById(requestDto.getOrderedGameId());
+        CustomerAccount reviewedBy = customerAccountRepository
+                .findCustomerAccountByCustomerId(requestDto.getReviewedById());
+        //Reply reply = replyRepository.findReplyByReplyId(requestDto.getReplyId());
+
+        if (orderedGame == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Ordered game not found");
         }
 
-        // Check if game already has a review
-        if (orderGame.getReview() != null) {
-            throw new GameShopException(HttpStatus.CONFLICT, "Game already has a review.");
+        if (reviewedBy == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found");
         }
 
-        // Validate review data
-        if (reviewRequestDto.getRating() == null) {
-            throw new GameShopException(HttpStatus.BAD_REQUEST, "Rating is required.");
+        //if (reply == null) {
+          //  throw new GameShopException(HttpStatus.NOT_FOUND, "Reply not found");
+        //}
+
+        Review review = new Review(requestDto.getReviewDate(), orderedGame);
+        review.setReviewedGame(orderedGame);
+        review.setRating(requestDto.getRating());
+
+        if (requestDto.getComment() != null) {
+            review.setComment(requestDto.getComment());
         }
 
-        Review review = new Review(reviewRequestDto.getReviewDate(), orderGame);
-        review.setRating(reviewRequestDto.getRating());
-        review.setComment(reviewRequestDto.getComment());
+       // review.addReviewReply(reply);
 
         return reviewRepository.save(review);
     }
 
     /**
-     * Retrieves all reviews for a specific game
+     * get all reviews
      * 
-     * @param gameId The ID of the game
-     * @return List of reviews for the game
-     * @throws GameShopException if the game doesn't exist
+     * @return List<Review>
      */
-    @Transactional
-    public List<Review> getReviewsByGame(int gameId) {
-        OrderGame orderGame = orderGameRepository.findOrderGameById(gameId);
-        if (orderGame == null) {
-            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found.");
-        }
-
-        // Since we don't have a findReviewsByOrderGame method, we can check if the game has a review
-        // and return it as a single-element list
-        Review review = orderGame.getReview();
-        if (review == null) {
-            return List.of(); // Return empty list if no review exists
-        }
-        return List.of(review);
+    public List<Review> viewReviews() {
+        return (List<Review>) reviewRepository.findAll();
     }
 
     /**
-     * Adds a reply to a specific review
+     * reply to review
      * 
-     * @param reviewId The ID of the review being replied to
-     * @param content The content of the reply
-     * @param managerEmail The email of the manager making the reply
-     * @return The created Reply
-     * @throws GameShopException if the review doesn't exist or if manager is not found
+     * @param reviewId
+     * @param reply
+     * @return Review
+     * @throws GameShopException
      */
     @Transactional
-    public Reply addReplyToReview(int reviewId, String content, String managerEmail) {
+    public Review replyToReview(int reviewId, Reply reply) {
         Review review = reviewRepository.findReviewByReviewId(reviewId);
+
         if (review == null) {
-            throw new GameShopException(HttpStatus.NOT_FOUND, "Review not found.");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Review not found");
         }
 
-        ManagerAccount manager = managerAccountRepository.findManagerAccountByEmail(managerEmail);
-        if (manager == null) {
-            throw new GameShopException(HttpStatus.NOT_FOUND, "Manager not found.");
-        }
+        review.addReviewReply(reply);
 
-        if (content == null || content.trim().isEmpty()) {
-            throw new GameShopException(HttpStatus.BAD_REQUEST, "Reply content cannot be empty.");
-        }
-
-        // Create reply with current date
-        Date replyDate = new Date(System.currentTimeMillis());
-        Reply reply = review.addReviewReply(content, replyDate, manager);
-
-        return reply;
+        return reviewRepository.save(review);
     }
 
     /**
-     * Deletes a specific review
+     * delete review
      * 
-     * @param reviewId The ID of the review to delete
-     * @throws GameShopException if the review doesn't exist
+     * @param reviewId
+     * @throws GameShopException
      */
     @Transactional
     public void deleteReview(int reviewId) {
         Review review = reviewRepository.findReviewByReviewId(reviewId);
+
         if (review == null) {
-            throw new GameShopException(HttpStatus.NOT_FOUND, "Review not found.");
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Review not found");
         }
 
         reviewRepository.delete(review);
     }
 
-    /**
-     * Helper method to get a review by ID
-     * 
-     * @param reviewId The ID of the review
-     * @return The Review object
-     * @throws GameShopException if the review doesn't exist
-     */
-    @Transactional
-    public Review getReview(int reviewId) {
-        Review review = reviewRepository.findReviewByReviewId(reviewId);
-        if (review == null) {
-            throw new GameShopException(HttpStatus.NOT_FOUND, "Review not found.");
-        }
-        return review;
-    }
 }
