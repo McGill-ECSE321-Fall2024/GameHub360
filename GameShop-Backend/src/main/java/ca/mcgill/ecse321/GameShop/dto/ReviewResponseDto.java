@@ -1,42 +1,45 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
-import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.model.Reply;
 import ca.mcgill.ecse321.GameShop.model.Review;
 import ca.mcgill.ecse321.GameShop.model.Review.GameReviewRating;
 import java.sql.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReviewResponseDto {
+    // Attributes
     private int reviewId;
     private GameReviewRating rating;
     private String comment;
     private Date reviewDate;
-    private List<ReviewResponseDto> reviews;
-    private List<Reply> reply;
-    private OrderGame orderedGame;
+    private List<Integer> reviewReplies;
+    private int reviewedOrderGameId;
 
-    // Constructor
-    public ReviewResponseDto(int reviewId, GameReviewRating rating, String comment, Date reviewDate, List<Reply> reply,
-            OrderGame orderedGame) {
+    // Constructors
+    public ReviewResponseDto() {
+    }
+
+    public ReviewResponseDto(int reviewId, GameReviewRating rating, String comment, Date reviewDate,
+            List<Integer> reviewReplies, int reviewedOrderGameId) {
         this.reviewId = reviewId;
         this.rating = rating;
         this.comment = comment;
         this.reviewDate = reviewDate;
-        this.reply = reply;
-        this.orderedGame = orderedGame;
+        this.reviewReplies = reviewReplies;
+        this.reviewedOrderGameId = reviewedOrderGameId;
     }
 
     public ReviewResponseDto(Review review) {
-        this(review.getReviewId(), review.getRating(), review.getComment(), review.getReviewDate(),
-                review.getReviewReplies(), review.getReviewedGame());
+        this.reviewId = review.getReviewId();
+        this.rating = review.getRating();
+        this.comment = review.getComment();
+        this.reviewDate = review.getReviewDate();
+        this.reviewReplies = review.getReviewReplies().stream().map(Reply::getReplyId).collect(Collectors.toList());
+        this.reviewedOrderGameId = review.getReviewedGame().getOrderGameId();
     }
 
-    public ReviewResponseDto(List<ReviewResponseDto> reviews) {
-        this.reviews = reviews;
-    }
-
-    // Getters and setters
+    // Getters and Setters
     public int getReviewId() {
         return reviewId;
     }
@@ -69,19 +72,19 @@ public class ReviewResponseDto {
         this.reviewDate = reviewDate;
     }
 
-    public List<Reply> getReply() {
-        return reply;
+    public List<Integer> getReviewReplies() {
+        return reviewReplies;
     }
 
-    public void setReply(List<Reply> reply) {
-        this.reply = reply;
+    public void setReviewReplies(List<Integer> reviewReplies) {
+        this.reviewReplies = reviewReplies;
     }
 
-    public OrderGame getOrderedGame() {
-        return orderedGame;
+    public int getReviewedOrderGameId() {
+        return reviewedOrderGameId;
     }
 
-    public void setOrderedGame(OrderGame orderedGame) {
-        this.orderedGame = orderedGame;
+    public void setReviewedOrderGameId(int reviewedOrderGameId) {
+        this.reviewedOrderGameId = reviewedOrderGameId;
     }
 }
