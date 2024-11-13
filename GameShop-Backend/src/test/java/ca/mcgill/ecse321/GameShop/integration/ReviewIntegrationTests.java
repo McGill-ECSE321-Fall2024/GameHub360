@@ -125,12 +125,7 @@ public class ReviewIntegrationTests {
         ReviewRequestDto requestDto = new ReviewRequestDto(savedReview);
 
         // Act
-        // ResponseEntity<ReviewResponseDto> response =
-        // client.postForEntity("/{gameId}/reviews", requestDto,
-        // ReviewResponseDto.class);
-        //ResponseEntity<ErrorResponseDto> response = client.postForEntity("/" + game1.getGameEntityId() + "/reviews",
-         //       requestDto, ErrorResponseDto.class);
-         ResponseEntity<ErrorResponseDto> response = client.exchange("/" + game1.getGameEntityId() + "/reviews", HttpMethod.POST, new HttpEntity<>(requestDto), ErrorResponseDto.class);
+         ResponseEntity<ErrorResponseDto> response = client.exchange("/games/" + game1.getGameEntityId() + "/reviews", HttpMethod.POST, new HttpEntity<>(requestDto), ErrorResponseDto.class);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());   
@@ -138,13 +133,7 @@ public class ReviewIntegrationTests {
         assertNotNull(errorResponse);
         assertEquals("Game not found", errorResponse.getError());
 
-
-
-
-
-
-
-       /** assertEquals(HttpStatus.OK, response.getStatusCode());
+      /**  assertEquals(HttpStatus.OK, response.getStatusCode());
         ReviewResponseDto reviewResponse = response.getBody();
         assertNotNull(reviewResponse);
         assertEquals(requestDto.getRating(), reviewResponse.getRating());
@@ -152,6 +141,6 @@ public class ReviewIntegrationTests {
         assertEquals(requestDto.getReviewDate(), reviewResponse.getReviewDate());
         assertEquals(requestDto.getOrderedGameId(), reviewResponse.getOrderedGame().getOrderGameId());
         // assertEquals(requestDto.getReviewedById(),
-        // reviewResponse.getReviewedBy().getCustomerId());*/
+        // reviewResponse.getReviewedBy().getCustomerId()); */
     }
 }
