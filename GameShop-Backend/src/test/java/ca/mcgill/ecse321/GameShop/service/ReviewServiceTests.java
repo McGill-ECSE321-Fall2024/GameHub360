@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import ca.mcgill.ecse321.GameShop.dto.ReplyRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.ReviewRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Review;
@@ -33,6 +34,7 @@ import ca.mcgill.ecse321.GameShop.repository.ReviewRepository;
 import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
 import ca.mcgill.ecse321.GameShop.repository.ReplyRepository;
 import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
 
 @SpringBootTest
 public class ReviewServiceTests {
@@ -45,6 +47,9 @@ public class ReviewServiceTests {
 
     @Mock
     private CustomerAccountRepository customerAccountRepository;
+
+    @Mock   
+    private ManagerAccountRepository managerAccountRepository;
 
     @Mock
     private ReplyRepository replyRepository;
@@ -197,17 +202,20 @@ public class ReviewServiceTests {
         // Create Review and Reply
         Review review = new Review(Date.valueOf(LocalDate.now()), orderGame1);
         Reply reply = new Reply("Thank you for the feedback!", Date.valueOf(LocalDate.now()), review, manager);
+        ReplyRequestDto replyRequestDto = new ReplyRequestDto(reply);
 
         // Mock repository behavior
         when(reviewRepository.findReviewByReviewId(any(Integer.class))).thenReturn(review);
         when(reviewRepository.save(any(Review.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(managerAccountRepository.findManagerAccountByStaffId(any(Integer.class))).thenReturn(manager);
+
 
         // Act
-        Review response = reviewService.replyToReview(review.getReviewId(), reply);
+        Reply response = reviewService.replyToReview(review.getReviewId(), replyRequestDto);
 
         // Assert
         assertNotNull(response);
-        assertTrue(response.getReviewReplies().contains(reply));
+        assertEquals(reply.getContent(), response.getContent());
         verify(reviewRepository, times(1)).findReviewByReviewId(review.getReviewId());
         verify(reviewRepository, times(1)).save(review);
     }
@@ -228,14 +236,14 @@ public class ReviewServiceTests {
         // Create Review and Reply
         Review review = new Review(Date.valueOf(LocalDate.now()), orderGame1);
         Reply reply = new Reply("Thank you for the feedback!", Date.valueOf(LocalDate.now()), review, manager);
-
+        ReplyRequestDto replyRequestDto = new ReplyRequestDto(reply);
         // Mock repository behavior
         when(reviewRepository.findReviewByReviewId(any(Integer.class))).thenReturn(null);
         when(reviewRepository.save(any(Review.class))).thenAnswer(i -> i.getArguments()[0]);
 
         // Act
         GameShopException e = assertThrows(GameShopException.class,
-                () -> reviewService.replyToReview(review.getReviewId(), reply));
+                () -> reviewService.replyToReview(review.getReviewId(), replyRequestDto));
 
         // Assert
         assertEquals("Review not found", e.getMessage());

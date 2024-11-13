@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import ca.mcgill.ecse321.GameShop.dto.ReplyRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.ReplyResponseDto;
+import ca.mcgill.ecse321.GameShop.dto.ReviewListDto;
 import ca.mcgill.ecse321.GameShop.dto.ReviewRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.ReviewResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.ValidationGroups;
@@ -42,14 +45,14 @@ public class ReviewController {
      * @return ResponseEntity<List<ReviewResponseDto>>
      */
     @GetMapping("/{gameId}/reviews")
-    public ReviewResponseDto viewReviews(@PathVariable int gameId) {
+    public ReviewListDto viewReviews(@PathVariable int gameId) {
         List<ReviewResponseDto> reviewResponseDtos = new ArrayList<ReviewResponseDto>();
         List<Review> reviews = reviewService.viewReviews();
         for (Review review : reviews) {
             reviewResponseDtos.add(new ReviewResponseDto(review));
         }
 
-        return new ReviewResponseDto(reviewResponseDtos);
+        return new ReviewListDto(reviewResponseDtos);
     }
 
     /**
@@ -57,12 +60,14 @@ public class ReviewController {
      * 
      * @param reviewId
      * @param reply
-     * @return ResponseEntity<ReviewResponseDto>
+     * @return ResponseEntity<ReplyResponseDto>
      */
     @PostMapping("/reviews/{reviewId}/reply")
-    public ReviewResponseDto replyToReview(@PathVariable int reviewId, @RequestBody Reply reply) {
-        Review review = reviewService.replyToReview(reviewId, reply);
-        return new ReviewResponseDto(review);
+    public ReplyResponseDto replyToReview(@PathVariable int reviewId, @RequestBody ReplyRequestDto Reply) {
+
+        Reply reply = reviewService.replyToReview(reviewId, Reply);
+        ReplyResponseDto replyResponseDto = new ReplyResponseDto(reply);
+        return replyResponseDto;
     }
 
     /**
@@ -74,5 +79,16 @@ public class ReviewController {
     @DeleteMapping("/reviews/{reviewId}")
     public void deleteReview(@PathVariable int reviewId) {
         reviewService.deleteReview(reviewId);
+    }
+
+    /**
+     * Delete a reply
+     * 
+     * @param replyId
+     * @return ResponseEntity<Void>
+     */
+    @DeleteMapping("/reviews/reply/{replyId}")
+    public void deleteReply(@PathVariable int replyId) {
+        reviewService.deleteReply(replyId);
     }
 }

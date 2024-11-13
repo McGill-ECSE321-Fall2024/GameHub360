@@ -1,16 +1,18 @@
 package ca.mcgill.ecse321.GameShop.service;
 
+import ca.mcgill.ecse321.GameShop.dto.ReplyRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.ReviewRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Review;
 import ca.mcgill.ecse321.GameShop.model.Reply;
 import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
+import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ReviewRepository;
 import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
 import ca.mcgill.ecse321.GameShop.repository.ReplyRepository;
 import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
-
+import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,9 @@ public class ReviewService {
 
     @Autowired
     private ReplyRepository replyRepository;
+
+    @Autowired
+    private ManagerAccountRepository managerAccountRepository;
 
     /**
      * submit a review
@@ -90,16 +95,30 @@ public class ReviewService {
      * @throws GameShopException
      */
     @Transactional
-    public Review replyToReview(int reviewId, Reply reply) {
+    public Reply replyToReview(int reviewId, ReplyRequestDto replyRequestDto) {
         Review review = reviewRepository.findReviewByReviewId(reviewId);
 
+        
         if (review == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Review not found");
         }
 
+        ManagerAccount manager = managerAccountRepository.findManagerAccountByStaffId(replyRequestDto.getManagerId());
+
+        if (manager == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Manager not found");
+        }
+        Reply reply = new Reply();
+        reply.setContent(replyRequestDto.getContent());
+        reply.setReplyDate(replyRequestDto.getReplyDate());
+        reply.setReviewer(manager);
+    
         review.addReviewReply(reply);
 
-        return reviewRepository.save(review);
+        
+        Reply savedReply = replyRepository.save(reply);
+
+        return savedReply;
     }
 
     /**
@@ -117,6 +136,24 @@ public class ReviewService {
         }
 
         reviewRepository.delete(review);
+    }
+
+    /**
+     * delete Reply
+     *  
+     * 
+     * @param replyId
+     * @throws GameShopException
+     */
+    @Transactional
+    public void deleteReply(int replyId) {
+        Reply reply = replyRepository.findReplyByReplyId(replyId);
+
+        if (reply == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Reply not found");
+        }
+
+        replyRepository.delete(reply);
     }
 
 }
