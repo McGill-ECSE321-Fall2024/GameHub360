@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,15 +16,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.model.Promotion;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
 import ca.mcgill.ecse321.GameShop.repository.PromotionRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.dto.GameCategoryRequestDto;
 
 @SpringBootTest
-public class GameCategoryServiceTets {
+public class GameCategoryServiceTests {
 
     @Mock
     private GameCategoryRepository gameCategoryRepository;
@@ -36,7 +41,7 @@ public class GameCategoryServiceTets {
     private GameCategoryService gameCategoryService;
 
     @Test
-    public void CreateGameCategorySuccess() {
+    public void testcreateGameCategorySuccess() {
         GameCategoryRequestDto requestDto = new GameCategoryRequestDto(false, "Action");
         requestDto.setCategoryType(GameCategory.CategoryType.GENRE);
 
@@ -61,9 +66,9 @@ public class GameCategoryServiceTets {
         // Mock repository behavior to simulate existing game category
         when(gameCategoryRepository.findGameCategoryByCategoryId(any(Integer.class))).thenReturn(gameCategory);
 
-        GameShopException e = assertThrows(GameShopException.class, () -> gameCategoryService.createGameategory(requestDto));
+        GameShopException e = assertThrows(GameShopException.class, () -> gameCategoryService.createGameCategory(requestDto));
 
-        assertEquals("Another game category with the same name and type already exists.", e.getMessage());
+        assertEquals("Game category already exists.", e.getMessage());
         assertEquals(HttpStatus.CONFLICT, e.getStatus());
     }
 
@@ -94,7 +99,7 @@ public class GameCategoryServiceTets {
 
         when(gameCategoryRepository.findGameCategoryByCategoryId(any(Integer.class))).thenReturn(null);
 
-        GameShopException e = assertThrows(GameShopException.class, () -> gameCategoryService.updateGameategory(requestDto));
+        GameShopException e = assertThrows(GameShopException.class, () -> gameCategoryService.updateGameCategory(1, requestDto));
 
         assertEquals("Game category not found.", e.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
@@ -105,7 +110,7 @@ public class GameCategoryServiceTets {
         GameCategory gameCategory = new GameCategory(true, "Action");
         gameCategory.setCategoryType(GameCategory.CategoryType.CONSOLE);
 
-        when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(Optional.of(gameCategory));
+        when(gameCategoryRepository.findGameCategoryByCategoryId(1)).thenReturn(gameCategory);
 
         gameCategoryService.deleteGameCategory(1);
 

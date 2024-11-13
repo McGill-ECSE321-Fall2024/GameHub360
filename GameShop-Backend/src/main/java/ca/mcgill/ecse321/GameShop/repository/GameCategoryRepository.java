@@ -1,7 +1,9 @@
 package ca.mcgill.ecse321.GameShop.repository;
 
 import org.springframework.data.repository.CrudRepository;
-
+import java.util.List;
+import ca.mcgill.ecse321.GameShop.model.Promotion;
+import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 
 public interface GameCategoryRepository extends CrudRepository<GameCategory, Integer> {
@@ -18,5 +20,5 @@ public interface GameCategoryRepository extends CrudRepository<GameCategory, Int
     public List<GameCategory> findByGamesContaining(Game game);
 
     // Find all game categories
-    public List<GameCategory> findAllGameCategories();
+    public List<GameCategory> findAll();
 }

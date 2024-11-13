@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.GameShop.dto;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
+import ca.mcgill.ecse321.GameShop.model.GameCategory.CategoryType;
+import java.util.List;
 
 public class GameCategoryResponseDto {
 
@@ -7,6 +9,8 @@ public class GameCategoryResponseDto {
     private String name;
     private boolean isAvailable;
     private CategoryType categoryType;
+    private List<Integer> gameIds;
+    private List<Integer> promotionIds;
 
     public GameCategoryResponseDto() {}
 
@@ -49,4 +53,11 @@ public class GameCategoryResponseDto {
         this.name = name;
     }
 
+    public List<Integer> getGameIds() {
+        return gameIds;
+    }
+
+    public List<Integer> getPromotionIds() {
+        return promotionIds;
+    }
 }
