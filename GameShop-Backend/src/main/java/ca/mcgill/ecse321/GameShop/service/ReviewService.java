@@ -47,11 +47,12 @@ public class ReviewService {
     private GameRepository gameRepository;
 
     /**
-     * submit a review
+     * Submit a review for an order.
      * 
-     * @param requestDto
-     * @return Review
-     * @throws GameShopException
+     * @param orderGameId the id of the order game
+     * @param requestDto  the review content
+     * @return Review the review
+     * @throws GameShopException if orderGame or customer not found
      */
     @Transactional
     public Review submitReview(int orderGameId, ReviewRequestDto requestDto) {
@@ -87,9 +88,11 @@ public class ReviewService {
     }
 
     /**
-     * Get all reviews
+     * Get all reviews for a game.
      * 
-     * @return List<Review>
+     * @param gameId the id of the game
+     * @return List<Review> the list of reviews
+     * @throws GameShopException if game not found
      */
     public List<Review> getGameReviews(int gameId) {
         // Check if the game exists
