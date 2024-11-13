@@ -95,7 +95,8 @@ public class GameRequestService {
      * @param requestDto the game request data transfer object containing updated
      *                   request details
      * @return the updated game request as a GameRequest
-     * @throws GameShopException if game request not found, request already processed, or category not found
+     * @throws GameShopException if game request not found, request already
+     *                           processed, or category not found
      */
     @Transactional
     public GameRequest updateGameRequest(Integer requestId, GameRequestRequestDto requestDto) {
@@ -123,7 +124,9 @@ public class GameRequestService {
                 if (category == null) {
                     throw new GameShopException(HttpStatus.NOT_FOUND, "Category not found");
                 }
-                gameRequest.addCategory(category);
+                if (!gameRequest.getCategories().contains(category)) {
+                    gameRequest.addCategory(category);
+                }
             }
         }
 
@@ -134,7 +137,8 @@ public class GameRequestService {
      * Delete a game request.
      * 
      * @param requestId the ID of the game request to delete
-     * @throws GameShopException if game request not found or request already processed
+     * @throws GameShopException if game request not found or request already
+     *                           processed
      */
     @Transactional
     public void deleteGameRequest(Integer requestId) {
@@ -210,7 +214,8 @@ public class GameRequestService {
      * @param approvalDto the game request approval data transfer object containing
      *                    approval details
      * @return the processed game request
-     * @throws GameShopException if manager not found, game request not found, or invalid approval details
+     * @throws GameShopException if manager not found, game request not found, or
+     *                           invalid approval details
      */
     @Transactional
     public GameRequest processRequest(Integer requestId, Integer managerId, boolean approval,

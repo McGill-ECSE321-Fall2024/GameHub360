@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,21 +22,14 @@ import ca.mcgill.ecse321.GameShop.dto.RequestNoteResponseDto;
 import ca.mcgill.ecse321.GameShop.model.GameRequest;
 import ca.mcgill.ecse321.GameShop.model.RequestNote;
 import ca.mcgill.ecse321.GameShop.service.GameRequestService;
+import jakarta.validation.Valid;
 
-/**
- * REST controller for managing game requests.
- */
 @RestController
 @RequestMapping("/games/request")
-@CrossOrigin(origins = "*")
 public class GameRequestController {
 
-    private final GameRequestService gameRequestService;
-
     @Autowired
-    public GameRequestController(GameRequestService gameRequestService) {
-        this.gameRequestService = gameRequestService;
-    }
+    private GameRequestService gameRequestService;
 
     /**
      * Submits a new game request.
@@ -46,7 +38,7 @@ public class GameRequestController {
      * @return the created game request as a response entity
      */
     @PostMapping
-    public GameRequestResponseDto submitGameRequest(@RequestBody GameRequestRequestDto request) {
+    public GameRequestResponseDto submitGameRequest(@RequestBody @Valid GameRequestRequestDto request) {
         GameRequest createdRequest = gameRequestService.createGameRequest(request);
         return new GameRequestResponseDto(createdRequest);
     }
@@ -88,7 +80,7 @@ public class GameRequestController {
     @PostMapping("/{requestId}/note")
     public RequestNoteResponseDto addNote(
             @PathVariable("requestId") int requestId,
-            @RequestBody RequestNoteRequestDto note) {
+            @RequestBody @Valid RequestNoteRequestDto note) {
         RequestNote addedNote = gameRequestService.addNote(requestId, note);
         return new RequestNoteResponseDto(addedNote);
     }

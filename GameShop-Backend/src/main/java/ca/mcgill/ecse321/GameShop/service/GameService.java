@@ -62,7 +62,7 @@ public class GameService {
      *                           with existing game
      */
     @Transactional
-    public Game updateGame(Integer gameId, Game game) {
+    public Game updateGame(Integer gameId, GameRequestDto game) {
         Game existingGame = gameRepository.findGameByGameEntityId(gameId);
         if (existingGame == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");

@@ -114,7 +114,7 @@ public class GameServiceTests {
     public void testUpdateGame_Success() {
         // Arrange
         Integer gameId = 1;
-        Game gameDto = new Game();
+        GameRequestDto gameDto = new GameRequestDto();
         gameDto.setName("Updated Game");
         gameDto.setDescription("Updated Description");
         gameDto.setImageURL("http://updatedimage.com/image.jpg");
@@ -153,7 +153,7 @@ public class GameServiceTests {
     public void testUpdateGame_GameNotFound() {
         // Arrange
         Integer gameId = 1;
-        Game gameDto = new Game();
+        GameRequestDto gameDto = new GameRequestDto();
 
         when(gameRepository.findGameByGameEntityId(gameId)).thenReturn(null);
 
@@ -171,7 +171,7 @@ public class GameServiceTests {
     public void testUpdateGame_GameNameAlreadyExists() {
         // Arrange
         Integer gameId = 1;
-        Game gameDto = new Game();
+        GameRequestDto gameDto = new GameRequestDto();
         gameDto.setName("Existing Game");
 
         Game existingGame = new Game();

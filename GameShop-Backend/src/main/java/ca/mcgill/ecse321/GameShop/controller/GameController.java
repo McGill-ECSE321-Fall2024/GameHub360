@@ -50,7 +50,7 @@ public class GameController {
     @PutMapping("/{gameId}")
     public GameResponseDto updateGame(
             @PathVariable("gameId") Integer gameId,
-            @Validated(ValidationGroups.Update.class) @RequestBody Game gameDto) {
+            @Validated(ValidationGroups.Update.class) @RequestBody GameRequestDto gameDto) {
         Game updatedGame = gameService.updateGame(gameId, gameDto);
         return new GameResponseDto(updatedGame);
     }

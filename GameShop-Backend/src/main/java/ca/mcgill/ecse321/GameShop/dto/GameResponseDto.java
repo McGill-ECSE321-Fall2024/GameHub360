@@ -10,7 +10,7 @@ import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.model.Promotion;
 
 public class GameResponseDto {
-
+    // Attributes
     private int gameId;
     private String name;
     private String description;

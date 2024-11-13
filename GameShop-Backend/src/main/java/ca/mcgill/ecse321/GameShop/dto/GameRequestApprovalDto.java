@@ -1,12 +1,22 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
-// Attributes
 public class GameRequestApprovalDto {
-
+    // Attributes
     private RequestNoteRequestDto note;
     private Double price;
     private Integer quantityInStock;
     private String rejectionReason;
+
+    // Constructors
+    public GameRequestApprovalDto() {
+    }
+
+    public GameRequestApprovalDto(RequestNoteRequestDto note, Double price, Integer quantityInStock, String rejectionReason) {
+        this.note = note;
+        this.price = price;
+        this.quantityInStock = quantityInStock;
+        this.rejectionReason = rejectionReason;
+    }
 
     // Setters and getters
     public RequestNoteRequestDto getNote() {
