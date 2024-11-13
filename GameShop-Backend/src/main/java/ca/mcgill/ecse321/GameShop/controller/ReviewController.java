@@ -26,14 +26,14 @@ public class ReviewController {
     /**
      * Submit a review for a game
      * 
-     * @param gameId
+     * @param orderGameId
      * @param reviewRequestDto
      * @return ResponseEntity<ReviewResponseDto>
      */
-    @PostMapping("/{gameId}/reviews")
-    public ReviewResponseDto submitReview(@PathVariable("gameId") int gameId,
+    @PostMapping("/{orderGameId}/reviews")
+    public ReviewResponseDto submitReview(@PathVariable("orderGameId") int orderGameId,
             @Valid @RequestBody ReviewRequestDto reviewRequestDto) {
-        Review review = reviewService.submitReview(reviewRequestDto);
+        Review review = reviewService.submitReview(orderGameId, reviewRequestDto);
         return new ReviewResponseDto(review);
     }
 
@@ -46,7 +46,7 @@ public class ReviewController {
     @GetMapping("/{gameId}/reviews")
     public ReviewListDto viewReviews(@PathVariable int gameId) {
         List<ReviewResponseDto> reviewResponseDtos = new ArrayList<ReviewResponseDto>();
-        List<Review> reviews = reviewService.viewReviews();
+        List<Review> reviews = reviewService.getGameReviews(gameId);
         for (Review review : reviews) {
             reviewResponseDtos.add(new ReviewResponseDto(review));
         }

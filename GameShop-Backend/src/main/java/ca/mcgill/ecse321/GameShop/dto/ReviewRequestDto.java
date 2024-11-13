@@ -8,9 +8,6 @@ public class ReviewRequestDto {
     @NotBlank(message = "Rating cannot be empty.")
     private GameReviewRating rating;
 
-    @NotBlank(message = "Game ID cannot be empty.")
-    private int reviewedGameId;
-
     @NotBlank(message = "Comment cannot be empty.")
     private int customerId;
 
@@ -20,9 +17,8 @@ public class ReviewRequestDto {
     public ReviewRequestDto() {
     }
 
-    public ReviewRequestDto(GameReviewRating rating, int reviewedGameId, int customerId, String comment) {
+    public ReviewRequestDto(GameReviewRating rating, int customerId, String comment) {
         this.rating = rating;
-        this.reviewedGameId = reviewedGameId;
         this.customerId = customerId;
         this.comment = comment;
     }
@@ -34,14 +30,6 @@ public class ReviewRequestDto {
 
     public void setRating(GameReviewRating rating) {
         this.rating = rating;
-    }
-
-    public int getReviewedGameId() {
-        return reviewedGameId;
-    }
-
-    public void setReviewedGameId(int reviewedGameId) {
-        this.reviewedGameId = reviewedGameId;
     }
 
     public int getCustomerId() {

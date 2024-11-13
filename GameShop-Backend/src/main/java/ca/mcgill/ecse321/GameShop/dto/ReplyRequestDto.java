@@ -10,17 +10,13 @@ public class ReplyRequestDto {
     @NotBlank(message = "Manager ID cannot be empty.")
     private int managerId;
 
-    @NotBlank(message = "Review ID cannot be empty.")
-    private int reviewId;
-
     // Constructors
     public ReplyRequestDto() {
     }
 
-    public ReplyRequestDto(String content, int managerId, int reviewId) {
+    public ReplyRequestDto(String content, int managerId) {
         this.content = content;
         this.managerId = managerId;
-        this.reviewId = reviewId;
     }
 
     // Getters and setters
@@ -38,13 +34,5 @@ public class ReplyRequestDto {
 
     public void setManagerId(int managerId) {
         this.managerId = managerId;
-    }
-
-    public int getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(int reviewId) {
-        this.reviewId = reviewId;
     }
 }
