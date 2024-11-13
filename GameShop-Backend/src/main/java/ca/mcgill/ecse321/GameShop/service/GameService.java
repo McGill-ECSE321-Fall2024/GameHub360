@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import ca.mcgill.ecse321.GameShop.dto.GameDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Game;
@@ -29,16 +28,14 @@ public class GameService {
      * Create a new game directly.
      * 
      * @param gameRequestDto the game request data transfer object containing game details
-     * @return the created game as a GameDto
+     * @return the created game as a Game
      */
     @Transactional
-    public GameDto createGame(GameRequestDto gameRequestDto) {
-        // Check if a game with the same name exists
+    public Game createGame(GameRequestDto gameRequestDto) {
         if (gameRepository.findGameByName(gameRequestDto.getName()) != null) {
             throw new GameShopException(HttpStatus.BAD_REQUEST, "Game with this name already exists");
         }
 
-        // Create new game
         Game game = new Game();
         game.setName(gameRequestDto.getName());
         game.setDescription(gameRequestDto.getDescription());
@@ -47,71 +44,74 @@ public class GameService {
         game.setPrice(gameRequestDto.getPrice());
         game.setQuantityInStock(gameRequestDto.getQuantityInStock());
 
-        return new GameDto(gameRepository.save(game));
+        return gameRepository.save(game);
     }
 
     /**
      * Update an existing game.
      * 
      * @param gameId the ID of the game to update
-     * @param gameDto the game data transfer object containing updated game details
-     * @return the updated game as a GameDto
+     * @param game the game data transfer object containing updated game details
+     * @return the updated game as a Game
      */
     @Transactional
-    public GameDto updateGame(Integer gameId, GameDto gameDto) {
-        Game game = gameRepository.findGameByGameEntityId(gameId);
-        if (game == null) {
+    public Game updateGame(Integer gameId, Game game) {
+        Game existingGame = gameRepository.findGameByGameEntityId(gameId);
+        if (existingGame == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
         // Update fields if provided
-        if (gameDto.getName() != null) {
-            Game existingGame = gameRepository.findGameByName(gameDto.getName());
-            if (existingGame != null && existingGame.getGameEntityId() != gameId) {
+        if (game.getName() != null) {
+            Game existingGameByName = gameRepository.findGameByName(game.getName());
+            if (existingGameByName != null && existingGameByName.getGameEntityId() != gameId) {
                 throw new GameShopException(HttpStatus.BAD_REQUEST, "Game with this name already exists");
             }
-            game.setName(gameDto.getName());
+            existingGame.setName(game.getName());
         }
-        if (gameDto.getDescription() != null) {
-            game.setDescription(gameDto.getDescription());
+        if (game.getDescription() != null) {
+            existingGame.setDescription(game.getDescription());
         }
-        if (gameDto.getImageUrl() != null) {
-            game.setImageURL(gameDto.getImageUrl());
+        if (game.getImageURL() != null) {
+            existingGame.setImageURL(game.getImageURL());
         }
-        game.setIsAvailable(gameDto.getIsAvailable());
-        game.setPrice(gameDto.getPrice());
-        game.setQuantityInStock(gameDto.getQuantityInStock());
+        existingGame.setIsAvailable(game.getIsAvailable());
+        if (game.getPrice() >= 0) {
+            existingGame.setPrice(game.getPrice());
+        }
+        if (game.getQuantityInStock() >= 0) {
+            existingGame.setQuantityInStock(game.getQuantityInStock());
+        }
 
-        return new GameDto(gameRepository.save(game));
+        return gameRepository.save(existingGame);
     }
 
     /**
      * Archive a game.
      * 
      * @param gameId the ID of the game to archive
-     * @return the archived game as a GameDto
+     * @return the archived game as a Game
      */
     @Transactional
-    public GameDto archiveGame(Integer gameId) {
+    public Game archiveGame(Integer gameId) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
         }
 
         game.setIsAvailable(false);
-        return new GameDto(gameRepository.save(game));
+        return gameRepository.save(game);
     }
 
     /**
      * View all archived games.
      * 
-     * @return a list of archived games as GameDto objects
+     * @return a list of archived games as Game objects
      */
     @Transactional
-    public List<GameDto> viewArchivedGames() {
+    public List<Game> viewArchivedGames() {
         return gameRepository.findAll().stream()
                 .filter(game -> !game.getIsAvailable())
-                .map(GameDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -119,10 +119,10 @@ public class GameService {
      * Reactivate an archived game.
      * 
      * @param gameId the ID of the game to reactivate
-     * @return the reactivated game as a GameDto
+     * @return the reactivated game as a Game
      */
     @Transactional
-    public GameDto reactivateArchivedGame(Integer gameId) {
+    public Game reactivateArchivedGame(Integer gameId) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
@@ -133,7 +133,7 @@ public class GameService {
         }
 
         game.setIsAvailable(true);
-        return new GameDto(gameRepository.save(game));
+        return gameRepository.save(game);
     }
 
     /**
@@ -142,10 +142,10 @@ public class GameService {
      * @param category the category to filter games by (optional)
      * @param minPrice the minimum price to filter games by (optional)
      * @param maxPrice the maximum price to filter games by (optional)
-     * @return a list of GameDto objects that match the provided filters
+     * @return a list of Game objects that match the provided filters
      */
     @Transactional
-    public List<GameDto> browseGames(String category, Double minPrice, Double maxPrice) {
+    public List<Game> browseGames(String category, Double minPrice, Double maxPrice) {
         List<Game> games = gameRepository.findAll().stream()
                 .filter(Game::getIsAvailable)
                 .filter(game -> category == null ||
@@ -154,7 +154,7 @@ public class GameService {
                 .filter(game -> minPrice == null || game.getPrice() >= minPrice)
                 .filter(game -> maxPrice == null || game.getPrice() <= maxPrice)
                 .collect(Collectors.toList());
-        return games.stream().map(GameDto::new).collect(Collectors.toList());
+        return games;
     }
 
     /**
@@ -164,20 +164,23 @@ public class GameService {
      * @param category the category to filter games by (optional)
      * @param minPrice the minimum price to filter games by (optional)
      * @param maxPrice the maximum price to filter games by (optional)
-     * @return a list of GameDto objects that match the provided search query and filters
+     * @return a list of Game objects that match the provided search query and filters
      */
     @Transactional
-    public List<GameDto> searchGames(String query, String category, Double minPrice, Double maxPrice) {
+    public List<Game> searchGames(String query, String category, Double minPrice, Double maxPrice) {
         return gameRepository.findAll().stream()
                 .filter(Game::getIsAvailable)
-                .filter(game -> game.getName().toLowerCase().contains(query.toLowerCase()) ||
-                        game.getDescription().toLowerCase().contains(query.toLowerCase()))
+                .filter(game -> 
+                    game.getName().toLowerCase().contains(query.toLowerCase()) ||
+                    game.getDescription().toLowerCase().contains(query.toLowerCase()) ||
+                    game.getCategories().stream()
+                        .anyMatch(cat -> cat.getName().toLowerCase().contains(query.toLowerCase()))
+                )
                 .filter(game -> category == null ||
                         game.getCategories().stream()
                                 .anyMatch(cat -> cat.getName().equalsIgnoreCase(category)))
                 .filter(game -> minPrice == null || game.getPrice() >= minPrice)
                 .filter(game -> maxPrice == null || game.getPrice() <= maxPrice)
-                .map(GameDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -186,10 +189,10 @@ public class GameService {
      * 
      * @param gameId the ID of the game to add to the category
      * @param categoryId the ID of the category to add the game to
-     * @return the updated game as a GameDto
+     * @return the updated game as a Game
      */
     @Transactional
-    public GameDto addGameToCategory(Integer gameId, Integer categoryId) {
+    public Game addGameToCategory(Integer gameId, Integer categoryId) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
@@ -205,7 +208,7 @@ public class GameService {
         }
 
         game.addCategory(category);
-        return new GameDto(gameRepository.save(game));
+        return gameRepository.save(game);
     }
 
     /**
@@ -213,10 +216,10 @@ public class GameService {
      * 
      * @param gameId the ID of the game to update
      * @param stock the new stock quantity
-     * @return the updated game as a GameDto
+     * @return the updated game as a Game
      */
     @Transactional
-    public GameDto updateGameStock(Integer gameId, Integer stock) {
+    public Game updateGameStock(Integer gameId, Integer stock) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
@@ -227,7 +230,7 @@ public class GameService {
         }
 
         game.setQuantityInStock(stock);
-        return new GameDto(gameRepository.save(game));
+        return gameRepository.save(game);
     }
 
     /**
@@ -235,10 +238,10 @@ public class GameService {
      * 
      * @param gameId the ID of the game to update
      * @param price the new price
-     * @return the updated game as a GameDto
+     * @return the updated game as a Game
      */
     @Transactional
-    public GameDto updateGamePrice(Integer gameId, Double price) {
+    public Game updateGamePrice(Integer gameId, Double price) {
         Game game = gameRepository.findGameByGameEntityId(gameId);
         if (game == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
@@ -249,6 +252,6 @@ public class GameService {
         }
 
         game.setPrice(price);
-        return new GameDto(gameRepository.save(game));
+        return gameRepository.save(game);
     }
 }

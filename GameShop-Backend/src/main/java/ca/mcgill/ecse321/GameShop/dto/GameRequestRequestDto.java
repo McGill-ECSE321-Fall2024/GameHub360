@@ -1,12 +1,13 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
-import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import java.sql.Date;
+import java.util.List;
 
-public class GameRequestDto {
+public class GameRequestRequestDto {
 
+    // Attributes
     @NotBlank(message = "Name is required.")
     private String name;
 
@@ -16,17 +17,27 @@ public class GameRequestDto {
     @NotBlank(message = "Image URL is required.")
     private String imageUrl;
 
-    @Positive(message = "Quantity in stock must be positive.")
-    private int quantityInStock;
+    @NotNull(message = "Request date is required.")
+    private Date requestDate;
 
-    @NotNull(message = "Availability status is required.")
-    private Boolean isAvailable;
-
-    @Positive(message = "Price must be positive.")
-    private double price;
+    @NotNull(message = "Staff ID is required.")
+    private Integer staffId;
 
     @NotNull(message = "Category IDs are required.")
     private List<Integer> categoryIds;
+
+    // Constructors
+    public GameRequestRequestDto() {
+    }
+
+    public GameRequestRequestDto(String name, String description, String imageUrl, Date requestDate, Integer staffId, List<Integer> categoryIds) {
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.requestDate = requestDate;
+        this.staffId = staffId;
+        this.categoryIds = categoryIds;
+    }
 
     // Getters and Setters
     public String getName() {
@@ -53,28 +64,20 @@ public class GameRequestDto {
         this.imageUrl = imageUrl;
     }
 
-    public int getQuantityInStock() {
-        return quantityInStock;
+    public Date getRequestDate() {
+        return requestDate;
     }
 
-    public void setQuantityInStock(int quantityInStock) {
-        this.quantityInStock = quantityInStock;
+    public void setRequestDate(Date requestDate) {
+        this.requestDate = requestDate;
     }
 
-    public Boolean getIsAvailable() {
-        return isAvailable;
+    public Integer getStaffId() {
+        return staffId;
     }
 
-    public void setIsAvailable(Boolean isAvailable) {
-        this.isAvailable = isAvailable;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
+    public void setStaffId(Integer staffId) {
+        this.staffId = staffId;
     }
 
     public List<Integer> getCategoryIds() {
