@@ -1,9 +1,10 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.sql.Date;
 import java.util.List;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class GameRequestRequestDto {
 
@@ -30,7 +31,8 @@ public class GameRequestRequestDto {
     public GameRequestRequestDto() {
     }
 
-    public GameRequestRequestDto(String name, String description, String imageUrl, Date requestDate, Integer staffId, List<Integer> categoryIds) {
+    public GameRequestRequestDto(String name, String description, String imageUrl, Date requestDate, Integer staffId,
+            List<Integer> categoryIds) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;

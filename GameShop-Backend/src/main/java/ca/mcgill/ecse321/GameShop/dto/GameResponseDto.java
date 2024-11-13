@@ -2,15 +2,16 @@ package ca.mcgill.ecse321.GameShop.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
-import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.model.Promotion;
 
 public class GameResponseDto {
 
-    private Integer gameId;
+    private int gameId;
     private String name;
     private String description;
     private String imageUrl;
@@ -35,18 +36,22 @@ public class GameResponseDto {
         this.quantityInStock = game.getQuantityInStock();
         this.isAvailable = game.getIsAvailable();
         this.price = game.getPrice();
-        this.categoryIds = game.getCategories().stream().map((GameCategory c) -> c.getCategoryId()).collect(Collectors.toList());
-        this.wishListIds = game.getWishLists().stream().map((CustomerAccount w) -> w.getCustomerId()).collect(Collectors.toList());
-        this.orderIds = game.getOrders().stream().map((OrderGame o) -> o.getCustomerOrder().getOrderId()).collect(Collectors.toList());
-        this.promotionIds = game.getPromotions().stream().map((Promotion p) -> p.getPromotionId()).collect(Collectors.toList());
+        this.categoryIds = game.getCategories().stream().map((GameCategory c) -> c.getCategoryId())
+                .collect(Collectors.toList());
+        this.wishListIds = game.getWishLists().stream().map((CustomerAccount w) -> w.getCustomerId())
+                .collect(Collectors.toList());
+        this.orderIds = game.getOrders().stream().map((OrderGame o) -> o.getCustomerOrder().getOrderId())
+                .collect(Collectors.toList());
+        this.promotionIds = game.getPromotions().stream().map((Promotion p) -> p.getPromotionId())
+                .collect(Collectors.toList());
     }
 
     // Getters and Setters
-    public Integer getGameId() {
+    public int getGameId() {
         return gameId;
     }
 
-    public void setGameId(Integer gameId) {
+    public void setGameId(int gameId) {
         this.gameId = gameId;
     }
 

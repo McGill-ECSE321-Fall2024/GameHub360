@@ -1,17 +1,24 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
-import ca.mcgill.ecse321.GameShop.model.Game;
-import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.GameResponseDto;
-import ca.mcgill.ecse321.GameShop.dto.GameListDto;
-import ca.mcgill.ecse321.GameShop.dto.ValidationGroups;
-import ca.mcgill.ecse321.GameShop.service.GameService;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import ca.mcgill.ecse321.GameShop.dto.GameListDto;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.GameResponseDto;
+import ca.mcgill.ecse321.GameShop.dto.ValidationGroups;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.service.GameService;
 
 @RestController
 @RequestMapping("/games")
@@ -42,7 +49,7 @@ public class GameController {
      */
     @PutMapping("/{gameId}")
     public GameResponseDto updateGame(
-            @PathVariable Integer gameId,
+            @PathVariable("gameId") Integer gameId,
             @Validated(ValidationGroups.Update.class) @RequestBody Game gameDto) {
         Game updatedGame = gameService.updateGame(gameId, gameDto);
         return new GameResponseDto(updatedGame);
@@ -66,9 +73,12 @@ public class GameController {
      * @return a list of archived games as GameResponseDto objects
      */
     @GetMapping("/archive")
-    public List<GameResponseDto> viewArchivedGames() {
+    public GameListDto viewArchivedGames() {
         List<Game> archivedGames = gameService.viewArchivedGames();
-        return archivedGames.stream().map(GameResponseDto::new).toList();
+        List<GameResponseDto> responseDtos = archivedGames.stream()
+                .map(GameResponseDto::new)
+                .toList();
+        return new GameListDto(responseDtos);
     }
 
     /**
@@ -98,8 +108,8 @@ public class GameController {
             @RequestParam(required = false) Double maxPrice) {
         List<Game> games = gameService.browseGames(category, minPrice, maxPrice);
         List<GameResponseDto> responseDtos = games.stream()
-            .map(GameResponseDto::new)
-            .toList();
+                .map(GameResponseDto::new)
+                .toList();
         return new GameListDto(responseDtos);
     }
 
@@ -120,15 +130,15 @@ public class GameController {
             @RequestParam(required = false) Double maxPrice) {
         List<Game> games = gameService.searchGames(query, category, minPrice, maxPrice);
         List<GameResponseDto> responseDtos = games.stream()
-            .map(GameResponseDto::new)
-            .toList();
+                .map(GameResponseDto::new)
+                .toList();
         return new GameListDto(responseDtos);
     }
 
     /**
      * Adds a game to a category.
      *
-     * @param gameId    the ID of the game
+     * @param gameId     the ID of the game
      * @param categoryId the ID of the category
      * @return the updated game as a GameResponseDto
      */

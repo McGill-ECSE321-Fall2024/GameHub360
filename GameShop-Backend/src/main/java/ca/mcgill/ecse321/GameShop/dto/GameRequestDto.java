@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
 import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -14,7 +15,7 @@ public class GameRequestDto {
     private String description;
 
     @NotBlank(message = "Image URL is required.")
-    private String imageUrl;
+    private String imageURL;
 
     @Positive(message = "Quantity in stock must be positive.")
     private int quantityInStock;
@@ -45,12 +46,12 @@ public class GameRequestDto {
         this.description = description;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImageURL() {
+        return imageURL;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public int getQuantityInStock() {

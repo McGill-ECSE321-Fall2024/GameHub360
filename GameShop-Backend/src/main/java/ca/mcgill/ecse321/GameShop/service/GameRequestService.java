@@ -1,22 +1,33 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import ca.mcgill.ecse321.GameShop.dto.GameRequestRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.RequestNoteRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
-import ca.mcgill.ecse321.GameShop.exception.GameShopException;
-import ca.mcgill.ecse321.GameShop.model.*;
-import ca.mcgill.ecse321.GameShop.repository.*;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.RequestNoteRequestDto;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
+import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.GameCategory;
+import ca.mcgill.ecse321.GameShop.model.GameRequest;
+import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
+import ca.mcgill.ecse321.GameShop.model.RequestNote;
+import ca.mcgill.ecse321.GameShop.model.StaffAccount;
+import ca.mcgill.ecse321.GameShop.repository.EmployeeAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameRequestRepository;
+import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.RequestNoteRepository;
 
 @Service
 public class GameRequestService {
@@ -42,12 +53,15 @@ public class GameRequestService {
     /**
      * Create a new game request.
      * 
-     * @param requestDto the game request data transfer object containing request details
+     * @param requestDto the game request data transfer object containing request
+     *                   details
      * @return the created game request as a GameRequest
+     * @throws GameShopException if employee not found or category not found
      */
     @Transactional
     public GameRequest createGameRequest(GameRequestRequestDto gameRequestRequestDto) {
-        EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(gameRequestRequestDto.getStaffId());
+        EmployeeAccount employee = employeeAccountRepository
+                .findEmployeeAccountByStaffId(gameRequestRequestDto.getStaffId());
         if (employee == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found");
         }
@@ -69,6 +83,7 @@ public class GameRequestService {
             GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
             gameRequest.addCategory(category);
         }
+        gameRequest.setRequestStatus(GameRequest.RequestStatus.SUBMITTED);
 
         return gameRequestRepository.save(gameRequest);
     }
@@ -76,9 +91,11 @@ public class GameRequestService {
     /**
      * Update an existing game request.
      * 
-     * @param requestId the ID of the game request to update
-     * @param requestDto the game request data transfer object containing updated request details
+     * @param requestId  the ID of the game request to update
+     * @param requestDto the game request data transfer object containing updated
+     *                   request details
      * @return the updated game request as a GameRequest
+     * @throws GameShopException if game request not found, request already processed, or category not found
      */
     @Transactional
     public GameRequest updateGameRequest(Integer requestId, GameRequestRequestDto requestDto) {
@@ -117,6 +134,7 @@ public class GameRequestService {
      * Delete a game request.
      * 
      * @param requestId the ID of the game request to delete
+     * @throws GameShopException if game request not found or request already processed
      */
     @Transactional
     public void deleteGameRequest(Integer requestId) {
@@ -136,8 +154,10 @@ public class GameRequestService {
      * Add a note to a game request.
      * 
      * @param requestId the ID of the game request to add a note to
-     * @param noteDto the request note data transfer object containing note details
+     * @param noteDto   the request note data transfer object containing note
+     *                  details
      * @return the created request note as a RequestNote
+     * @throws GameShopException if game request not found or staff member not found
      */
     @Transactional
     public RequestNote addNote(Integer requestId, RequestNoteRequestDto noteDto) {
@@ -167,7 +187,8 @@ public class GameRequestService {
      * Delete a note from a game request.
      * 
      * @param requestId the ID of the game request to delete a note from
-     * @param noteId the ID of the note to delete
+     * @param noteId    the ID of the note to delete
+     * @throws GameShopException if note not found
      */
     @Transactional
     public void deleteNote(Integer requestId, Integer noteId) {
@@ -183,14 +204,17 @@ public class GameRequestService {
     /**
      * Process (approve/reject) a game request - only managers can do this.
      * 
-     * @param requestId the ID of the game request to process
-     * @param managerId the ID of the manager processing the request
-     * @param approval true if the request is approved, false if rejected
-     * @param approvalDto the game request approval data transfer object containing approval details
+     * @param requestId   the ID of the game request to process
+     * @param managerId   the ID of the manager processing the request
+     * @param approval    true if the request is approved, false if rejected
+     * @param approvalDto the game request approval data transfer object containing
+     *                    approval details
      * @return the processed game request
+     * @throws GameShopException if manager not found, game request not found, or invalid approval details
      */
     @Transactional
-    public GameRequest processRequest(Integer requestId, Integer managerId, boolean approval, GameRequestApprovalDto approvalDto) {
+    public GameRequest processRequest(Integer requestId, Integer managerId, boolean approval,
+            GameRequestApprovalDto approvalDto) {
         ManagerAccount manager = managerAccountRepository.findManagerAccountByStaffId(managerId);
         if (manager == null) {
             throw new GameShopException(HttpStatus.FORBIDDEN, "Only managers can process game requests");
@@ -248,6 +272,7 @@ public class GameRequestService {
      * 
      * @param requestId the ID of the game request to retrieve
      * @return the retrieved game request as a GameRequest
+     * @throws GameShopException if game request not found
      */
     @Transactional
     public GameRequest getRequest(Integer requestId) {

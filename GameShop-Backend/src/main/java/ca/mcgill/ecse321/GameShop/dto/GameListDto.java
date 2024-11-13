@@ -1,7 +1,7 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GameListDto {
     // Attributes

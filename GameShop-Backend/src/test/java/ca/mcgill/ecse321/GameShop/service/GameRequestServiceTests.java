@@ -1,15 +1,17 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
-import ca.mcgill.ecse321.GameShop.dto.GameRequestRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.RequestNoteRequestDto;
-import ca.mcgill.ecse321.GameShop.exception.GameShopException;
-import ca.mcgill.ecse321.GameShop.model.*;
-import ca.mcgill.ecse321.GameShop.repository.*;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,9 +20,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.*;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.RequestNoteRequestDto;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
+import ca.mcgill.ecse321.GameShop.model.EmployeeAccount;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.GameCategory;
+import ca.mcgill.ecse321.GameShop.model.GameRequest;
+import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
+import ca.mcgill.ecse321.GameShop.model.RequestNote;
+import ca.mcgill.ecse321.GameShop.repository.EmployeeAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameRequestRepository;
+import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.RequestNoteRepository;
 
 @SpringBootTest
 public class GameRequestServiceTests {
@@ -55,8 +70,7 @@ public class GameRequestServiceTests {
                 "http://testurl.com/image.jpg",
                 Date.valueOf(LocalDate.now()),
                 1,
-                Arrays.asList(1, 2)
-        );
+                Arrays.asList(1, 2));
 
         EmployeeAccount employee = new EmployeeAccount("employee@example.com", "password", true);
 
@@ -97,8 +111,7 @@ public class GameRequestServiceTests {
                 "http://testurl.com/image.jpg",
                 Date.valueOf(LocalDate.now()),
                 1,
-                Arrays.asList(1, 2)
-        );
+                Arrays.asList(1, 2));
 
         when(employeeAccountRepository.findEmployeeAccountByStaffId(requestDto.getStaffId())).thenReturn(null);
 
@@ -121,8 +134,7 @@ public class GameRequestServiceTests {
                 "http://testurl.com/image.jpg",
                 Date.valueOf(LocalDate.now()),
                 1,
-                Arrays.asList(1, 2)
-        );
+                Arrays.asList(1, 2));
 
         EmployeeAccount employee = new EmployeeAccount("employee@example.com", "password", true);
 
@@ -156,12 +168,11 @@ public class GameRequestServiceTests {
                 "http://newimage.com/image.jpg",
                 Date.valueOf(LocalDate.now()),
                 1,
-                Arrays.asList(1)
-        );
+                Arrays.asList(1));
 
         GameRequest gameRequest = new GameRequest();
         gameRequest.setRequestStatus(GameRequest.RequestStatus.SUBMITTED);
-        gameRequest.setCategories(new GameCategory[]{});
+        gameRequest.setCategories(new GameCategory[] {});
 
         GameCategory category = new GameCategory(true, "Category 1");
         ReflectionTestUtils.setField(category, "categoryId", 1);
@@ -205,17 +216,16 @@ public class GameRequestServiceTests {
         // Arrange
         Integer requestId = 1;
         GameRequestRequestDto requestDto = new GameRequestRequestDto(
-            "Updated Game",
-            "Updated Description",
-            "http://newimage.com/image.jpg",
-            Date.valueOf(LocalDate.now()),
-            1,
-            Arrays.asList(1)
-        );
+                "Updated Game",
+                "Updated Description",
+                "http://newimage.com/image.jpg",
+                Date.valueOf(LocalDate.now()),
+                1,
+                Arrays.asList(1));
 
         GameRequest gameRequest = new GameRequest();
         ReflectionTestUtils.setField(gameRequest, "gameEntityId", requestId);
-        gameRequest.setRequestStatus(GameRequest.RequestStatus.APPROVED);  // Set status to APPROVED
+        gameRequest.setRequestStatus(GameRequest.RequestStatus.APPROVED); // Set status to APPROVED
 
         GameCategory category = new GameCategory(true, "Category 1");
         ReflectionTestUtils.setField(category, "categoryId", 1);
@@ -299,7 +309,8 @@ public class GameRequestServiceTests {
         EmployeeAccount staffAccount = new EmployeeAccount("employee@example.com", "password", true);
 
         when(gameRequestRepository.findGameRequestByGameEntityId(requestId)).thenReturn(gameRequest);
-        when(employeeAccountRepository.findEmployeeAccountByStaffId(noteDto.getStaffWriterId())).thenReturn(staffAccount);
+        when(employeeAccountRepository.findEmployeeAccountByStaffId(noteDto.getStaffWriterId()))
+                .thenReturn(staffAccount);
         when(requestNoteRepository.save(any(RequestNote.class))).thenAnswer(invocation -> {
             RequestNote savedNote = invocation.getArgument(0);
             ReflectionTestUtils.setField(savedNote, "noteId", 1); // Simulate database assigning an ID
@@ -429,7 +440,7 @@ public class GameRequestServiceTests {
         gameRequest.setName("Game Name");
         gameRequest.setDescription("Game Description");
         gameRequest.setImageURL("http://gameimage.com");
-        gameRequest.setCategories(new GameCategory[]{});
+        gameRequest.setCategories(new GameCategory[] {});
 
         when(managerAccountRepository.findManagerAccountByStaffId(managerId)).thenReturn(manager);
         when(gameRequestRepository.findGameRequestByGameEntityId(requestId)).thenReturn(gameRequest);

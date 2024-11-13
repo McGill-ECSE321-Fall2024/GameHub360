@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
 import java.sql.Date;
+
 import ca.mcgill.ecse321.GameShop.model.RequestNote;
 
 public class RequestNoteResponseDto {
@@ -12,7 +13,7 @@ public class RequestNoteResponseDto {
     private Integer staffWriterId;
     private Integer gameRequestId;
 
-    // Constructors 
+    // Constructors
     public RequestNoteResponseDto() {
     }
 
@@ -22,7 +23,8 @@ public class RequestNoteResponseDto {
         this.content = requestNote.getContent();
         this.noteDate = requestNote.getNoteDate();
         this.staffWriterId = requestNote.getNotesWriter() != null ? requestNote.getNotesWriter().getStaffId() : null;
-        this.gameRequestId = requestNote.getGameRequest() != null ? requestNote.getGameRequest().getGameEntityId() : null;
+        this.gameRequestId = requestNote.getGameRequest() != null ? requestNote.getGameRequest().getGameEntityId()
+                : null;
     }
 
     // Getters and Setters

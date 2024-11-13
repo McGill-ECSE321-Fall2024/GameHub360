@@ -1,15 +1,18 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
-import ca.mcgill.ecse321.GameShop.exception.GameShopException;
-import ca.mcgill.ecse321.GameShop.model.Game;
-import ca.mcgill.ecse321.GameShop.model.GameCategory;
-import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
-import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,8 +21,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Arrays;
-import java.util.List;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.GameCategory;
+import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameRepository;
 
 @SpringBootTest
 public class GameServiceTests {
@@ -39,7 +46,7 @@ public class GameServiceTests {
         GameRequestDto gameRequestDto = new GameRequestDto();
         gameRequestDto.setName("Test Game");
         gameRequestDto.setDescription("Test Description");
-        gameRequestDto.setImageUrl("http://testimage.com/image.jpg");
+        gameRequestDto.setImageURL("http://testimage.com/image.jpg");
         gameRequestDto.setQuantityInStock(100);
         gameRequestDto.setIsAvailable(true);
         gameRequestDto.setPrice(59.99);
@@ -56,7 +63,7 @@ public class GameServiceTests {
         when(gameRepository.save(any(Game.class))).thenAnswer(invocation -> {
             Game savedGame = invocation.getArgument(0);
             ReflectionTestUtils.setField(savedGame, "gameEntityId", 1);
-            savedGame.setCategories(new GameCategory[]{category1, category2});
+            savedGame.setCategories(new GameCategory[] { category1, category2 });
             return savedGame;
         });
 
@@ -81,7 +88,7 @@ public class GameServiceTests {
         GameRequestDto gameRequestDto = new GameRequestDto();
         gameRequestDto.setName("Existing Game");
         gameRequestDto.setDescription("Existing Description");
-        gameRequestDto.setImageUrl("http://existingimage.com/image.jpg");
+        gameRequestDto.setImageURL("http://existingimage.com/image.jpg");
         gameRequestDto.setQuantityInStock(50);
         gameRequestDto.setIsAvailable(true);
         gameRequestDto.setPrice(39.99);
@@ -452,8 +459,8 @@ public class GameServiceTests {
 
         Game existingGame = new Game();
         ReflectionTestUtils.setField(existingGame, "gameEntityId", gameId);
-        existingGame.setCategories(new GameCategory[]{});
-        
+        existingGame.setCategories(new GameCategory[] {});
+
         when(gameRepository.findGameByGameEntityId(gameId)).thenReturn(existingGame);
         when(gameCategoryRepository.findGameCategoryByCategoryId(categoryId)).thenReturn(newCategory);
         when(gameRepository.save(any(Game.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -494,7 +501,7 @@ public class GameServiceTests {
 
         Game existingGame = new Game();
         ReflectionTestUtils.setField(existingGame, "gameEntityId", gameId);
-        existingGame.setCategories(new GameCategory[]{});
+        existingGame.setCategories(new GameCategory[] {});
 
         when(gameRepository.findGameByGameEntityId(gameId)).thenReturn(existingGame);
         when(gameCategoryRepository.findGameCategoryByCategoryId(categoryId)).thenReturn(null);
@@ -520,7 +527,7 @@ public class GameServiceTests {
 
         Game existingGame = new Game();
         ReflectionTestUtils.setField(existingGame, "gameEntityId", gameId);
-        existingGame.setCategories(new GameCategory[]{existingCategory});
+        existingGame.setCategories(new GameCategory[] { existingCategory });
 
         when(gameRepository.findGameByGameEntityId(gameId)).thenReturn(existingGame);
         when(gameCategoryRepository.findGameCategoryByCategoryId(categoryId)).thenReturn(existingCategory);

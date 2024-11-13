@@ -1,19 +1,29 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
-import ca.mcgill.ecse321.GameShop.model.GameRequest;
-import ca.mcgill.ecse321.GameShop.model.RequestNote;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteResponseDto;
-import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
+import ca.mcgill.ecse321.GameShop.model.GameRequest;
+import ca.mcgill.ecse321.GameShop.model.RequestNote;
 import ca.mcgill.ecse321.GameShop.service.GameRequestService;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 /**
  * REST controller for managing game requests.
  */
@@ -50,7 +60,7 @@ public class GameRequestController {
      */
     @PostMapping("/{requestId}")
     public GameRequestResponseDto editGameRequest(
-            @PathVariable Integer requestId,
+            @PathVariable("requestId") int requestId,
             @RequestBody GameRequestRequestDto request) {
         GameRequest updatedRequest = gameRequestService.updateGameRequest(requestId, request);
         return new GameRequestResponseDto(updatedRequest);
@@ -63,7 +73,7 @@ public class GameRequestController {
      * @return a response entity indicating the result of the operation
      */
     @DeleteMapping("/{requestId}")
-    public Void deleteGameRequest(@PathVariable Integer requestId) {
+    public Void deleteGameRequest(@PathVariable("requestId") int requestId) {
         gameRequestService.deleteGameRequest(requestId);
         return null;
     }
@@ -77,7 +87,7 @@ public class GameRequestController {
      */
     @PostMapping("/{requestId}/note")
     public RequestNoteResponseDto addNote(
-            @PathVariable Integer requestId,
+            @PathVariable("requestId") int requestId,
             @RequestBody RequestNoteRequestDto note) {
         RequestNote addedNote = gameRequestService.addNote(requestId, note);
         return new RequestNoteResponseDto(addedNote);
@@ -92,8 +102,8 @@ public class GameRequestController {
      */
     @DeleteMapping("/{requestId}/note/{noteId}")
     public Void deleteNote(
-            @PathVariable Integer requestId,
-            @PathVariable Integer noteId) {
+            @PathVariable("requestId") int requestId,
+            @PathVariable("noteId") int noteId) {
         gameRequestService.deleteNote(requestId, noteId);
         return null;
     }
@@ -109,9 +119,9 @@ public class GameRequestController {
      */
     @PutMapping("/{requestId}/approval")
     public GameRequestResponseDto processRequest(
-            @PathVariable Integer requestId,
-            @RequestParam Integer managerId,
-            @RequestParam boolean approval,
+            @PathVariable("requestId") int requestId,
+            @RequestParam("managerId") int managerId,
+            @RequestParam("approval") boolean approval,
             @RequestBody(required = false) GameRequestApprovalDto noteDto) {
         GameRequest processedRequest = gameRequestService.processRequest(requestId, managerId, approval, noteDto);
         return new GameRequestResponseDto(processedRequest);
@@ -135,7 +145,7 @@ public class GameRequestController {
      * @return the requested game request as a response entity
      */
     @GetMapping("/{requestId}")
-    public GameRequestResponseDto getRequest(@PathVariable Integer requestId) {
+    public GameRequestResponseDto getRequest(@PathVariable("requestId") int requestId) {
         GameRequest request = gameRequestService.getRequest(requestId);
         return new GameRequestResponseDto(request);
     }

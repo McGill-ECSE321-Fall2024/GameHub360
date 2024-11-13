@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
 import java.sql.Date;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

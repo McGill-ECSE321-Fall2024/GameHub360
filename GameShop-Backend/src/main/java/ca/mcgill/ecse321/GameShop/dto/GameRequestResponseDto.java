@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.GameShop.dto;
 import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import ca.mcgill.ecse321.GameShop.model.GameRequest;
 import ca.mcgill.ecse321.GameShop.model.RequestNote;
 
@@ -17,8 +18,7 @@ public class GameRequestResponseDto {
     private Integer staffId;
     private List<Integer> noteIds;
     private List<Integer> categoryIds;
-    
-    
+
     // Constructors
     public GameRequestResponseDto() {
     }
