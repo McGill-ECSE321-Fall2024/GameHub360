@@ -5,15 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="42e7dcb1-e7d8-4e96-973d-ca748bf474ae" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/CustomerAccountListDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/OrderHistoryDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentCardListDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/WishlistDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/controller/CustomerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentDetailsRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentDetailsRequestDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentDetailsResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/dto/PaymentDetailsResponseDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/service/CustomerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/service/CustomerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/service/ManagerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/main/java/ca/mcgill/ecse321/GameShop/service/ManagerService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/integration/CustomerIntegrationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/integration/CustomerIntegrationTests.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/service/CustomerServiceTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameShop-Backend/src/test/java/ca/mcgill/ecse321/GameShop/service/CustomerServiceTests.java" afterDir="false" />
     </list>
@@ -77,6 +72,9 @@
     "Gradle.CustomerIntegrationTests.testCreateDuplicateCustomerFails.executor": "Run",
     "Gradle.CustomerIntegrationTests.testCreateOrUpdatePaymentCard_NotFound.executor": "Run",
     "Gradle.CustomerIntegrationTests.testCreateOrUpdatePaymentCard_Success.executor": "Run",
+    "Gradle.CustomerIntegrationTests.testCreatePaymentCard_Conflict_AlreadyExists.executor": "Run",
+    "Gradle.CustomerIntegrationTests.testCreatePaymentCard_CustomerNotFound.executor": "Run",
+    "Gradle.CustomerIntegrationTests.testCreatePaymentCard_Success.executor": "Run",
     "Gradle.CustomerIntegrationTests.testGetAllCustomers_Success.executor": "Run",
     "Gradle.CustomerIntegrationTests.testGetAllPaymentCards_NotFound.executor": "Run",
     "Gradle.CustomerIntegrationTests.testGetAllPaymentCards_Success.executor": "Run",
@@ -91,6 +89,10 @@
     "Gradle.CustomerIntegrationTests.testUpdateCustomer_BadRequest.executor": "Run",
     "Gradle.CustomerIntegrationTests.testUpdateCustomer_NotFound.executor": "Run",
     "Gradle.CustomerIntegrationTests.testUpdateCustomer_Success.executor": "Run",
+    "Gradle.CustomerIntegrationTests.testUpdatePaymentCard_CardDoesNotBelongToCustomer.executor": "Run",
+    "Gradle.CustomerIntegrationTests.testUpdatePaymentCard_CardNotFound.executor": "Run",
+    "Gradle.CustomerIntegrationTests.testUpdatePaymentCard_CustomerNotFound.executor": "Run",
+    "Gradle.CustomerIntegrationTests.testUpdatePaymentCard_Success.executor": "Run",
     "Gradle.CustomerIntegrationTests.testViewOrderHistory_NotFound.executor": "Run",
     "Gradle.CustomerIntegrationTests.testViewOrderHistory_Success.executor": "Run",
     "Gradle.CustomerIntegrationTests.testViewWishlist_NotFound.executor": "Run",
@@ -100,6 +102,9 @@
     "Gradle.CustomerServiceTests.testCreateCustomerSuccessfully.executor": "Run",
     "Gradle.CustomerServiceTests.testCreateOrUpdatePaymentCard_CustomerNotFound.executor": "Run",
     "Gradle.CustomerServiceTests.testCreateOrUpdatePaymentCard_Success.executor": "Run",
+    "Gradle.CustomerServiceTests.testCreatePaymentCardAlreadyExists.executor": "Run",
+    "Gradle.CustomerServiceTests.testCreatePaymentCardCustomerNotFound.executor": "Run",
+    "Gradle.CustomerServiceTests.testCreatePaymentCardSuccessfully.executor": "Run",
     "Gradle.CustomerServiceTests.testGetAllCustomers.executor": "Run",
     "Gradle.CustomerServiceTests.testGetAllPaymentCardsByCustomerId_CustomerNotFound.executor": "Run",
     "Gradle.CustomerServiceTests.testGetAllPaymentCardsByCustomerId_Success.executor": "Run",
@@ -118,6 +123,10 @@
     "Gradle.CustomerServiceTests.testSuccessfulOrderHistoryRetrieval.executor": "Run",
     "Gradle.CustomerServiceTests.testUpdateCustomerNotFound.executor": "Run",
     "Gradle.CustomerServiceTests.testUpdateCustomerSuccess.executor": "Run",
+    "Gradle.CustomerServiceTests.testUpdatePaymentCardCustomerNotFound.executor": "Run",
+    "Gradle.CustomerServiceTests.testUpdatePaymentCardDoesNotBelongToCustomer.executor": "Run",
+    "Gradle.CustomerServiceTests.testUpdatePaymentCardNotFound.executor": "Run",
+    "Gradle.CustomerServiceTests.testUpdatePaymentCardSuccessfully.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "API-Endpoints-Benzo",
     "kotlin-language-version-configured": "true",
@@ -130,7 +139,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Gradle.CustomerServiceTests">
+  <component name="RunManager" selected="Gradle.CustomerIntegrationTests">
     <configuration name="CustomerIntegrationTests" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -155,7 +164,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="CustomerIntegrationTests.testGetAllPaymentCards_NotFound" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="CustomerIntegrationTests.testGetPaymentCardById_Success" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
@@ -168,7 +177,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;ca.mcgill.ecse321.GameShop.integration.CustomerIntegrationTests.testGetAllPaymentCards_NotFound&quot;" />
+            <option value="&quot;ca.mcgill.ecse321.GameShop.integration.CustomerIntegrationTests.testGetPaymentCardById_Success&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -179,7 +188,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="CustomerIntegrationTests.testViewWishlist_NotFound" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="CustomerIntegrationTests.testUpdatePaymentCard_CardDoesNotBelongToCustomer" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
@@ -192,7 +201,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;ca.mcgill.ecse321.GameShop.integration.CustomerIntegrationTests.testViewWishlist_NotFound&quot;" />
+            <option value="&quot;ca.mcgill.ecse321.GameShop.integration.CustomerIntegrationTests.testUpdatePaymentCard_CardDoesNotBelongToCustomer&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -203,7 +212,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="CustomerIntegrationTests.testViewWishlist_Success" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="CustomerIntegrationTests.testUpdatePaymentCard_CardNotFound" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/GameShop-Backend" />
@@ -216,7 +225,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;ca.mcgill.ecse321.GameShop.integration.CustomerIntegrationTests.testViewWishlist_Success&quot;" />
+            <option value="&quot;ca.mcgill.ecse321.GameShop.integration.CustomerIntegrationTests.testUpdatePaymentCard_CardNotFound&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -260,11 +269,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.CustomerServiceTests" />
         <item itemvalue="Gradle.CustomerIntegrationTests" />
-        <item itemvalue="Gradle.CustomerIntegrationTests.testViewWishlist_NotFound" />
-        <item itemvalue="Gradle.CustomerIntegrationTests.testViewWishlist_Success" />
-        <item itemvalue="Gradle.CustomerIntegrationTests.testGetAllPaymentCards_NotFound" />
+        <item itemvalue="Gradle.CustomerServiceTests" />
+        <item itemvalue="Gradle.CustomerIntegrationTests.testGetPaymentCardById_Success" />
+        <item itemvalue="Gradle.CustomerIntegrationTests.testUpdatePaymentCard_CardDoesNotBelongToCustomer" />
+        <item itemvalue="Gradle.CustomerIntegrationTests.testUpdatePaymentCard_CardNotFound" />
       </list>
     </recent_temporary>
   </component>

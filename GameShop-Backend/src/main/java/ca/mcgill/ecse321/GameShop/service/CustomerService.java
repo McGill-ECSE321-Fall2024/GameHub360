@@ -88,10 +88,12 @@ public class CustomerService {
         }
 
         // Validate and potentially update password
-        if (!PasswordUtils.isValidPassword(customerRequestDto.getPassword())) {
-            throw new GameShopException(HttpStatus.BAD_REQUEST, "Password does not meet security requirements.");
+        if (customerRequestDto.getPassword() != null) {
+            if (!PasswordUtils.isValidPassword(customerRequestDto.getPassword())) {
+                throw new GameShopException(HttpStatus.BAD_REQUEST, "Password does not meet security requirements.");
+            }
+            customer.setPassword(EncryptionUtils.encrypt(customerRequestDto.getPassword()));
         }
-        customer.setPassword(EncryptionUtils.encrypt(customerRequestDto.getPassword()));
 
         // Update optional fields: name and phone number
         if (customerRequestDto.getName() != null) {
@@ -172,6 +174,76 @@ public class CustomerService {
     }
 
     /**
+     * Creates a new payment card for a specific customer by their ID.
+     *
+     * @param customerId               The ID of the customer.
+     * @param paymentDetailsRequestDto The payment details data for creation.
+     * @return PaymentDetails representing the created payment card.
+     * @throws GameShopException if the customer is not found or already has payment details.
+     */
+    @Transactional
+    public PaymentDetails createPaymentCard(Integer customerId, PaymentDetailsRequestDto paymentDetailsRequestDto) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+
+        for (PaymentDetails card: customer.getPaymentCards()){
+            if (card.getCardNumber() == paymentDetailsRequestDto.getCardNumber()) {
+                throw new GameShopException(HttpStatus.CONFLICT, "Payment details already exist.");
+            }
+        }
+
+        PaymentDetails paymentDetails = new PaymentDetails(paymentDetailsRequestDto.getCardName(),
+                paymentDetailsRequestDto.getPostalCode(),
+                paymentDetailsRequestDto.getCardNumber(),
+                paymentDetailsRequestDto.getExpMonth(),
+                paymentDetailsRequestDto.getExpYear(),
+                customer);
+        paymentDetails = paymentDetailsRepository.save(paymentDetails);
+
+        customer.addPaymentCard(paymentDetails);
+        customerAccountRepository.save(customer);
+
+        return paymentDetails;
+    }
+
+    /**
+     * Updates an existing payment card for a specific customer by their ID.
+     *
+     * @param customerId               The ID of the customer.
+     * @param paymentDetailsRequestDto The payment details data for update.
+     * @return PaymentDetails representing the updated payment card.
+     * @throws GameShopException if the customer or payment details are not found.
+     */
+    @Transactional
+    public PaymentDetails updatePaymentCard(Integer customerId, int cardId, PaymentDetailsRequestDto paymentDetailsRequestDto) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+
+        PaymentDetails card = paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(cardId);
+        if (card == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Card not found.");
+        }
+
+        if (!customer.getPaymentCards().contains(card)) {
+            throw new GameShopException(HttpStatus.FORBIDDEN, "Card does not belong to the specified customer.");
+        }
+
+        card.setCardName(paymentDetailsRequestDto.getCardName());
+        card.setPostalCode(paymentDetailsRequestDto.getPostalCode());
+        card.setCardNumber(paymentDetailsRequestDto.getCardNumber());
+        card.setExpMonth(paymentDetailsRequestDto.getExpMonth());
+        card.setExpYear(paymentDetailsRequestDto.getExpYear());
+
+        customerAccountRepository.save(customer);
+
+        return card;
+    }
+
+    /**
      * Retrieves a specific payment card for a customer by customer ID and card ID.
      *
      * @param customerId The ID of the customer.
@@ -206,33 +278,6 @@ public class CustomerService {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
         }
         return customer.getPaymentCards();
-    }
-
-    /**
-     * Creates or updates a payment card for a specific customer by their ID.
-     *
-     * @param customerId               The ID of the customer.
-     * @param paymentDetailsRequestDto The payment details data for creation or update.
-     * @return PaymentDetails representing the created/updated payment card.
-     * @throws GameShopException if customer with customerId is not found
-     */
-    @Transactional
-    public PaymentDetails createOrUpdatePaymentCard(Integer customerId, PaymentDetailsRequestDto paymentDetailsRequestDto) {
-        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
-        if (customer == null) {
-            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
-        }
-
-        PaymentDetails paymentDetails = new PaymentDetails(paymentDetailsRequestDto.getCardName(),
-                paymentDetailsRequestDto.getPostalCode(),
-                paymentDetailsRequestDto.getCardNumber(),
-                paymentDetailsRequestDto.getExpMonth(),
-                paymentDetailsRequestDto.getExpYear(),
-                customer);
-
-        customerAccountRepository.save(customer);
-
-        return paymentDetails;
     }
 
     /**

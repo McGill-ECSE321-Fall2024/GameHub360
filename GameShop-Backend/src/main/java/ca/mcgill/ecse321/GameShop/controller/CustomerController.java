@@ -104,6 +104,35 @@ public class CustomerController {
     }
 
     /**
+     * Endpoint to create a payment card for a specific customer.
+     *
+     * @param customerId               The ID of the customer.
+     * @param paymentDetailsRequestDto The payment details data for creation.
+     * @return PaymentDetailsResponseDto representing the created payment details.
+     */
+    @PostMapping("/{customerId}/payment")
+    public PaymentDetailsResponseDto createPaymentCard(@PathVariable Integer customerId,
+                                                       @RequestBody PaymentDetailsRequestDto paymentDetailsRequestDto) {
+        PaymentDetails paymentDetails = customerService.createPaymentCard(customerId, paymentDetailsRequestDto);
+        return new PaymentDetailsResponseDto(paymentDetails);
+    }
+
+    /**
+     * Endpoint to update an existing payment card for a specific customer.
+     *
+     * @param customerId               The ID of the customer.
+     * @param paymentDetailsRequestDto The payment details data for updating.
+     * @return PaymentDetailsResponseDto representing the updated payment details.
+     */
+    @PutMapping("/{customerId}/payment/{cardId}")
+    public PaymentDetailsResponseDto updatePaymentCard(@PathVariable Integer customerId,
+                                                       @PathVariable Integer cardId,
+                                                       @RequestBody PaymentDetailsRequestDto paymentDetailsRequestDto) {
+        PaymentDetails paymentDetails = customerService.updatePaymentCard(customerId, cardId, paymentDetailsRequestDto);
+        return new PaymentDetailsResponseDto(paymentDetails);
+    }
+
+    /**
      * Endpoint to retrieve a specific payment card for a customer.
      *
      * @param customerId The ID of the customer.
@@ -129,20 +158,6 @@ public class CustomerController {
                 .map(PaymentDetailsResponseDto::new)
                 .collect(Collectors.toList());
         return new PaymentCardListDto(paymentCards);
-    }
-
-    /**
-     * Endpoint to create or update a payment card for a specific customer.
-     *
-     * @param customerId               The ID of the customer.
-     * @param paymentDetailsRequestDto The payment details data for creation or update.
-     * @return PaymentDetailsResponseDto representing the created/updated payment details.
-     */
-    @PostMapping("/{customerId}/payment")
-    public PaymentDetailsResponseDto updatePaymentCards(@PathVariable Integer customerId,
-                                                        @RequestBody PaymentDetailsRequestDto paymentDetailsRequestDto) {
-        PaymentDetails paymentDetails = customerService.createOrUpdatePaymentCard(customerId, paymentDetailsRequestDto);
-        return new PaymentDetailsResponseDto(paymentDetails);
     }
 
     /**
