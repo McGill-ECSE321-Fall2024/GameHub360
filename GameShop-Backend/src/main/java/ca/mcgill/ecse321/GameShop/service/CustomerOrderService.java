@@ -102,7 +102,7 @@ public class CustomerOrderService {
      * @throws GameShopException    
      */
     @Transactional
-    public CustomerOrder monitorOrderStatuses(int orderId) {
+    public CustomerOrder getCustomerOrderById(int orderId) {
         List<CustomerOrder> orders = (List<CustomerOrder>) customerOrderRepository.findAll();
         CustomerOrder order = orders.stream()
                                     .filter(o -> o.getOrderId() == orderId)

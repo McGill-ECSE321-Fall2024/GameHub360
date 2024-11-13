@@ -5,18 +5,17 @@ import ca.mcgill.ecse321.GameShop.model.Review.GameReviewRating;
 import java.sql.Date;
 
 public class ReviewRequestDto {
+    // Attributes
     private GameReviewRating rating;
     private String comment;
     private Date reviewDate;
     private int orderedGameId;
     private int reviewedById;
 
-
-    // Default constructor
+    // Constructors
     public ReviewRequestDto() {
     }
 
-    // Constructor with all fields
     public ReviewRequestDto(GameReviewRating rating, String comment, Date reviewDate, int orderedGameId, int reviewedById) {
         this.rating = rating;
         this.comment = comment;
