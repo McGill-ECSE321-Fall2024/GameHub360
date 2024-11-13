@@ -71,7 +71,7 @@ public class ReviewServiceTests {
         OrderGame orderGame1 = new OrderGame(customerOrder, game1);
 
         ReviewRequestDto requestDto = new ReviewRequestDto(GameReviewRating.FIVE_STARS, "Great game",
-                Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId(), 0);
+                Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId());
 
         // Mock repository behavior
         when(orderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);
@@ -107,7 +107,7 @@ public class ReviewServiceTests {
         OrderGame orderGame1 = new OrderGame(customerOrder, game1);
 
         ReviewRequestDto requestDto = new ReviewRequestDto(GameReviewRating.FIVE_STARS, "Great game",
-                Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId(), 0);
+                Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId());
 
         // Mock repository behavior
         when(orderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(null);
@@ -140,7 +140,7 @@ public class ReviewServiceTests {
         OrderGame orderGame1 = new OrderGame(customerOrder, game1);
 
         ReviewRequestDto requestDto = new ReviewRequestDto(GameReviewRating.FIVE_STARS, "Great game",
-                Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId(), 0);
+                Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId());
 
         // Mock repository behavior
         when(orderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);

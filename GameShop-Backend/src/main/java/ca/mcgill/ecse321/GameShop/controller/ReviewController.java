@@ -32,7 +32,7 @@ public class ReviewController {
      * @return ResponseEntity<ReviewResponseDto>
      */
     @PostMapping("/{gameId}/reviews")
-    public ReviewResponseDto submitReview(@PathVariable int gameId,
+    public ReviewResponseDto submitReview(@PathVariable("gameId") int gameId,
             @Validated({ ValidationGroups.Post.class }) @RequestBody ReviewRequestDto reviewRequestDto) {
         Review review = reviewService.submitReview(reviewRequestDto);
         return new ReviewResponseDto(review);

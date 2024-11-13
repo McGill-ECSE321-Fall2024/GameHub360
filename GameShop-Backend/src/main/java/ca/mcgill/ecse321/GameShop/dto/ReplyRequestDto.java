@@ -8,8 +8,7 @@ public class ReplyRequestDto {
 
     private String content;
     private Date replyDate;
-    private int managerId;//remove this
-
+    private int managerId;
 
     public ReplyRequestDto() {
     }

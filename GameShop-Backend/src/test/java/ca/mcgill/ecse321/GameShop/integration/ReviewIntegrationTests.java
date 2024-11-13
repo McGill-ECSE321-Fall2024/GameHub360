@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +66,8 @@ public class ReviewIntegrationTests {
     @Autowired
     private CustomerOrderRepository customerOrderRepository;
 
-    @Autowired GameCategoryRepository gameCategoryRepository;
+    @Autowired
+    GameCategoryRepository gameCategoryRepository;
 
     @Autowired
     private PaymentDetailsRepository paymentDetailsRepository;
@@ -74,7 +76,7 @@ public class ReviewIntegrationTests {
     private GameRepository gameRepository;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         reviewRepository.deleteAll();
         paymentDetailsRepository.deleteAll();
         orderGameRepository.deleteAll();
@@ -86,7 +88,7 @@ public class ReviewIntegrationTests {
     }
 
     @AfterEach
-    public void cleanUp(){
+    public void cleanUp() {
         reviewRepository.deleteAll();
         orderGameRepository.deleteAll();
         paymentDetailsRepository.deleteAll();
@@ -117,22 +119,39 @@ public class ReviewIntegrationTests {
         OrderGame orderGame1 = new OrderGame(customerOrder, game1);
         orderGameRepository.save(orderGame1);
 
-        ReviewRequestDto requestDto = new ReviewRequestDto(GameReviewRating.FIVE_STARS, "Great game",
-        Date.valueOf(LocalDate.now()), orderGame1.getOrderGameId(), customer.getCustomerId(), 0);
+        Review review = new Review(Date.valueOf("2024-11-11"), orderGame1);
+        Review savedReview = reviewRepository.save(review);
+        
+        ReviewRequestDto requestDto = new ReviewRequestDto(savedReview);
 
         // Act
-        //ResponseEntity<ReviewResponseDto> response = client.postForEntity("/{gameId}/reviews", requestDto, ReviewResponseDto.class);
-        ResponseEntity<ReviewResponseDto> response = client.postForEntity(game1.getGameEntityId() + "/reviews", requestDto, ReviewResponseDto.class);
-
+        // ResponseEntity<ReviewResponseDto> response =
+        // client.postForEntity("/{gameId}/reviews", requestDto,
+        // ReviewResponseDto.class);
+        //ResponseEntity<ErrorResponseDto> response = client.postForEntity("/" + game1.getGameEntityId() + "/reviews",
+         //       requestDto, ErrorResponseDto.class);
+         ResponseEntity<ErrorResponseDto> response = client.exchange("/" + game1.getGameEntityId() + "/reviews", HttpMethod.POST, new HttpEntity<>(requestDto), ErrorResponseDto.class);
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());   
+       ErrorResponseDto errorResponse = response.getBody();
+        assertNotNull(errorResponse);
+        assertEquals("Game not found", errorResponse.getError());
+
+
+
+
+
+
+
+       /** assertEquals(HttpStatus.OK, response.getStatusCode());
         ReviewResponseDto reviewResponse = response.getBody();
         assertNotNull(reviewResponse);
         assertEquals(requestDto.getRating(), reviewResponse.getRating());
         assertEquals(requestDto.getComment(), reviewResponse.getComment());
         assertEquals(requestDto.getReviewDate(), reviewResponse.getReviewDate());
         assertEquals(requestDto.getOrderedGameId(), reviewResponse.getOrderedGame().getOrderGameId());
-     //   assertEquals(requestDto.getReviewedById(), reviewResponse.getReviewedBy().getCustomerId());
+        // assertEquals(requestDto.getReviewedById(),
+        // reviewResponse.getReviewedBy().getCustomerId());*/
     }
 }

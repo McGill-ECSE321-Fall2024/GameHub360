@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
+import ca.mcgill.ecse321.GameShop.model.Review;
 import ca.mcgill.ecse321.GameShop.model.Review.GameReviewRating;
 import java.sql.Date;
 
@@ -9,21 +10,23 @@ public class ReviewRequestDto {
     private Date reviewDate;
     private int orderedGameId;
     private int reviewedById;
-    private int replyId;
+
 
     // Default constructor
     public ReviewRequestDto() {
     }
 
     // Constructor with all fields
-    public ReviewRequestDto(GameReviewRating rating, String comment, Date reviewDate, int orderedGameId, int reviewedById,
-            int replyId) {
+    public ReviewRequestDto(GameReviewRating rating, String comment, Date reviewDate, int orderedGameId, int reviewedById) {
         this.rating = rating;
         this.comment = comment;
         this.reviewDate = reviewDate;
         this.orderedGameId = orderedGameId;
         this.reviewedById = reviewedById;
-        this.replyId = replyId;
+    }
+
+    public ReviewRequestDto(Review review) { 
+        this(review.getRating(), review.getComment(), review.getReviewDate(), review.getReviewedGame().getOrderGameId(), review.getReviewId());
     }
 
     // Getters and setters
@@ -65,14 +68,6 @@ public class ReviewRequestDto {
 
     public void setReviewedById(int reviewedById) {
         this.reviewedById = reviewedById;
-    }
-
-    public int getReplyId() {
-        return replyId;
-    }
-
-    public void setReplyId(int replyId) {
-        this.replyId = replyId;
     }
 
 }
