@@ -1,255 +1,173 @@
-// package ca.mcgill.ecse321.GameShop.service;
+package ca.mcgill.ecse321.GameShop.service;
 
-// import static org.junit.jupiter.api.Assertions.assertEquals;
-// import static org.junit.jupiter.api.Assertions.assertNotNull;
-// import static org.junit.jupiter.api.Assertions.assertThrows;
-// import static org.mockito.ArgumentMatchers.any;
-// import static org.mockito.Mockito.times;
-// import static org.mockito.Mockito.verify;
-// import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
 
-// import java.sql.Date;
-// import java.time.LocalDate;
-// import java.util.List;
-// import java.util.Optional;
+import ca.mcgill.ecse321.GameShop.dto.CustomerOrderRequestDto;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
+import ca.mcgill.ecse321.GameShop.model.*;
+import ca.mcgill.ecse321.GameShop.model.CustomerOrder.OrderStatus;
+import ca.mcgill.ecse321.GameShop.repository.*;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
-// import org.junit.jupiter.api.Test;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.http.HttpStatus;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 
-// import ca.mcgill.ecse321.GameShop.dto.CustomerOrderRequestDto;
-// import ca.mcgill.ecse321.GameShop.exception.GameShopException;
-// import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
-// import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
-// import ca.mcgill.ecse321.GameShop.model.CustomerOrder.OrderStatus;
-// import ca.mcgill.ecse321.GameShop.model.Game;
-// import ca.mcgill.ecse321.GameShop.model.GameCategory;
-// import ca.mcgill.ecse321.GameShop.model.OrderGame;
-// import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
-// import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
-// import ca.mcgill.ecse321.GameShop.repository.CustomerOrderRepository;
-// import ca.mcgill.ecse321.GameShop.repository.GameRepository;
-// import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
-// import ca.mcgill.ecse321.GameShop.repository.PaymentDetailsRepository;
+@SpringBootTest
+public class CustomerOrderServiceTests {
 
-// @SpringBootTest
-// public class CustomerOrderServiceTests {
+    @Mock
+    private CustomerOrderRepository customerOrderRepository;
 
-//     @Mock
-//     private CustomerOrderRepository customerOrderRepository;
+    @Mock
+    private CustomerAccountRepository customerAccountRepository;
 
-//     @Mock
-//     private CustomerAccountRepository customerAccountRepository;
+    @Mock
+    private PaymentDetailsRepository paymentDetailsRepository;
 
-//     @Mock
-//     private GameRepository gameRepository;
+    @Mock
+    private GameRepository gameRepository;
 
-//     @Mock
-//     private PaymentDetailsRepository paymentDetailsRepository;
+    @InjectMocks
+    private CustomerOrderService customerOrderService;
 
-//     @Mock
-//     private OrderGameRepository OrderGameRepository;
+    @Test
+    public void testCreateCustomerOrderSuccess() {
+        // Arrange
+        CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Arrays.asList(1, 2), 1001, 2001);
+        CustomerAccount customer = new CustomerAccount();
 
-//     @InjectMocks
-//     private CustomerOrderService customerOrderService;
+        Game game1 = new Game();
+        game1.setQuantityInStock(10);
+        game1.setIsAvailable(true);
 
-//     @Test
-//     public void testCreateCustomerOrder() {
-//         // Arrange
-//         CustomerAccount customer = new CustomerAccount("exmaple@mcgill.com", "password123");
-//         GameCategory gameCategory = new GameCategory(true, "Action");
+        Game game2 = new Game();
+        game2.setQuantityInStock(5);
+        game2.setIsAvailable(true);
 
-//         Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
+        PaymentDetails paymentDetails = new PaymentDetails();
+        paymentDetails.setCardOwner(customer);
 
-//         // Create the CustomerOrder object
-//         PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
-//         CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
-//         OrderGame orderGame1 = new OrderGame(customerOrder, game1);
+        when(customerAccountRepository.findCustomerAccountByCustomerId(2001)).thenReturn(customer);
+        when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(1001)).thenReturn(paymentDetails);
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(game1);
+        when(gameRepository.findGameByGameEntityId(2)).thenReturn(game2);
+        when(customerOrderRepository.save(any(CustomerOrder.class))).thenAnswer(i -> i.getArgument(0));
 
-//         List<Integer> orderedGameIds = List.of(orderGame1.getOrderGameId());
+        // Act
+        CustomerOrder response = customerOrderService.createCustomerOrder(requestDto);
 
-//         CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), orderedGameIds,
-//                 customer.getCustomerId(), paymentDetails.getPaymentDetailsId());
+        // Assert
+        assertNotNull(response);
+        assertEquals(customer, response.getOrderedBy());
+        assertEquals(paymentDetails, response.getPaymentInformation());
+        assertEquals(2, response.getOrderedGames().size());
+        verify(gameRepository, times(2)).save(any(Game.class));
+        verify(customerOrderRepository, times(1)).save(any(CustomerOrder.class));
+    }
 
-//         // Mock repository behavior
-//         when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(any(Integer.class)))
-//                 .thenReturn(paymentDetails);
-//         when(gameRepository.findGameByGameEntityId(any(Integer.class))).thenReturn(game1);
-//         when(OrderGameRepository.save(any(OrderGame.class))).thenReturn(orderGame1);
-//         when(OrderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);
-//         when(customerAccountRepository.findCustomerAccountByCustomerId(any(Integer.class))).thenReturn(customer);
-//         when(customerOrderRepository.save(any(CustomerOrder.class))).thenReturn(customerOrder);
+    @Test
+    public void testCreateCustomerOrderGameNotFound() {
+        // Arrange
+        CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Collections.singletonList(1), 1001, 2001);
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(null);
 
-//         // Act
-//         CustomerOrder response = customerOrderService.createCustomerOrder(requestDto);
+        // Act & Assert
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> customerOrderService.createCustomerOrder(requestDto));
+        assertEquals("Game with ID 1 not found", e.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+    }
 
-//         // Assert
-//         assertNotNull(response);
-//         assertEquals(customer.getCustomerId(), response.getOrderedBy().getCustomerId());
-//         assertEquals(paymentDetails.getPaymentDetailsId(), response.getPaymentInformation().getPaymentDetailsId());
-//         assertEquals(Date.valueOf(LocalDate.now()), response.getOrderDate());
-//         verify(customerOrderRepository, times(1)).save(any(CustomerOrder.class));
+    @Test
+    public void testCreateCustomerOrderCustomerNotFound() {
+        // Arrange
+        CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Collections.singletonList(1), 1001, 2001);
+        Game game = new Game();
+        game.setQuantityInStock(5);
+        game.setIsAvailable(true);
+        when(gameRepository.findGameByGameEntityId(1)).thenReturn(game);
+        when(customerAccountRepository.findCustomerAccountByCustomerId(2001)).thenReturn(null);
 
-//     }
+        // Act & Assert
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> customerOrderService.createCustomerOrder(requestDto));
+        assertEquals("Customer with ID 2001 not found", e.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+    }
 
-//     @Test
-//     public void testCreateCustomerOrderWithInvalidCustomer() {
-//         // Arrange
-//         CustomerAccount customer = new CustomerAccount("Not John Doe", "password123");
-//         GameCategory gameCategory = new GameCategory(true, "Action");
+    @Test
+    public void testReturnCustomerOrderSuccess() {
+        // Arrange
+        CustomerOrder order = new CustomerOrder();
+        order.setOrderDate(Date.valueOf(LocalDate.now().minusDays(5)));
+        order.setOrderStatus(OrderStatus.DELIVERED);
+        when(customerOrderRepository.findOrderByOrderId(1)).thenReturn(order);
+        when(customerOrderRepository.save(any(CustomerOrder.class))).thenAnswer(i -> i.getArgument(0));
 
-//         Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
+        // Act
+        CustomerOrder response = customerOrderService.returnCustomerOrder(1);
 
-//         // Create the CustomerOrder object
-//         PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
-//         CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
-//         OrderGame orderGame1 = new OrderGame(customerOrder, game1);
+        // Assert
+        assertNotNull(response);
+        assertEquals(OrderStatus.RETURNED, response.getOrderStatus());
+        verify(customerOrderRepository, times(1)).save(order);
+    }
 
-//         List<Integer> orderedGameIds = List.of(orderGame1.getOrderGameId());
+    @Test
+    public void testReturnCustomerOrderNotFound() {
+        // Arrange
+        when(customerOrderRepository.findOrderByOrderId(1)).thenReturn(null);
 
-//         CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), orderedGameIds,
-//                 customer.getCustomerId(), paymentDetails.getPaymentDetailsId());
+        // Act & Assert
+        GameShopException e = assertThrows(GameShopException.class, () -> customerOrderService.returnCustomerOrder(1));
+        assertEquals("Order with ID 1 not found", e.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+    }
 
-//         // Mock repository behavior
-//         when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(any(Integer.class)))
-//                 .thenReturn(paymentDetails);
-//         when(gameRepository.findGameByGameEntityId(any(Integer.class))).thenReturn(game1);
-//         when(OrderGameRepository.save(any(OrderGame.class))).thenReturn(orderGame1);
-//         when(OrderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);
-//         when(customerAccountRepository.findCustomerAccountByCustomerId(any(Integer.class))).thenReturn(null);
-//         when(customerOrderRepository.save(any(CustomerOrder.class))).thenReturn(customerOrder);
+    @Test
+    public void testReturnCustomerOrderOutsideReturnPeriod() {
+        // Arrange
+        CustomerOrder order = new CustomerOrder();
+        order.setOrderDate(Date.valueOf(LocalDate.now().minusDays(10)));
+        order.setOrderStatus(OrderStatus.DELIVERED);
+        when(customerOrderRepository.findOrderByOrderId(1)).thenReturn(order);
 
-//         // Act
-//         GameShopException e = assertThrows(GameShopException.class,
-//                 () -> customerOrderService.createCustomerOrder(requestDto));
+        // Act & Assert
+        GameShopException e = assertThrows(GameShopException.class, () -> customerOrderService.returnCustomerOrder(1));
+        assertEquals("Order with ID 1 was placed more than 7 days ago", e.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+    }
 
-//         // Assert
-//         assertEquals("Customer not found", e.getMessage());
-//         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-//     }
+    @Test
+    public void testGetCustomerOrderByIdSuccess() {
+        // Arrange
+        CustomerOrder order = new CustomerOrder();
+        when(customerOrderRepository.findOrderByOrderId(1)).thenReturn(order);
 
-//     @Test
-//     public void testCreateCustomerOrderWithInvalidPaymentDetails() {
-//         // Arrange
-//         CustomerAccount customer = new CustomerAccount("John Doe", "password123");
-//         GameCategory gameCategory = new GameCategory(true, "Action");
+        // Act
+        CustomerOrder response = customerOrderService.getCustomerOrderById(1);
 
-//         Game game1 = new Game("Game1", "desc", "imageurl", 10, true, 10.0, gameCategory);
+        // Assert
+        assertNotNull(response);
+        verify(customerOrderRepository, times(1)).findOrderByOrderId(1);
+    }
 
-//         // Create the CustomerOrder object
-//         PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
-//         CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
-//         OrderGame orderGame1 = new OrderGame(customerOrder, game1);
+    @Test
+    public void testGetCustomerOrderByIdNotFound() {
+        // Arrange
+        when(customerOrderRepository.findOrderByOrderId(1)).thenReturn(null);
 
-//         List<Integer> orderedGameIds = List.of(orderGame1.getOrderGameId());
-
-//         CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), orderedGameIds,
-//                 customer.getCustomerId(), paymentDetails.getPaymentDetailsId());
-
-//         // Mock repository behavior
-//         when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(any(Integer.class))).thenReturn(null);
-//         when(gameRepository.findGameByGameEntityId(any(Integer.class))).thenReturn(game1);
-//         when(OrderGameRepository.save(any(OrderGame.class))).thenReturn(orderGame1);
-//         when(OrderGameRepository.findOrderGameById(any(Integer.class))).thenReturn(orderGame1);
-//         when(customerAccountRepository.findCustomerAccountByCustomerId(any(Integer.class))).thenReturn(customer);
-//         when(customerOrderRepository.save(any(CustomerOrder.class))).thenReturn(customerOrder);
-
-//         // Act
-//         GameShopException e = assertThrows(GameShopException.class,
-//                 () -> customerOrderService.createCustomerOrder(requestDto));
-
-//         // Assert
-//         assertEquals("Payment information not found", e.getMessage());
-//         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-
-//     }
-
-//     @Test
-//     public void testReturnCustomerOrder() {
-//         // Arrange
-//         CustomerAccount customer = new CustomerAccount("johndoe@gmail.com", "password123");
-
-//         // Create the CustomerOrder object
-//         PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
-//         CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
-//         customerOrder.setOrderStatus(OrderStatus.DELIVERED);
-
-//         // Mock repository behavior
-//         when(customerOrderRepository.findById(any(Integer.class))).thenReturn(Optional.of(customerOrder));
-//         when(customerOrderRepository.save(any(CustomerOrder.class))).thenReturn(customerOrder);
-
-//         // Act
-//         CustomerOrder response = customerOrderService.returnCustomerOrder(customerOrder.getOrderId());
-
-//         // Assert
-//         assertNotNull(response);
-//         assertEquals(OrderStatus.RETURNED, response.getOrderStatus());
-//         verify(customerOrderRepository, times(1)).findById(customerOrder.getOrderId());
-//         verify(customerOrderRepository, times(1)).save(customerOrder);
-//     }
-
-//     @Test
-//     public void testReturnCustomerOrderWithInvalidOrder() {
-//         // Arrange
-//         CustomerOrderRequestDto requestDto = new CustomerOrderRequestDto(Date.valueOf(LocalDate.now()), List.of(1), 1,
-//                 1);
-
-//         // Mock repository behavior
-//         when(customerOrderRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
-
-//         // Act
-//         GameShopException e = assertThrows(GameShopException.class,
-//                 () -> customerOrderService.returnCustomerOrder(requestDto.getOrderedById()));
-
-//         // Assert
-//         assertEquals("Order not found", e.getMessage());
-//         assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-
-//     }
-
-//     @Test
-//     public void testReturnCustomerOrderWithAlreadyReturnedOrder() {
-//         // Arrange
-//         CustomerAccount customer = new CustomerAccount("exmaple@mcgill.com", "password123");
-
-//         // Create the CustomerOrder object
-//         PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
-//         CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
-//         customerOrder.setOrderStatus(OrderStatus.RETURNED);
-
-//         // Mock repository behavior
-//         when(customerOrderRepository.findById(any(Integer.class))).thenReturn(Optional.of(customerOrder));
-
-//         // Act
-//         GameShopException e = assertThrows(GameShopException.class,
-//                 () -> customerOrderService.returnCustomerOrder(customerOrder.getOrderId()));
-
-//         // Assert
-//         assertEquals("Order has already been returned", e.getMessage());
-//         assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-//     }
-
-//     @Test
-//     public void testMonitorOrderStatuses() {
-//         // Arrange
-//         CustomerAccount customer = new CustomerAccount("example@gmail.com", "password123");
-
-//         // Create the CustomerOrder object
-//         PaymentDetails paymentDetails = new PaymentDetails("John Doe", "H3H 1A7", 123456789, 12, 2023, customer);
-//         CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customer, paymentDetails);
-//         customerOrder.setOrderStatus(OrderStatus.DELIVERED);
-
-//         // Mock repository behavior
-//         when(customerOrderRepository.findAll()).thenReturn(List.of(customerOrder));
-
-//         // Act
-//         CustomerOrder response = customerOrderService.monitorOrderStatuses(customerOrder.getOrderId());
-
-//         // Assert
-//         assertNotNull(response);
-//         assertEquals(OrderStatus.DELIVERED, response.getOrderStatus());
-//         verify(customerOrderRepository, times(1)).findAll();
-//     }
-// }
+        // Act & Assert
+        GameShopException e = assertThrows(GameShopException.class, () -> customerOrderService.getCustomerOrderById(1));
+        assertEquals("Order with ID 1 not found", e.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+    }
+}

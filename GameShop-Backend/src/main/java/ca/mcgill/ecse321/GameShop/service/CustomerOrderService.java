@@ -26,7 +26,7 @@ import java.util.List;
 @Service
 public class CustomerOrderService {
 
-    private static final int RETURN_PERIOD_DAYS = 7; // Extracted constant for better readability
+    private static final int RETURN_PERIOD_DAYS = 7;
 
     @Autowired
     private CustomerOrderRepository customerOrderRepository;
@@ -193,7 +193,7 @@ public class CustomerOrderService {
             throw new GameShopException(HttpStatus.NOT_FOUND,
                     "Payment information with ID " + paymentInformationId + " not found");
         }
-        if (!(paymentDetails.getCardOwner().getCustomerId() == customer.getCustomerId())) {
+        if (paymentDetails.getCardOwner().getCustomerId() != customer.getCustomerId()) {
             throw new GameShopException(HttpStatus.BAD_REQUEST, "Payment information with ID " + paymentInformationId
                     + " does not belong to customer with ID " + customer.getCustomerId());
         }
