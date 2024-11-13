@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CustomerOrderRequestDto {
     private Date orderDate;
-    private List<Integer> orderedGameIds;
+    private List<Integer> orderedGameIds; // a list of OrderGame ids not Game ids
     private int orderedById;
     private int paymentInformationId;
 

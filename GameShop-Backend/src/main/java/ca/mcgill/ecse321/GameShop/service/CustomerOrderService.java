@@ -62,12 +62,12 @@ public class CustomerOrderService {
         CustomerOrder order = new CustomerOrder(orderDate, orderedBy, paymentInformation);
 
         // add ordered games
-        for (int gameId : requestDto.getOrderedGameIds()) {
-            OrderGame game = orderGameRepository.findOrderGameById(gameId);
-            if (game == null) {
+        for (int orderGameId : requestDto.getOrderedGameIds()) {
+            OrderGame orderedGame = orderGameRepository.findOrderGameById(orderGameId);
+            if (orderedGame == null) {
                 throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
             }
-            order.addOrderedGame(game);
+            order.addOrderedGame(orderedGame);
         }
 
         return customerOrderRepository.save(order);
