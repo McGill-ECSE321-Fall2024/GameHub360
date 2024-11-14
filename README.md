@@ -80,10 +80,21 @@ Start the Spring Boot application:
 # Deliverable 2
 
 ## Links
--
+- [Wiki Home Page](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki)
+- [Project Report D2](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Project-Report-D2)
+- [QA Plan](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/QA-Plan)
+- [QA Report](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/QA-Report)
 
 ## Effort Table (D2)
-\\\
+| Team Member           | Time Spent (h) | Responsibilities                                                                                                                       |
+| --------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| name                  | #hours         | Work description                                                                                                                       |
+| Ismail Sentissi       | 17             | Requirements, testing, use-case scenarios & report                                                                                     |
+| Ahmed Mossa           | 37             | Created the Employee and AcitivtyLog classes endpoints, writing the QA report, writing multiple tests classes & helped colleagues debug |
+| Nicolas Bolouri       | 22             | Minutes organizer and scribe, GitHub setup initialization & Creating/editing domain model                                              |
+| Hamza Alfarrash       | 18             | Use-case diagram 1, requirements, wiki documentation & testing                                                                         |
+| Amgad Elgamal         | 18             | Domain Model Rationale, testing, requirements & backlog                                                                                |
+| Mohamed-Amine Benzaid | 18             | Use-case diagram 1, testing, use-case scenarios & requirements                                                                         |
 
 # Deliverable 1
 
