@@ -84,6 +84,14 @@ Start the Spring Boot application:
    ./gradlew test
    ```
 
+#### Integration Testing
+
+1. Ensure the database is correctly set up and accessible.
+2. Run integration tests:
+   ```bash
+   ./gradlew integrationTest
+   ```
+
 ## Deliverable 2
 
 ### Links
