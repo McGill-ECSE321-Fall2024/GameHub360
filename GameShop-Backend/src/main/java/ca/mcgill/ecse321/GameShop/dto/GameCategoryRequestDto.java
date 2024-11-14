@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import ca.mcgill.ecse321.GameShop.model.GameCategory.CategoryType;
 import java.util.List;
 
@@ -9,10 +10,10 @@ public class GameCategoryRequestDto {
     @NotBlank(message = "Name cannot be empty.")
     private String name;
 
-    @NotBlank(message = "Category type cannot be empty.")
+    @NotNull(message = "Category type cannot be empty.")
     private CategoryType categoryType;
 
-    @NotBlank(message = "Availability cannot be empty.")
+    @NotNull(message = "Availability cannot be null.")
     private Boolean available;
 
     private List<Integer> gameIds;
