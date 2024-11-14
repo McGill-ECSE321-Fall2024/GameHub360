@@ -32,18 +32,30 @@ public class GameCategoryService {
     }
 
     @Transactional
-    public GameCategory createGameCategory (GameCategoryRequestDto gameCategoryRequestDto){
+    public GameCategory createGameCategory(GameCategoryRequestDto gameCategoryRequestDto) {
+        // Debug logging
+        System.out.println("Request DTO isAvailable: " + gameCategoryRequestDto.isAvailable());
+        
         GameCategory gameCategory = gameCategoryRepository.findGameCategoryByName(gameCategoryRequestDto.getName());
         if (gameCategory != null) {
-            if (gameCategory.getCategoryType() == gameCategoryRequestDto.getCategoryType()){
+            if (gameCategory.getCategoryType() == gameCategoryRequestDto.getCategoryType()) {
                 throw new GameShopException(HttpStatus.CONFLICT, "Game category already exists.");
             }
         }
 
+        // Create new category using constructor
         GameCategory newGameCategory = new GameCategory(gameCategoryRequestDto.isAvailable(), gameCategoryRequestDto.getName());
         newGameCategory.setCategoryType(gameCategoryRequestDto.getCategoryType());
-
-        return gameCategoryRepository.save(newGameCategory);
+        
+        // Debug logging
+        System.out.println("Before save - isAvailable: " + newGameCategory.getIsAvailable());
+        
+        GameCategory savedCategory = gameCategoryRepository.save(newGameCategory);
+        
+        // Debug logging
+        System.out.println("After save - isAvailable: " + savedCategory.getIsAvailable());
+        
+        return savedCategory;
     }
 
     @Transactional

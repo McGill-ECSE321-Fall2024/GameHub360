@@ -64,7 +64,7 @@ public class GameCategoryServiceTests {
         gameCategory.setCategoryType(GameCategory.CategoryType.GENRE);
 
         // Mock repository behavior to simulate existing game category
-        when(gameCategoryRepository.findGameCategoryByCategoryId(any(Integer.class))).thenReturn(gameCategory);
+        when(gameCategoryRepository.findGameCategoryByName(any(String.class))).thenReturn(gameCategory);
 
         GameShopException e = assertThrows(GameShopException.class, () -> gameCategoryService.createGameCategory(requestDto));
 

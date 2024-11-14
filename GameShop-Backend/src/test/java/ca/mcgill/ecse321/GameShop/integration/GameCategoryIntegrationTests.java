@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.GameShop.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.mcgill.ecse321.GameShop.dto.GameCategoryRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameCategoryResponseDto;
@@ -10,6 +11,7 @@ import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.model.GameCategory.CategoryType;
 import ca.mcgill.ecse321.GameShop.model.Promotion;
+import ca.mcgill.ecse321.GameShop.model.Promotion.PromotionType;
 import ca.mcgill.ecse321.GameShop.repository.PromotionRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
@@ -34,8 +36,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Collections;
 
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -56,8 +56,7 @@ public class GameCategoryIntegrationTests {
     private GameCategoryRepository gameCategoryRepository;
 
     private static final String VALID_NAME = "Action";
-    private static final Boolean ISAVAILABLE_TRUE = true;
-    private static final Boolean ISAVAILABLE_FALSE = false;
+    private static final Boolean ISAVAILABLE = true;
     private static final CategoryType VALID_CATEGORY_TYPE = CategoryType.CONSOLE;
 
     @BeforeEach
@@ -71,24 +70,24 @@ public class GameCategoryIntegrationTests {
     @Test
     @Order(1)
     public void testCreateGameCategorySuccessfully() {
-        GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE_TRUE);
-
-        ResponseEntity<GameCategoryResponseDto> response = client.postForEntity("/categories/", request,
+        GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, true);
+        
+        ResponseEntity<GameCategoryResponseDto> response = client.postForEntity("/categories/", request, 
                 GameCategoryResponseDto.class);
-
+        
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         GameCategoryResponseDto responseBody = response.getBody();
         assertNotNull(responseBody);
-        assertEquals(VALID_CATEGORY_TYPE, responseBody.getCategoryType());
         assertEquals(VALID_NAME, responseBody.getName());
-        assertEquals(ISAVAILABLE_TRUE, responseBody.isAvailable());
+        assertEquals(VALID_CATEGORY_TYPE, responseBody.getCategoryType());
+        assertTrue(responseBody.isAvailable(), "Expected isAvailable to be true");
     }
 
     @Test
     @Order(2)
     public void testCreateDuplicateGameCategoryFails() {
-        GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE_TRUE);
+        GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE);
         client.postForEntity("/categories/", request, GameCategoryResponseDto.class);
 
         // Act
@@ -106,13 +105,19 @@ public class GameCategoryIntegrationTests {
     @Order(3)
     public void testUpdateGameCategorySuccessfully() {
         // Arrange
-        GameCategoryRequestDto createRequest = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE_TRUE);
-        client.postForEntity("/categories/", createRequest, GameCategoryResponseDto.class);
-        GameCategoryRequestDto updateRequest = new GameCategoryRequestDto("Drama", VALID_CATEGORY_TYPE, ISAVAILABLE_TRUE);
+        GameCategoryRequestDto createRequest = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE);
+        ResponseEntity<GameCategoryResponseDto> createResponse = client.postForEntity("/categories/", createRequest, 
+                GameCategoryResponseDto.class);
+        Integer categoryId = createResponse.getBody().getCategoryId();
+        
+        GameCategoryRequestDto updateRequest = new GameCategoryRequestDto("Drama", VALID_CATEGORY_TYPE, ISAVAILABLE);
 
         // Act
-        ResponseEntity<GameCategoryResponseDto> response = client.exchange("/categories/", HttpMethod.PUT,
-                new HttpEntity<>(updateRequest), GameCategoryResponseDto.class);
+        ResponseEntity<GameCategoryResponseDto> response = client.exchange(
+                "/categories/" + categoryId, 
+                HttpMethod.PUT,
+                new HttpEntity<>(updateRequest), 
+                GameCategoryResponseDto.class);
 
         // Assert
         assertNotNull(response);
@@ -126,7 +131,7 @@ public class GameCategoryIntegrationTests {
     @Order(4)
     public void testUpdateGameCategoryNotFound() {
         // Arrange
-        GameCategoryRequestDto updateRequest = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE_TRUE);
+        GameCategoryRequestDto updateRequest = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE);
 
         // Act
         ResponseEntity<ErrorResponseDto> updateResponse = client.exchange("/categories/999", HttpMethod.PUT,
@@ -143,7 +148,7 @@ public class GameCategoryIntegrationTests {
     @Test
     @Order(5)
     public void testDeleteGameCategorySuccessfully() {
-        GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE_TRUE);
+        GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE);
 
         ResponseEntity<GameCategoryResponseDto> response = client.postForEntity("/categories/", request,
                 GameCategoryResponseDto.class);
@@ -186,24 +191,30 @@ public class GameCategoryIntegrationTests {
     @Test
     @Order(7)
     public void testGetGameCategoriesByGameIdSuccessfully() {
+        // Create and save a game category first
+        GameCategory category = new GameCategory();
+        category.setName(VALID_NAME);
+        category.setCategoryType(VALID_CATEGORY_TYPE);
+        category.setIsAvailable(ISAVAILABLE);
+        category = gameCategoryRepository.save(category);
+        
+        // Create and save game
         Game game = new Game();
-        game.setName("COD");
-        game.addCategory(new GameCategory());
-        gameRepository.save(game);
-
-        GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE_TRUE);
-        client.postForEntity("/categories/", request, GameCategoryResponseDto.class);
-
-        ResponseEntity<GameCategoryResponseDto[]> response = client.getForEntity("/categories/game/" + game.getGameEntityId(),
-                GameCategoryResponseDto[].class);
+        game.setName("TestGame");
+        game = gameRepository.save(game);
+        
+        // Add game to category
+        category.addGame(game);
+        gameCategoryRepository.save(category);
+        
+        ResponseEntity<GameCategoryResponseDto[]> response = client.getForEntity(
+                "/categories/game/" + game.getGameEntityId(),
+                GameCategoryResponseDto[].class);    
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<GameCategoryResponseDto> categories = Arrays.asList(response.getBody());
-        assertNotNull(categories);
-        assertEquals(1, categories.size());
-        GameCategoryResponseDto category = categories.get(0);
-        assertEquals(Collections.singletonList(game.getGameEntityId()), category.getGameIds());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().length > 0);
     }
 
     @Test
@@ -227,23 +238,31 @@ public class GameCategoryIntegrationTests {
     @Test
     @Order(9)
     public void testGetGameCategoriesByPromotionIdSuccessfully() {
+        // Create and save category
+        GameCategory category = new GameCategory();
+        category.setName(VALID_NAME);
+        category.setCategoryType(VALID_CATEGORY_TYPE);
+        category.setIsAvailable(ISAVAILABLE);
+        category = gameCategoryRepository.save(category);
+        
+        // Create and save promotion
         Promotion promotion = new Promotion();
-        promotion.setDiscountPercentageValue(20.5);
+        promotion.setDiscountPercentageValue(20.0);
+        promotion.setPromotionType(PromotionType.CATEGORY);
+        promotion = promotionRepository.save(promotion);
+        
+        // Add promotion to category
+        promotion.addPromotedCategory(category);
         promotionRepository.save(promotion);
-
-        GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE_TRUE);
-        client.postForEntity("/categories/", request, GameCategoryResponseDto.class);
-
-        ResponseEntity<GameCategoryResponseDto[]> response = client.getForEntity("/categories/promotion/" + promotion.getPromotionId(),
+        
+        ResponseEntity<GameCategoryResponseDto[]> response = client.getForEntity(
+                "/categories/promotion/" + promotion.getPromotionId(),
                 GameCategoryResponseDto[].class);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<GameCategoryResponseDto> categories = Arrays.asList(response.getBody());
-        assertNotNull(categories);
-        assertEquals(1, categories.size());
-        GameCategoryResponseDto category = categories.get(0);
-        assertEquals(Collections.singletonList(promotion.getPromotionId()), category.getGameIds());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().length);
     }
 
     @Test

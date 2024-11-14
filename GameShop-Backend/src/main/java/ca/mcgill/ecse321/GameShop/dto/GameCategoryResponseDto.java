@@ -7,7 +7,7 @@ public class GameCategoryResponseDto {
 
     private int categoryId;
     private String name;
-    private boolean isAvailable;
+    private boolean available;
     private CategoryType categoryType;
     private List<Integer> gameIds;
     private List<Integer> promotionIds;
@@ -18,7 +18,7 @@ public class GameCategoryResponseDto {
         this.categoryId = gameCategory.getCategoryId();
         this.name = gameCategory.getName();
         this.categoryType = gameCategory.getCategoryType();
-        this.isAvailable = gameCategory.getIsAvailable();
+        this.available = gameCategory.getIsAvailable();
     }
 
     public int getCategoryId() {
@@ -38,11 +38,11 @@ public class GameCategoryResponseDto {
     }
 
     public boolean isAvailable() {
-        return isAvailable;
+        return available;
     }
 
     public void setAvailable(boolean available) {
-        isAvailable = available;
+        this.available = available;
     }
 
     public String getName() {
@@ -59,5 +59,13 @@ public class GameCategoryResponseDto {
 
     public List<Integer> getPromotionIds() {
         return promotionIds;
+    }
+
+    public void setPromotionIds(List<Integer> promotionIds) {
+        this.promotionIds = promotionIds;
+    }
+
+    public void setGameIds(List<Integer> gameIds) {
+        this.gameIds = gameIds;
     }
 }

@@ -8,26 +8,26 @@ public class GameCategoryRequestDto {
     @NotBlank(message = "Name cannot be empty.")
     private String name;
     private CategoryType categoryType;
-    boolean isAvailable;
+    private boolean available;
     private List<Integer> gameIds;
     private List<Integer> promotionIds;
     public GameCategoryRequestDto() {}
 
-    public GameCategoryRequestDto (boolean isAvailable, String name) {
+    public GameCategoryRequestDto (boolean available, String name) {
         this.name = name;
-        this.isAvailable = isAvailable;
+        this.available = available;
     }
 
-    public GameCategoryRequestDto (String name, CategoryType categoryType, boolean isAvailable) {
+    public GameCategoryRequestDto (String name, CategoryType categoryType, boolean available) {
         this.name = name;
-        this.isAvailable = isAvailable;
+        this.available = available;
         this.categoryType = categoryType;
     }
 
-    public GameCategoryRequestDto (boolean isAvailable, String name, CategoryType categoryType, List<Integer> gameIds,
+    public GameCategoryRequestDto (boolean available, String name, CategoryType categoryType, List<Integer> gameIds,
                                    List<Integer> promotionIds) {
         this.name = name;
-        this.isAvailable = isAvailable;
+        this.available = available;
         this.categoryType = categoryType;
         this.gameIds = gameIds;
         this.promotionIds = promotionIds;
@@ -50,11 +50,26 @@ public class GameCategoryRequestDto {
     }
 
     public boolean isAvailable() {
-        return isAvailable;
+        return available;
     }
 
-    public void setIsAvailable(boolean available) {
-        isAvailable = available;
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
+    public List<Integer> getGameIds() {
+        return gameIds;
+    }
+
+    public void setGameIds(List<Integer> gameIds) {
+        this.gameIds = gameIds;
+    }
+
+    public List<Integer> getPromotionIds() {
+        return promotionIds;
+    }
+
+    public void setPromotionIds(List<Integer> promotionIds) {
+        this.promotionIds = promotionIds;
+    }
 }
