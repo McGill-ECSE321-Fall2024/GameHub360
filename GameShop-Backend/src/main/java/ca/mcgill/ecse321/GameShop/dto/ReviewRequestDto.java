@@ -1,16 +1,17 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
 import ca.mcgill.ecse321.GameShop.model.Review.GameReviewRating;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class ReviewRequestDto {
     // Attributes
-    @NotBlank(message = "Rating cannot be empty.")
+    @NotNull(message = "Rating cannot be null.")
     private GameReviewRating rating;
 
-    @NotBlank(message = "Comment cannot be empty.")
+    @NotNull(message = "Customer Id cannot be null.")
     private int customerId;
 
+    @NotNull(message = "Comment cannot be null.")
     private String comment;
 
     // Constructors

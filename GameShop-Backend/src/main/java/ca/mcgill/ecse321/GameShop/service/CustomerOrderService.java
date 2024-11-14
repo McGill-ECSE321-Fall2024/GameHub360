@@ -1,27 +1,27 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import ca.mcgill.ecse321.GameShop.exception.GameShopException;
-import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
-import ca.mcgill.ecse321.GameShop.model.Game;
-import ca.mcgill.ecse321.GameShop.model.CustomerOrder.OrderStatus;
-import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
-import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
-import ca.mcgill.ecse321.GameShop.model.OrderGame;
-import ca.mcgill.ecse321.GameShop.repository.CustomerOrderRepository;
-import ca.mcgill.ecse321.GameShop.repository.GameRepository;
-import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
-import ca.mcgill.ecse321.GameShop.repository.PaymentDetailsRepository;
-import ca.mcgill.ecse321.GameShop.dto.CustomerOrderRequestDto;
-import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import ca.mcgill.ecse321.GameShop.dto.CustomerOrderRequestDto;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
+import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
+import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
+import ca.mcgill.ecse321.GameShop.model.CustomerOrder.OrderStatus;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.OrderGame;
+import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
+import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.CustomerOrderRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.repository.PaymentDetailsRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class CustomerOrderService {
@@ -98,6 +98,12 @@ public class CustomerOrderService {
         if (order.getOrderStatus() == OrderStatus.RETURNED) {
             throw new GameShopException(HttpStatus.BAD_REQUEST,
                     "Order with ID " + orderId + " has already been returned");
+        }
+
+        // Check if order is delivered
+        if (order.getOrderStatus() != OrderStatus.DELIVERED) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST,
+                    "Order with ID " + orderId + " must be delivered before it can be returned");
         }
 
         // Check if order was placed within the return period

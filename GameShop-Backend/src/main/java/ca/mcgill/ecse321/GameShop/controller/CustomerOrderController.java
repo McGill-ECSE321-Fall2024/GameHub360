@@ -42,7 +42,7 @@ public class CustomerOrderController {
      * @return CustomerOrderResponseDto
      */
     @PostMapping("/{orderId}/return")
-    public CustomerOrderResponseDto returnOrder(@PathVariable Integer orderId) {
+    public CustomerOrderResponseDto returnOrder(@PathVariable("orderId") Integer orderId) {
         CustomerOrder customerOrder = customerOrderService.returnCustomerOrder(orderId);
         return new CustomerOrderResponseDto(customerOrder);
     }
@@ -54,7 +54,7 @@ public class CustomerOrderController {
      * @return CustomerOrderResponseDto
      */
     @GetMapping("/{orderId}")
-    public CustomerOrderResponseDto getCustomerOrderById(@PathVariable Integer orderId) {
+    public CustomerOrderResponseDto getCustomerOrderById(@PathVariable("orderId") Integer orderId) {
         CustomerOrder customerOrder = customerOrderService.getCustomerOrderById(orderId);
         return new CustomerOrderResponseDto(customerOrder);
     }

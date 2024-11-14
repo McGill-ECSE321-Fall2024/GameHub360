@@ -234,3 +234,4 @@ public class CustomerOrderIntegrationTests {
         assertEquals(CustomerOrder.OrderStatus.RETURNED, responseBody.getOrderStatus());
     }
 }
+

@@ -1,13 +1,13 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class ReplyRequestDto {
     // Attributes
-    @NotBlank(message = "Content cannot be empty.")
+    @NotNull(message = "Content cannot be empty.")
     private String content;
 
-    @NotBlank(message = "Manager ID cannot be empty.")
+    @NotNull(message = "Manager ID cannot be empty.")
     private int managerId;
 
     // Constructors

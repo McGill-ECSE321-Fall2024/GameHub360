@@ -1,29 +1,29 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import ca.mcgill.ecse321.GameShop.dto.ReplyRequestDto;
-import ca.mcgill.ecse321.GameShop.dto.ReviewRequestDto;
-import ca.mcgill.ecse321.GameShop.exception.GameShopException;
-import ca.mcgill.ecse321.GameShop.model.Review;
-import ca.mcgill.ecse321.GameShop.model.Reply;
-import ca.mcgill.ecse321.GameShop.model.OrderGame;
-import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
-import ca.mcgill.ecse321.GameShop.model.Game;
-import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
-import ca.mcgill.ecse321.GameShop.repository.ReviewRepository;
-import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
-import ca.mcgill.ecse321.GameShop.repository.ReplyRepository;
-import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
-import ca.mcgill.ecse321.GameShop.repository.GameRepository;
-import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
-import jakarta.transaction.Transactional;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
+import ca.mcgill.ecse321.GameShop.dto.ReplyRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.ReviewRequestDto;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
+import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
+import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
+import ca.mcgill.ecse321.GameShop.model.OrderGame;
+import ca.mcgill.ecse321.GameShop.model.Reply;
+import ca.mcgill.ecse321.GameShop.model.Review;
+import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
+import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
+import ca.mcgill.ecse321.GameShop.repository.ReplyRepository;
+import ca.mcgill.ecse321.GameShop.repository.ReviewRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ReviewService {
