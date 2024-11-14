@@ -29,28 +29,6 @@ I am a U3 Software Engineering student with a strong passion for web development
 
 I am a third-year Computer Engineering student passionate about software design and development. I love exploring new technologies and working in team environments to create innovative solutions that drive progress in the field.
 
-# Deliverable 1
-
-## Links
-
-- [Wiki Home Page](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki)
-- [Requirements](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Requirements)
-- [Use Case Diagrams and Specifications](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Use-Cases-and-Specifications)
-- [Domain Model & Rationale](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Domain-Model-and-Rationale)
-- [Project Report](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Project-Report)
-
-## Effort Table (D1)
-
-| Team Member           | Time Spent (h) | Responsibilities                                                                                                                       |
-| --------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| name                  | #hours         | Work description                                                                                                                       |
-| Ismail Sentissi       | 17             | Requirements, testing, use-case scenarios & report                                                                                     |
-| Ahmed Mossa           | 18             | Writing Umple code for the domain model and generating/editing Java code, Spring Boot project setup, requirements & use-case scenarios |
-| Nicolas Bolouri       | 22             | Minutes organizer and scribe, GitHub setup initialization & Creating/editing domain model                                              |
-| Hamza Alfarrash       | 18             | Use-case diagram 1, requirements, wiki documentation & testing                                                                         |
-| Amgad Elgamal         | 18             | Domain Model Rationale, testing, requirements & backlog                                                                                |
-| Mohamed-Amine Benzaid | 18             | Use-case diagram 1, testing, use-case scenarios & requirements                                                                         |
-
 # Getting Started
 
 ## Backend
@@ -98,3 +76,33 @@ Start the Spring Boot application:
    ```bash
    ./gradlew test
    ```
+
+# Deliverable 2
+
+## Links
+-
+
+## Effort Table (D2)
+\\\
+
+# Deliverable 1
+
+## Links
+
+- [Wiki Home Page](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki)
+- [Requirements](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Requirements)
+- [Use Case Diagrams and Specifications](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Use-Cases-and-Specifications)
+- [Domain Model & Rationale](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Domain-Model-and-Rationale)
+- [Project Report](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Project-Report)
+
+## Effort Table (D1)
+
+| Team Member           | Time Spent (h) | Responsibilities                                                                                                                       |
+| --------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| name                  | #hours         | Work description                                                                                                                       |
+| Ismail Sentissi       | 17             | Requirements, testing, use-case scenarios & report                                                                                     |
+| Ahmed Mossa           | 18             | Writing Umple code for the domain model and generating/editing Java code, Spring Boot project setup, requirements & use-case scenarios |
+| Nicolas Bolouri       | 22             | Minutes organizer and scribe, GitHub setup initialization & Creating/editing domain model                                              |
+| Hamza Alfarrash       | 18             | Use-case diagram 1, requirements, wiki documentation & testing                                                                         |
+| Amgad Elgamal         | 18             | Domain Model Rationale, testing, requirements & backlog                                                                                |
+| Mohamed-Amine Benzaid | 18             | Use-case diagram 1, testing, use-case scenarios & requirements                                                                         |
