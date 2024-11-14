@@ -38,4 +38,9 @@ tasks.named('test') {
 
 tasks.named('jacocoTestReport') {
     dependsOn test
+	classDirectories.setFrom(
+        files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['ca/mcgill/ecse321/GameShop/model/**'])
+        })
+    )
 }
