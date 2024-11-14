@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
+import ca.mcgill.ecse321.GameShop.dto.GameCategoryListDto;
 import ca.mcgill.ecse321.GameShop.dto.GameCategoryRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameCategoryResponseDto;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
@@ -22,45 +23,46 @@ public class GameCategoryController {
     /**
      * Endpoint to view all categories.
      *
-     * @return A list of all current categories.
+     * @return A DTO containing a list of all current categories.
      */
     @GetMapping("/")
-    public List<GameCategoryResponseDto> getAllGameCategories() {
-        List<GameCategoryResponseDto> gameCategoryDtos = new ArrayList<GameCategoryResponseDto>();
+    public GameCategoryListDto getAllGameCategories() {
+        List<GameCategoryResponseDto> gameCategoryDtos = new ArrayList<>();
         for (GameCategory gameCategory : gameCategoryService.getAllCategories()) {
             gameCategoryDtos.add(new GameCategoryResponseDto(gameCategory));
         }
-        return gameCategoryDtos;
+        return new GameCategoryListDto(gameCategoryDtos);
     }
 
     /**
      * Endpoint to get categories by game ID.
      *
      * @param gameId The ID of the game.
-     * @return A list of categories associated with the given game.
+     * @return A DTO containing a list of categories associated with the given game.
      */
     @GetMapping("/game/{gameId}")
-    public List<GameCategoryResponseDto> getGameCategoriesByGame(@PathVariable Integer gameId) {
-        List<GameCategoryResponseDto> gameCategoriesDtos = new ArrayList<GameCategoryResponseDto>();
+    public GameCategoryListDto getGameCategoriesByGame(@PathVariable Integer gameId) {
+        List<GameCategoryResponseDto> gameCategoryDtos = new ArrayList<>();
         for (GameCategory gameCategory : gameCategoryService.getGameCategoriesByGameId(gameId)) {
-            gameCategoriesDtos.add(new GameCategoryResponseDto(gameCategory));
+            gameCategoryDtos.add(new GameCategoryResponseDto(gameCategory));
         }
-        return gameCategoriesDtos;
+        return new GameCategoryListDto(gameCategoryDtos);
     }
 
     /**
      * Endpoint to get categories by promotion ID.
      *
      * @param promotionId The ID of the promotion.
-     * @return A list of categories associated with the given promotion.
+     * @return A DTO containing a list of categories associated with the given
+     *         promotion.
      */
     @GetMapping("/promotion/{promotionId}")
-    public List<GameCategoryResponseDto> getGameCategoriesByPromotion(@PathVariable Integer promotionId) {
-        List<GameCategoryResponseDto> gameCategoriesDtos = new ArrayList<GameCategoryResponseDto>();
+    public GameCategoryListDto getGameCategoriesByPromotion(@PathVariable Integer promotionId) {
+        List<GameCategoryResponseDto> gameCategoryDtos = new ArrayList<>();
         for (GameCategory gameCategory : gameCategoryService.getGameCategoriesByPromotionId(promotionId)) {
-            gameCategoriesDtos.add(new GameCategoryResponseDto(gameCategory));
+            gameCategoryDtos.add(new GameCategoryResponseDto(gameCategory));
         }
-        return gameCategoriesDtos;
+        return new GameCategoryListDto(gameCategoryDtos);
     }
 
     /**
@@ -70,7 +72,8 @@ public class GameCategoryController {
      * @return The created category details.
      */
     @PostMapping("/")
-    public GameCategoryResponseDto createGameCategory(@Valid @RequestBody GameCategoryRequestDto gameCategoryRequestDto) {
+    public GameCategoryResponseDto createGameCategory(
+            @Valid @RequestBody GameCategoryRequestDto gameCategoryRequestDto) {
         GameCategory gameCategory = gameCategoryService.createGameCategory(gameCategoryRequestDto);
         return new GameCategoryResponseDto(gameCategory);
     }
@@ -78,13 +81,13 @@ public class GameCategoryController {
     /**
      * Endpoint to update an existing category.
      *
-     * @param categoryId         The ID of the category to update.
-     * @param gameCategoryRequestDto   The updated category details (can be null).
+     * @param categoryId             The ID of the category to update.
+     * @param gameCategoryRequestDto The updated category details (can be null).
      * @return The updated category information.
      */
     @PutMapping("/{categoryId}")
     public GameCategoryResponseDto updateGameCategory(@PathVariable Integer categoryId,
-                                                @RequestBody GameCategoryRequestDto gameCategoryRequestDto) {
+            @RequestBody GameCategoryRequestDto gameCategoryRequestDto) {
         GameCategory gameCategory = gameCategoryService.updateGameCategory(categoryId, gameCategoryRequestDto);
         return new GameCategoryResponseDto(gameCategory);
     }
