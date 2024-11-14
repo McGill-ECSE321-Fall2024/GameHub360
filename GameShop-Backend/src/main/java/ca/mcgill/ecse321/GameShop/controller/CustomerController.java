@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
-    
+
     @Autowired
     private CustomerService customerService;
 
@@ -24,8 +24,8 @@ public class CustomerController {
      * Endpoint to create a new customer
      * 
      * @param customerRequestDto The request object containing the customer's email,
-     *                          password, name (optional), and phone number
-     *                          (optional).
+     *                           password, name (optional), and phone number
+     *                           (optional).
      * @return A response containing the newly created customer's details.
      */
     @PostMapping("/")
@@ -38,10 +38,12 @@ public class CustomerController {
     /**
      * Endpoint to update a customer
      *
-     * @param customerRequestDto The request object containing the customer's updated email,
-     *                          password, name (optional), or phone number
-     *                          (optional).
-     * @param customerId The customer Id of the customer account that is being updated
+     * @param customerRequestDto The request object containing the customer's
+     *                           updated email,
+     *                           password, name (optional), or phone number
+     *                           (optional).
+     * @param customerId         The customer Id of the customer account that is
+     *                           being updated
      * @return A response containing the newly updated customer's details.
      */
     @PutMapping("/{customerId}")
@@ -55,7 +57,8 @@ public class CustomerController {
     /**
      * Endpoint to retrieve all customer accounts.
      *
-     * @return A CustomerAccountListDto containing a list of CustomerResponseDto representing all customer accounts.
+     * @return A CustomerAccountListDto containing a list of CustomerResponseDto
+     *         representing all customer accounts.
      */
     @GetMapping
     public CustomerAccountListDto getAllCustomers() {
@@ -80,11 +83,14 @@ public class CustomerController {
     /**
      * Endpoint to log in a customer.
      *
-     * @param customerRequestDto The DTO containing the customer's email and password for authentication.
-     * @return A CustomerResponseDto containing the customer's details if login is successful.
+     * @param customerRequestDto The DTO containing the customer's email and
+     *                           password for authentication.
+     * @return A CustomerResponseDto containing the customer's details if login is
+     *         successful.
      */
     @PostMapping("/login")
-    public CustomerResponseDto login(@RequestBody CustomerRequestDto customerRequestDto) {
+    public CustomerResponseDto login(
+            @Validated({ ValidationGroups.Post.class }) @RequestBody CustomerRequestDto customerRequestDto) {
         CustomerAccount customer = customerService.login(customerRequestDto);
         return new CustomerResponseDto(customer);
     }
@@ -93,7 +99,8 @@ public class CustomerController {
      * Endpoint to retrieve order history for a specific customer.
      *
      * @param customerId The ID of the customer.
-     * @return An OrderHistoryDto containing a list of OrderResponseDto representing the order history of the customer.
+     * @return An OrderHistoryDto containing a list of OrderResponseDto representing
+     *         the order history of the customer.
      */
     @GetMapping("/{customerId}/orders")
     public OrderHistoryDto viewOrderHistory(@PathVariable Integer customerId) {
@@ -112,7 +119,7 @@ public class CustomerController {
      */
     @PostMapping("/{customerId}/payment")
     public PaymentDetailsResponseDto createPaymentCard(@PathVariable Integer customerId,
-                                                       @RequestBody PaymentDetailsRequestDto paymentDetailsRequestDto) {
+            @RequestBody PaymentDetailsRequestDto paymentDetailsRequestDto) {
         PaymentDetails paymentDetails = customerService.createPaymentCard(customerId, paymentDetailsRequestDto);
         return new PaymentDetailsResponseDto(paymentDetails);
     }
@@ -126,8 +133,8 @@ public class CustomerController {
      */
     @PutMapping("/{customerId}/payment/{cardId}")
     public PaymentDetailsResponseDto updatePaymentCard(@PathVariable Integer customerId,
-                                                       @PathVariable Integer cardId,
-                                                       @RequestBody PaymentDetailsRequestDto paymentDetailsRequestDto) {
+            @PathVariable Integer cardId,
+            @RequestBody PaymentDetailsRequestDto paymentDetailsRequestDto) {
         PaymentDetails paymentDetails = customerService.updatePaymentCard(customerId, cardId, paymentDetailsRequestDto);
         return new PaymentDetailsResponseDto(paymentDetails);
     }
@@ -140,7 +147,8 @@ public class CustomerController {
      * @return PaymentDetailsResponseDto representing the payment card details.
      */
     @GetMapping("/{customerId}/card/{cardId}")
-    public PaymentDetailsResponseDto getPaymentCardById(@PathVariable Integer customerId, @PathVariable Integer cardId) {
+    public PaymentDetailsResponseDto getPaymentCardById(@PathVariable Integer customerId,
+            @PathVariable Integer cardId) {
         PaymentDetails paymentDetails = customerService.getPaymentCardById(customerId, cardId);
         return new PaymentDetailsResponseDto(paymentDetails);
     }
@@ -149,7 +157,8 @@ public class CustomerController {
      * Endpoint to retrieve all payment cards for a specific customer.
      *
      * @param customerId The ID of the customer.
-     * @return A PaymentCardListDto containing a list of PaymentDetailsResponseDto representing the customer's payment cards.
+     * @return A PaymentCardListDto containing a list of PaymentDetailsResponseDto
+     *         representing the customer's payment cards.
      */
     @GetMapping("/{customerId}/cards")
     public PaymentCardListDto getAllPaymentCards(@PathVariable Integer customerId) {
@@ -189,7 +198,8 @@ public class CustomerController {
      * Retrieves all games in the customer's wishlist.
      *
      * @param customerId The ID of the customer.
-     * @return A WishlistDto containing a list of GameResponseDto representing the games in the wishlist.
+     * @return A WishlistDto containing a list of GameResponseDto representing the
+     *         games in the wishlist.
      */
     @GetMapping("/{customerId}/wishlist")
     public WishlistDto viewWishlist(@PathVariable Integer customerId) {

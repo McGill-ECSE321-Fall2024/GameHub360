@@ -67,7 +67,7 @@ public class CustomerIntegrationTests {
         validCustomerId = customerResponse.getBody().getCustomerId();
 
         // Create a PaymentDetails entry with the EXISTING_CARD_NUMBER
-        PaymentDetailsRequestDto existingCardRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, EXISTING_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto existingCardRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, EXISTING_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String url = "/customers/" + validCustomerId + "/payment";
         ResponseEntity<PaymentDetailsResponseDto> cardResponse = client.postForEntity(url, existingCardRequest, PaymentDetailsResponseDto.class);
         validCardId = cardResponse.getBody().getPaymentDetailsId();
@@ -312,7 +312,7 @@ public class CustomerIntegrationTests {
     @Order(14)
     public void testCreatePaymentCard_Success() {
         // Arrange
-        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String url = "/customers/" + validCustomerId + "/payment";
 
         // Act
@@ -327,7 +327,7 @@ public class CustomerIntegrationTests {
     @Order(15)
     public void testCreatePaymentCard_CustomerNotFound() {
         // Arrange
-        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String url = "/customers/9999/payment"; // Non-existent customerId
 
         // Act
@@ -344,7 +344,7 @@ public class CustomerIntegrationTests {
     @Order(16)
     public void testCreatePaymentCard_Conflict_AlreadyExists() {
         // Arrange
-        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, EXISTING_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, EXISTING_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String url = "/customers/" + validCustomerId + "/payment";
 
         // First, create the card
@@ -366,7 +366,7 @@ public class CustomerIntegrationTests {
     @Order(17)
     public void testUpdatePaymentCard_Success() {
         // Arrange
-        PaymentDetailsRequestDto updateRequest = new PaymentDetailsRequestDto("New name", VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto updateRequest = new PaymentDetailsRequestDto("New name", VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String updateUrl = "/customers/" + validCustomerId + "/payment/" + validCardId;
 
         // Act
@@ -381,7 +381,7 @@ public class CustomerIntegrationTests {
     @Order(18)
     public void testUpdatePaymentCard_CustomerNotFound() {
         // Arrange
-        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto("New name", VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto("New name", VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String url = "/customers/9999/payment/1"; // Non-existent customerId and cardId
 
         // Act
@@ -398,7 +398,7 @@ public class CustomerIntegrationTests {
     @Order(19)
     public void testUpdatePaymentCard_CardNotFound() {
         // Arrange
-        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto("New name", VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto("New name", VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String url = "/customers/" + validCustomerId + "/payment/9999"; // Non-existent cardId
 
         // Act
@@ -419,12 +419,12 @@ public class CustomerIntegrationTests {
         ResponseEntity<CustomerResponseDto> customerResponse = client.postForEntity("/customers/", request, CustomerResponseDto.class);
         int otherCustomerId = customerResponse.getBody().getCustomerId();
 
-        PaymentDetailsRequestDto cardRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, 12121212, VALID_EXP_MONTH, VALID_EXP_YEAR, otherCustomerId);
+        PaymentDetailsRequestDto cardRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, 12121212, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String cardUrl = "/customers/" + otherCustomerId + "/payment";
         ResponseEntity<PaymentDetailsResponseDto> cardResponse = client.postForEntity(cardUrl, cardRequest, PaymentDetailsResponseDto.class);
         int unrelatedCardId = cardResponse.getBody().getPaymentDetailsId();
 
-        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto("New name", VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto("New name", VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String url = "/customers/" + validCustomerId + "/payment/" + unrelatedCardId; // cardId not associated with validCustomerId
 
         // Act
@@ -443,7 +443,7 @@ public class CustomerIntegrationTests {
     @Order(21)
     public void testGetPaymentCardById_Success() {
         // Arrange
-        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String paymentUrl = "/customers/" + validCustomerId + "/payment";
         ResponseEntity<PaymentDetailsResponseDto> createResponse = client.postForEntity(paymentUrl, paymentRequest, PaymentDetailsResponseDto.class);
 
@@ -475,7 +475,7 @@ public class CustomerIntegrationTests {
     @Order(23)
     public void testGetAllPaymentCards_Success() {
         // Arrange
-        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR, validCustomerId);
+        PaymentDetailsRequestDto paymentRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, VALID_CARD_NUMBER, VALID_EXP_MONTH, VALID_EXP_YEAR);
         String paymentUrl = "/customers/" + validCustomerId + "/payment";
         client.postForEntity(paymentUrl, paymentRequest, PaymentDetailsResponseDto.class);
 

@@ -377,7 +377,7 @@ public class CustomerServiceTests {
     public void testCreatePaymentCardSuccessfully() {
         // Arrange
         Integer customerId = 1;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025, customerId);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025);
         CustomerAccount customer = new CustomerAccount();
         customer.setName("John Doe");
 
@@ -399,7 +399,7 @@ public class CustomerServiceTests {
     public void testCreatePaymentCardCustomerNotFound() {
         // Arrange
         Integer customerId = 1;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025, customerId);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025);
 
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
 
@@ -419,7 +419,7 @@ public class CustomerServiceTests {
     public void testCreatePaymentCardAlreadyExists() {
         // Arrange
         Integer customerId = 1;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025, customerId);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025);
         CustomerAccount customer = new CustomerAccount();
         customer.setName("John Doe");
 
@@ -447,7 +447,7 @@ public class CustomerServiceTests {
         // Arrange
         Integer customerId = 1;
         int cardId = 2;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026, customerId);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026);
 
         CustomerAccount customer = new CustomerAccount();
         customer.setName("Jane Doe");
@@ -477,7 +477,7 @@ public class CustomerServiceTests {
         // Arrange
         Integer customerId = 1;
         int cardId = 2;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026, customerId);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026);
 
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
 
@@ -498,7 +498,7 @@ public class CustomerServiceTests {
         // Arrange
         Integer customerId = 1;
         int cardId = 2;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026, customerId);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026);
 
         CustomerAccount customer = new CustomerAccount();
 
@@ -522,7 +522,7 @@ public class CustomerServiceTests {
         // Arrange
         Integer customerId = 1;
         int cardId = 2;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026, customerId);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026);
 
         CustomerAccount customer = new CustomerAccount();
 

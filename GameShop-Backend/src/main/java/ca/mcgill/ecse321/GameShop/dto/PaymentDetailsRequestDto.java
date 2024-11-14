@@ -1,22 +1,32 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 public class PaymentDetailsRequestDto {
     // Attributes
+    @NotBlank(message = "Card name cannot be empty.")
     private String cardName;
+
+    @NotBlank(message = "Postal code cannot be empty.")
     private String postalCode;
+
+    @Positive(message = "Card number must be a positive integer.")
     private int cardNumber;
+
+    @Positive(message = "Expiry month must be a positive integer.")
     private int expMonth;
+
+    @Positive(message = "Expiry year must be a positive integer.")
     private int expYear;
-    private Integer customerId; // ID of the associated CustomerAccount
 
     // Constructor
-    public PaymentDetailsRequestDto(String cardName, String postalCode, int cardNumber, int expMonth, int expYear, Integer customerId) {
+    public PaymentDetailsRequestDto(String cardName, String postalCode, int cardNumber, int expMonth, int expYear) {
         this.cardName = cardName;
         this.postalCode = postalCode;
         this.cardNumber = cardNumber;
         this.expMonth = expMonth;
         this.expYear = expYear;
-        this.customerId = customerId;
     }
 
     // Getters and Setters
@@ -59,13 +69,5 @@ public class PaymentDetailsRequestDto {
 
     public void setExpYear(int expYear) {
         this.expYear = expYear;
-    }
-
-    public Integer getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
     }
 }
