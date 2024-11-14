@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id 'jacoco'
 	id 'org.springframework.boot' version '3.3.4'
 	id 'io.spring.dependency-management' version '1.1.6'
 }
@@ -28,6 +29,11 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	testLogging {
+		exceptionFormat "full"
+		events "passed", "failed"
+ 	}
+	finalizedBy jacocoTestReport
 }
 
 sourceSets {
@@ -51,4 +57,12 @@ task integrationTest(type: Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
     shouldRunAfter test
+}
+tasks.named('jacocoTestReport') {
+    dependsOn test
+	classDirectories.setFrom(
+        files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['ca/mcgill/ecse321/GameShop/model/**'])
+        })
+    )
 }

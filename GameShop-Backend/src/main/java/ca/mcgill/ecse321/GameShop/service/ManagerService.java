@@ -6,6 +6,7 @@ import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
 import ca.mcgill.ecse321.GameShop.utils.PasswordUtils;
 import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
+import ca.mcgill.ecse321.GameShop.utils.PhoneUtils;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,11 @@ public class ManagerService {
             throw new GameShopException(HttpStatus.BAD_REQUEST, "Password does not meet security requirements.");
         }
         String encryptedPassword = EncryptionUtils.encrypt(managerRequestDto.getPassword());
+
+        // Validate phone number format
+        if (!PhoneUtils.isValidPhoneNumber(managerRequestDto.getPhoneNumber())) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Phone Number does not meet formatting criteria.");
+        }
 
         // Set up and save the new manager account
         ManagerAccount manager = new ManagerAccount(managerRequestDto.getEmail(), encryptedPassword);
