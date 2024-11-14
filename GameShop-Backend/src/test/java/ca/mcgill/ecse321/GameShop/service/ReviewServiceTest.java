@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.GameShop.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 import ca.mcgill.ecse321.GameShop.dto.ReplyRequestDto;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @ExtendWith(MockitoExtension.class)
 public class ReviewServiceTest {
@@ -57,6 +59,7 @@ public class ReviewServiceTest {
     @BeforeEach
     public void setUp() {
         customer = new CustomerAccount("customer@example.com", "securePassword");
+        ReflectionTestUtils.setField(customer, "customerId", 1);
         manager = new ManagerAccount("manager@example.com", "strongPassword");
         game = new Game();
         game.setDescription("Test Game");
@@ -65,12 +68,16 @@ public class ReviewServiceTest {
         CustomerOrder customerOrder = new CustomerOrder();
         customerOrder.setOrderedBy(customer);
         orderGame.setCustomerOrder(customerOrder);
-        orderGame.getCustomerOrder().setOrderedBy(customer);
         orderGame.setGame(game);
 
         review = new Review();
-        review.setReviewedGame(orderGame);
+        review.setReviewDate(new java.sql.Date(System.currentTimeMillis()));
         review.setComment("Great game!");
+        review.setRating(Review.GameReviewRating.FIVE_STARS);
+        ReflectionTestUtils.setField(review, "reviewReplies", new ArrayList<Reply>());
+        
+        orderGame.setReview(review);
+        review.setReviewedGame(orderGame);
 
         reviewRequestDto = new ReviewRequestDto(Review.GameReviewRating.FIVE_STARS, 1, "Great game!");
         replyRequestDto = new ReplyRequestDto("Thank you for your feedback!", 1);
@@ -90,10 +97,17 @@ public class ReviewServiceTest {
     public void testSubmitReview_Success() {
         // Arrange
         when(orderGameRepository.findOrderGameById(anyInt())).thenReturn(orderGame);
-        when(customerAccountRepository.findCustomerAccountByCustomerId(anyInt())).thenReturn(customer);
+        when(customerAccountRepository.findCustomerAccountByCustomerId(1)).thenReturn(customer);
         when(reviewRepository.save(any(Review.class))).thenAnswer(invocation -> {
             Review savedReview = invocation.getArgument(0);
-            ReflectionTestUtils.setField(savedReview, "reviewId", 1); // Simulate database ID assignment
+            ReflectionTestUtils.setField(savedReview, "reviewId", 1);
+            
+            // If the review has a reviewedGame, maintain the bidirectional relationship
+            OrderGame game = savedReview.getReviewedGame();
+            if (game != null) {
+                game.setReview(savedReview);
+            }
+            
             return savedReview;
         });
 
@@ -104,7 +118,8 @@ public class ReviewServiceTest {
         assertNotNull(createdReview);
         assertEquals(orderGame, createdReview.getReviewedGame());
         assertEquals("Great game!", createdReview.getComment());
-        verify(reviewRepository, times(1)).save(any(Review.class));
+        assertEquals(orderGame.getReview(), createdReview);
+        verify(reviewRepository, times(2)).save(any(Review.class));
     }
 
     @Test
@@ -183,7 +198,7 @@ public class ReviewServiceTest {
         when(managerAccountRepository.findManagerAccountByStaffId(anyInt())).thenReturn(manager);
         when(replyRepository.save(any(Reply.class))).thenAnswer(invocation -> {
             Reply savedReply = invocation.getArgument(0);
-            ReflectionTestUtils.setField(savedReply, "replyId", 1); // Simulate database ID assignment
+            ReflectionTestUtils.setField(savedReply, "replyId", 1);
             return savedReply;
         });
 

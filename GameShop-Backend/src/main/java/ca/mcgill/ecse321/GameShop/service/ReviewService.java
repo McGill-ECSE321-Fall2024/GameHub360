@@ -74,16 +74,26 @@ public class ReviewService {
             throw new GameShopException(HttpStatus.FORBIDDEN, "Customer is not the owner of the order");
         }
 
-        // Create and save review
-        Date reviewDate = new Date(System.currentTimeMillis());
-        Review review = new Review(reviewDate, orderGame);
-        review.setRating(requestDto.getRating());
+        // Clear any existing review
+        if (orderGame.getReview() != null) {
+            orderGame.getReview().delete();
+            orderGame.setReview(null);
+        }
 
-        // Optional comment
+        // Create review
+        Review review = new Review();
+        review.setReviewDate(new Date(System.currentTimeMillis()));
+        review.setRating(requestDto.getRating());
         if (requestDto.getComment() != null) {
             review.setComment(requestDto.getComment());
         }
 
+        // Save review to get ID
+        review = reviewRepository.save(review);
+        
+        // Set up bidirectional relationship
+        review.setReviewedGame(orderGame);
+        
         return reviewRepository.save(review);
     }
 
