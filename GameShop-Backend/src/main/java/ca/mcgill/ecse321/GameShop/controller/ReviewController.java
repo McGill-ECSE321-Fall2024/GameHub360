@@ -44,7 +44,7 @@ public class ReviewController {
      * @return ResponseEntity<List<ReviewResponseDto>>
      */
     @GetMapping("/{gameId}/reviews")
-    public ReviewListDto viewReviews(@PathVariable int gameId) {
+    public ReviewListDto viewReviews(@PathVariable("gameId") int gameId) {
         List<ReviewResponseDto> reviewResponseDtos = new ArrayList<ReviewResponseDto>();
         List<Review> reviews = reviewService.getGameReviews(gameId);
         for (Review review : reviews) {
@@ -61,8 +61,8 @@ public class ReviewController {
      * @param reply
      * @return ResponseEntity<ReplyResponseDto>
      */
-    @PostMapping("/reviews/{reviewId}/reply")
-    public ReplyResponseDto replyToReview(@PathVariable int reviewId, @Valid @RequestBody ReplyRequestDto replyRequestDto) {
+    @PostMapping("/reviews/{reviewId}/reply") //! HEREEEEEE NOT TESTED
+    public ReplyResponseDto replyToReview(@PathVariable("reviewId") int reviewId, @Valid @RequestBody ReplyRequestDto replyRequestDto) {
         Reply reply = reviewService.replyToReview(reviewId, replyRequestDto);
         return new ReplyResponseDto(reply);
     }
@@ -74,7 +74,7 @@ public class ReviewController {
      * @return ResponseEntity<Void>
      */
     @DeleteMapping("/reviews/{reviewId}")
-    public void deleteReview(@PathVariable int reviewId) {
+    public void deleteReview(@PathVariable("reviewId") int reviewId) {
         reviewService.deleteReview(reviewId);
     }
 
@@ -85,7 +85,7 @@ public class ReviewController {
      * @return ResponseEntity<Void>
      */
     @DeleteMapping("/reviews/reply/{replyId}")
-    public void deleteReply(@PathVariable int replyId) {
+    public void deleteReply(@PathVariable("replyId") int replyId) {
         reviewService.deleteReply(replyId);
     }
 }
