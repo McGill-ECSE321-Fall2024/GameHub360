@@ -94,15 +94,14 @@ Start the Spring Boot application:
 - [QA Report](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/QA-Report)
 
 ### Effort Table (D2)
-| Team Member           | Time Spent (h) | Responsibilities                                                                                                                       |
-| --------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| name                  | #hours         | Work description                                                                                                                       |
-| Ismail Sentissi       | 17             | Requirements, testing, use-case scenarios & report                                                                                     |
-| Ahmed Mossa           | 37             | Created the Employee and AcitivtyLog classes endpoints, writing the QA report, writing multiple tests classes & helped colleagues debug |
-| Nicolas Bolouri       | 22             | Minutes organizer and scribe, GitHub setup initialization & Creating/editing domain model                                              |
-| Hamza Alfarrash       | 18             | Use-case diagram 1, requirements, wiki documentation & testing                                                                         |
-| Amgad Elgamal         | 18             | Domain Model Rationale, testing, requirements & backlog                                                                                |
-| Mohamed-Amine Benzaid | 18             | Use-case diagram 1, testing, use-case scenarios & requirements                                                                         |
+| Team Member           | Time Spent (h) | Responsibilities                                                                                                                         |
+|-----------------------|----------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| Ismail Sentissi       | 27             | API design for Categories, Project Management and Report, Integration tests, cleaned up backlog, QA Plan                             |
+| Ahmed Mossa           | 37             | API implementation for Employees, created QA report, unit & integration tests, assisted colleagues with debugging                     |
+| Nicolas Bolouri       | 35             | API design for Manager and Store, project minutes organizer and scribe, GitHub setup, created API documentation                       |
+| Hamza Alfarrash       | 23             | API implementation for Reviews and Orders, wiki documentation, integration tests                                                      |
+| Amgad Elgamal         | 32             | API implementation for Games, cleaned up backlog, domain model rationale, testing                                                     |
+| Mohamed-Amine Benzaid | 31             | API implementation for Customers, QA plan, unit tests, integration tests                                                              |
 
 ## Deliverable 1
 
