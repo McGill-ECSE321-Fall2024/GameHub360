@@ -92,7 +92,8 @@ public class CustomerOrderIntegrationTests {
         paymentDetailsId = paymentDetails.getPaymentDetailsId();
 
         // Create and save CustomerOrder
-        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf("2024-10-22"), customerAccount, paymentDetails);
+        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf(LocalDate.now()), customerAccount, paymentDetails);
+        customerOrder.setOrderStatus(CustomerOrder.OrderStatus.DELIVERED);
         customerOrder = customerOrderRepository.save(customerOrder);
         customerOrderId = customerOrder.getOrderId();
 
@@ -215,5 +216,21 @@ public class CustomerOrderIntegrationTests {
         ErrorResponseDto responseBody = response.getBody();
         assertNotNull(responseBody);
         assertEquals("Order with ID " + invalidOrderId + " not found", responseBody.getError());
+    }
+
+    // -- Tests
+
+    @Test
+    @Order(7)
+    public void testReturnCustomerOrderWithinReturnPeriod() {
+
+        ResponseEntity<CustomerOrderResponseDto> response = client.postForEntity("/orders/" + customerOrderId + "/return", null, CustomerOrderResponseDto.class);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        CustomerOrderResponseDto responseBody = response.getBody();
+        assertNotNull(responseBody);
+        assertEquals(customerOrderId, responseBody.getOrderId());
+        assertEquals(CustomerOrder.OrderStatus.RETURNED, responseBody.getOrderStatus());
     }
 }
