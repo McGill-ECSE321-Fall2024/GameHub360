@@ -26,11 +26,24 @@ public class GameCategoryService {
     @Autowired
     private GameRepository gameRepository;
 
+    /**
+     * Retrieves all categories from the repository.
+     *
+     * @return a list of all categories.
+     */
     @Transactional
     public List<GameCategory> getAllCategories() {
         return (List<GameCategory>) gameCategoryRepository.findAll();
     }
 
+    /**
+     * Creates a new category based on the provided category request DTO.
+     *
+     * @param gameCategoryRequestDto the DTO containing the details of the category to
+     *                            create.
+     * @return the created category.
+     * @throws GameShopException if the category is already in the repository.
+     */
     @Transactional
     public GameCategory createGameCategory(GameCategoryRequestDto gameCategoryRequestDto) {
         // Debug logging
@@ -58,6 +71,15 @@ public class GameCategoryService {
         return savedCategory;
     }
 
+    /**
+     * Updates an existing category with the given ID and new details from the
+     * provided DTO.
+     *
+     * @param categoryId         the ID of the category to update.
+     * @param gameCategoryRequestDto   the DTO containing the updated promotion details.
+     * @return the updated promotion.
+     * @throws GameShopException if the category is not found or if updated category already exists.
+     */
     @Transactional
     public GameCategory updateGameCategory (Integer categoryId, GameCategoryRequestDto gameCategoryRequestDto) {
         GameCategory gameCategory = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
@@ -76,6 +98,12 @@ public class GameCategoryService {
         return gameCategoryRepository.save(gameCategory);
         }
 
+    /**
+     * Deletes the category with the specified ID.
+     *
+     * @param categoryId the ID of the category to delete.
+     * @throws GameShopException if the category with the given ID is not found.
+     */
     @Transactional
     public void deleteGameCategory(Integer categoryId) {
         GameCategory gameCategory = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
@@ -85,6 +113,13 @@ public class GameCategoryService {
         gameCategoryRepository.delete(gameCategory);
     }
 
+    /**
+     * Retrieves all categories associated with the specified promotion ID.
+     *
+     * @param promotionId the ID of the promotion for which categories are to be retrieved.
+     * @return a list of categories associated with the specified promotion.
+     * @throws GameShopException if the promotion with the given ID is not found.
+     */
     @Transactional
     public List<GameCategory> getGameCategoriesByPromotionId(Integer promotionId) {
         Promotion promotion = promotionRepository.findPromotionByPromotionId(promotionId);
@@ -94,6 +129,13 @@ public class GameCategoryService {
         return gameCategoryRepository.findByPromotionsContaining(promotion);
     }
 
+    /**
+     * Retrieves all categories associated with the specified game ID.
+     *
+     * @param gameId the ID of the game for which categories are to be retrieved.
+     * @return a list of categories associated with the specified game.
+     * @throws GameShopException if the game with the given ID is not found.
+     */
     @Transactional
     public List<GameCategory> getGameCategoriesByGameId(Integer gameId) {
         Game game = gameRepository.findGameByGameEntityId(gameId);

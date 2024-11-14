@@ -5,12 +5,16 @@ import ca.mcgill.ecse321.GameShop.model.GameCategory.CategoryType;
 import java.util.List;
 
 public class GameCategoryRequestDto {
+
+    // Attributes
     @NotBlank(message = "Name cannot be empty.")
     private String name;
     private CategoryType categoryType;
     private boolean available;
     private List<Integer> gameIds;
     private List<Integer> promotionIds;
+
+    // Constructors
     public GameCategoryRequestDto() {}
 
     public GameCategoryRequestDto (boolean available, String name) {
@@ -33,6 +37,7 @@ public class GameCategoryRequestDto {
         this.promotionIds = promotionIds;
     }
 
+    // Getters and Setters
     public String getName() {
         return name;
     }

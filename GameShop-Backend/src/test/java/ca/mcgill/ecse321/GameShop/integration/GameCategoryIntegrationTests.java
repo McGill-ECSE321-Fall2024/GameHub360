@@ -70,11 +70,14 @@ public class GameCategoryIntegrationTests {
     @Test
     @Order(1)
     public void testCreateGameCategorySuccessfully() {
+        // Arrange
         GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, true);
-        
+
+        // Act
         ResponseEntity<GameCategoryResponseDto> response = client.postForEntity("/categories/", request, 
                 GameCategoryResponseDto.class);
-        
+
+        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         GameCategoryResponseDto responseBody = response.getBody();
@@ -87,6 +90,7 @@ public class GameCategoryIntegrationTests {
     @Test
     @Order(2)
     public void testCreateDuplicateGameCategoryFails() {
+        // Arrange
         GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE);
         client.postForEntity("/categories/", request, GameCategoryResponseDto.class);
 
@@ -148,12 +152,14 @@ public class GameCategoryIntegrationTests {
     @Test
     @Order(5)
     public void testDeleteGameCategorySuccessfully() {
+        // Arrange
         GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, ISAVAILABLE);
 
         ResponseEntity<GameCategoryResponseDto> response = client.postForEntity("/categories/", request,
                 GameCategoryResponseDto.class);
         GameCategoryResponseDto responseBody = response.getBody();
 
+        // Act
         ResponseEntity<Void> deleteResponse = client.exchange(
                 "/categories/" + responseBody.getCategoryId(),
                 HttpMethod.DELETE, null, Void.class);
@@ -191,26 +197,25 @@ public class GameCategoryIntegrationTests {
     @Test
     @Order(7)
     public void testGetGameCategoriesByGameIdSuccessfully() {
-        // Create and save a game category first
+        // Arrange
         GameCategory category = new GameCategory();
         category.setName(VALID_NAME);
         category.setCategoryType(VALID_CATEGORY_TYPE);
         category.setIsAvailable(ISAVAILABLE);
         category = gameCategoryRepository.save(category);
-        
-        // Create and save game
+
         Game game = new Game();
         game.setName("TestGame");
         game = gameRepository.save(game);
-        
-        // Add game to category
         category.addGame(game);
         gameCategoryRepository.save(category);
-        
+
+        // Act
         ResponseEntity<GameCategoryResponseDto[]> response = client.getForEntity(
                 "/categories/game/" + game.getGameEntityId(),
-                GameCategoryResponseDto[].class);    
+                GameCategoryResponseDto[].class);
 
+        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -238,27 +243,26 @@ public class GameCategoryIntegrationTests {
     @Test
     @Order(9)
     public void testGetGameCategoriesByPromotionIdSuccessfully() {
-        // Create and save category
+        // Arrange
         GameCategory category = new GameCategory();
         category.setName(VALID_NAME);
         category.setCategoryType(VALID_CATEGORY_TYPE);
         category.setIsAvailable(ISAVAILABLE);
         category = gameCategoryRepository.save(category);
-        
-        // Create and save promotion
+
         Promotion promotion = new Promotion();
         promotion.setDiscountPercentageValue(20.0);
         promotion.setPromotionType(PromotionType.CATEGORY);
         promotion = promotionRepository.save(promotion);
-        
-        // Add promotion to category
         promotion.addPromotedCategory(category);
         promotionRepository.save(promotion);
-        
+
+        // Act
         ResponseEntity<GameCategoryResponseDto[]> response = client.getForEntity(
                 "/categories/promotion/" + promotion.getPromotionId(),
                 GameCategoryResponseDto[].class);
 
+        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());

@@ -5,6 +5,7 @@ import java.util.List;
 
 public class GameCategoryResponseDto {
 
+    // Attributes
     private int categoryId;
     private String name;
     private boolean available;
@@ -12,6 +13,7 @@ public class GameCategoryResponseDto {
     private List<Integer> gameIds;
     private List<Integer> promotionIds;
 
+    // Constructors
     public GameCategoryResponseDto() {}
 
     public GameCategoryResponseDto(GameCategory gameCategory) {
@@ -21,6 +23,7 @@ public class GameCategoryResponseDto {
         this.available = gameCategory.getIsAvailable();
     }
 
+    // Getters and Setters
     public int getCategoryId() {
         return categoryId;
     }
