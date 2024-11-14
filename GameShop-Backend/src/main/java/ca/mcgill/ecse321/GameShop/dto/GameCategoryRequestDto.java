@@ -1,35 +1,40 @@
 package ca.mcgill.ecse321.GameShop.dto;
+
 import jakarta.validation.constraints.NotBlank;
-import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.model.GameCategory.CategoryType;
 import java.util.List;
 
 public class GameCategoryRequestDto {
-
     // Attributes
     @NotBlank(message = "Name cannot be empty.")
     private String name;
+
+    @NotBlank(message = "Category type cannot be empty.")
     private CategoryType categoryType;
+
+    @NotBlank(message = "Availability cannot be empty.")
     private boolean available;
+
     private List<Integer> gameIds;
     private List<Integer> promotionIds;
 
     // Constructors
-    public GameCategoryRequestDto() {}
+    public GameCategoryRequestDto() {
+    }
 
-    public GameCategoryRequestDto (boolean available, String name) {
+    public GameCategoryRequestDto(boolean available, String name) {
         this.name = name;
         this.available = available;
     }
 
-    public GameCategoryRequestDto (String name, CategoryType categoryType, boolean available) {
+    public GameCategoryRequestDto(String name, CategoryType categoryType, boolean available) {
         this.name = name;
         this.available = available;
         this.categoryType = categoryType;
     }
 
-    public GameCategoryRequestDto (boolean available, String name, CategoryType categoryType, List<Integer> gameIds,
-                                   List<Integer> promotionIds) {
+    public GameCategoryRequestDto(boolean available, String name, CategoryType categoryType, List<Integer> gameIds,
+            List<Integer> promotionIds) {
         this.name = name;
         this.available = available;
         this.categoryType = categoryType;
