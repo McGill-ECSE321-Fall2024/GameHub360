@@ -13,7 +13,7 @@ public class GameCategoryRequestDto {
     private CategoryType categoryType;
 
     @NotBlank(message = "Availability cannot be empty.")
-    private boolean available;
+    private Boolean available;
 
     private List<Integer> gameIds;
     private List<Integer> promotionIds;
@@ -59,7 +59,7 @@ public class GameCategoryRequestDto {
         this.categoryType = categoryType;
     }
 
-    public boolean isAvailable() {
+    public Boolean isAvailable() {
         return available;
     }
 
