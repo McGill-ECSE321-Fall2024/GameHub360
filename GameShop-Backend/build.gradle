@@ -36,6 +36,28 @@ tasks.named('test') {
 	finalizedBy jacocoTestReport
 }
 
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+            runtimeClasspath += output + compileClasspath
+            srcDir file('src/test/java/ca/mcgill/ecse321/GameShop/integration')
+        }
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+task integrationTest(type: Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+}
 tasks.named('jacocoTestReport') {
     dependsOn test
 	classDirectories.setFrom(
