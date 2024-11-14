@@ -71,7 +71,8 @@ public class GameCategoryServiceTests {
         when(gameCategoryRepository.findGameCategoryByName(any(String.class))).thenReturn(gameCategory);
 
         // Act
-        GameShopException e = assertThrows(GameShopException.class, () -> gameCategoryService.createGameCategory(requestDto));
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> gameCategoryService.createGameCategory(requestDto));
 
         // Assert
         assertEquals("Game category already exists.", e.getMessage());
@@ -110,7 +111,8 @@ public class GameCategoryServiceTests {
         when(gameCategoryRepository.findGameCategoryByCategoryId(any(Integer.class))).thenReturn(null);
 
         // Act
-        GameShopException e = assertThrows(GameShopException.class, () -> gameCategoryService.updateGameCategory(1, requestDto));
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> gameCategoryService.updateGameCategory(1, requestDto));
 
         // Assert
         assertEquals("Game category not found.", e.getMessage());
@@ -170,7 +172,8 @@ public class GameCategoryServiceTests {
         when(promotionRepository.findPromotionByPromotionId(1)).thenReturn(null);
 
         // Act
-        GameShopException e = assertThrows(GameShopException.class, () -> gameCategoryService.getGameCategoriesByPromotionId(1));
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> gameCategoryService.getGameCategoriesByPromotionId(1));
 
         // Assert
         assertEquals("Promotion with ID 1 not found.", e.getMessage());
@@ -202,7 +205,8 @@ public class GameCategoryServiceTests {
         when(gameRepository.findGameByGameEntityId(1)).thenReturn(null);
 
         // Act
-        GameShopException e = assertThrows(GameShopException.class, () -> gameCategoryService.getGameCategoriesByGameId(1));
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> gameCategoryService.getGameCategoriesByGameId(1));
 
         // Assert
         assertEquals("Game with ID 1 not found.", e.getMessage());
