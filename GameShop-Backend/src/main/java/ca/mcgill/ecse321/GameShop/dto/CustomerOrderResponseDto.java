@@ -8,25 +8,40 @@ import ca.mcgill.ecse321.GameShop.model.CustomerOrder.OrderStatus;
 import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
 
 public class CustomerOrderResponseDto {
+    // Attributes
     private int orderId;
     private OrderStatus orderStatus;
     private Date orderDate;
-    private List<OrderGameDto> orderedGames;
-    private CustomerAccountDto orderedBy;
-    private PaymentDetailsDto paymentInformation;
+    private List<Integer> orderedGamesIds;
+    private int orderedById;
+    private int paymentInformationId;
 
+    // Constructors
     public CustomerOrderResponseDto() {
+    }
+
+    public CustomerOrderResponseDto(int orderId, OrderStatus orderStatus, Date orderDate, List<Integer> orderedGamesIds,
+            int orderedById, int paymentInformationId) {
+        this.orderId = orderId;
+        this.orderStatus = orderStatus;
+        this.orderDate = orderDate;
+        this.orderedGamesIds = orderedGamesIds;
+        this.orderedById = orderedById;
+        this.paymentInformationId = paymentInformationId;
     }
 
     public CustomerOrderResponseDto(CustomerOrder customerOrder) {
         this.orderId = customerOrder.getOrderId();
         this.orderStatus = customerOrder.getOrderStatus();
         this.orderDate = customerOrder.getOrderDate();
-        this.orderedGames = customerOrder.getOrderedGames().stream().map(OrderGameDto::new).collect(Collectors.toList());
-        this.orderedBy = new CustomerAccountDto(customerOrder.getOrderedBy());
-        this.paymentInformation = new PaymentDetailsDto(customerOrder.getPaymentInformation());
+        this.orderedGamesIds = customerOrder.getOrderedGames().stream()
+                .map(orderGame -> orderGame.getGame().getGameEntityId())
+                .collect(Collectors.toList());
+        this.orderedById = customerOrder.getOrderedBy().getCustomerId();
+        this.paymentInformationId = customerOrder.getPaymentInformation().getPaymentDetailsId();
     }
 
+    // Getters and Setters
     public int getOrderId() {
         return orderId;
     }
@@ -51,27 +66,27 @@ public class CustomerOrderResponseDto {
         this.orderDate = orderDate;
     }
 
-    public List<OrderGameDto> getOrderedGames() {
-        return orderedGames;
+    public List<Integer> getOrderedGamesIds() {
+        return orderedGamesIds;
     }
 
-    public void setOrderedGames(List<OrderGameDto> orderedGames) {
-        this.orderedGames = orderedGames;
+    public void setOrderedGamesIds(List<Integer> orderedGamesIds) {
+        this.orderedGamesIds = orderedGamesIds;
     }
 
-    public CustomerAccountDto getOrderedBy() {
-        return orderedBy;
+    public int getOrderedById() {
+        return orderedById;
     }
 
-    public void setOrderedBy(CustomerAccountDto orderedBy) {
-        this.orderedBy = orderedBy;
+    public void setOrderedById(int orderedById) {
+        this.orderedById = orderedById;
     }
 
-    public PaymentDetailsDto getPaymentInformation() {
-        return paymentInformation;
+    public int getPaymentInformationId() {
+        return paymentInformationId;
     }
 
-    public void setPaymentInformation(PaymentDetailsDto paymentInformation) {
-        this.paymentInformation = paymentInformation;
+    public void setPaymentInformationId(int paymentInformationId) {
+        this.paymentInformationId = paymentInformationId;
     }
 }

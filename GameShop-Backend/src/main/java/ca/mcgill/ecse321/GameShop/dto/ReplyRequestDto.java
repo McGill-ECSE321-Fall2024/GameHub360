@@ -1,42 +1,31 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
-import java.sql.Date;
-
-import ca.mcgill.ecse321.GameShop.model.Reply;
+import jakarta.validation.constraints.NotBlank;
 
 public class ReplyRequestDto {
-
+    // Attributes
+    @NotBlank(message = "Content cannot be empty.")
     private String content;
-    private Date replyDate;
+
+    @NotBlank(message = "Manager ID cannot be empty.")
     private int managerId;
 
+    // Constructors
     public ReplyRequestDto() {
     }
 
-    public ReplyRequestDto(String content, Date replyDate, int managerId) {
+    public ReplyRequestDto(String content, int managerId) {
         this.content = content;
-        this.replyDate = replyDate;
         this.managerId = managerId;
     }
 
-    public ReplyRequestDto(Reply reply) {
-        this(reply.getContent(), reply.getReplyDate(), reply.getReviewer().getStaffId());
-    }
-
+    // Getters and setters
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public Date getReplyDate() {
-        return replyDate;
-    }
-
-    public void setReplyDate(Date replyDate) {
-        this.replyDate = replyDate;
     }
 
     public int getManagerId() {
@@ -46,13 +35,4 @@ public class ReplyRequestDto {
     public void setManagerId(int managerId) {
         this.managerId = managerId;
     }
-
-
-
-
-
-
-
-
-
 }

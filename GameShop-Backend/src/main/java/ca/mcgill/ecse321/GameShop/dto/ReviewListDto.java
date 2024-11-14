@@ -15,12 +15,11 @@ public class ReviewListDto {
     }
 
     // Getters and Setters
-    public List<ReviewResponseDto> getLogs() {
+    public List<ReviewResponseDto> getReviews() {
         return reviews;
     }
 
-    public void setLogs(List<ReviewResponseDto> reviews) {
+    public void setReviews(List<ReviewResponseDto> reviews) {
         this.reviews = reviews;
     }
-
 }

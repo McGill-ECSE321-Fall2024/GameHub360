@@ -1,26 +1,35 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
+import java.sql.Date;
+
 import ca.mcgill.ecse321.GameShop.model.Reply;
 
 public class ReplyResponseDto {
-
+    // Attributes
     private int replyId;
-    private String reply;
+    private String content;
+    private Date replyDate;
     private int reviewId;
+    private int staffId;
 
+    // Constructors
     public ReplyResponseDto() {
     }
 
-    public ReplyResponseDto(int replyId, String reply, int reviewId) {
+    public ReplyResponseDto(int replyId, String content, Date replyDate, int reviewId, int staffId) {
         this.replyId = replyId;
-        this.reply = reply;
+        this.content = content;
+        this.replyDate = replyDate;
         this.reviewId = reviewId;
+        this.staffId = staffId;
     }
 
-    public ReplyResponseDto(Reply reply2) {
-        //TODO Auto-generated constructor stub
+    public ReplyResponseDto(Reply reply) {
+        this(reply.getReplyId(), reply.getContent(), reply.getReplyDate(), reply.getReviewRecord().getReviewId(),
+                reply.getReviewer().getStaffId());
     }
 
+    // Getters and Setters
     public int getReplyId() {
         return replyId;
     }
@@ -29,12 +38,20 @@ public class ReplyResponseDto {
         this.replyId = replyId;
     }
 
-    public String getReply() {
-        return reply;
+    public String getContent() {
+        return content;
     }
 
-    public void setReply(String reply) {
-        this.reply = reply;
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Date getReplyDate() {
+        return replyDate;
+    }
+
+    public void setReplyDate(Date replyDate) {
+        this.replyDate = replyDate;
     }
 
     public int getReviewId() {
@@ -45,4 +62,11 @@ public class ReplyResponseDto {
         this.reviewId = reviewId;
     }
 
+    public int getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(int staffId) {
+        this.staffId = staffId;
+    }
 }

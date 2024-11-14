@@ -1,33 +1,31 @@
 package ca.mcgill.ecse321.GameShop.dto;
 
-import java.sql.Date;
 import java.util.List;
 
-public class CustomerOrderRequestDto {
-    private Date orderDate;
-    private List<Integer> orderedGameIds; // a list of OrderGame ids not Game ids
-    private int orderedById;
-    private int paymentInformationId;
+import jakarta.validation.constraints.NotBlank;
 
+public class CustomerOrderRequestDto {
+    // Attributes
+    @NotBlank(message = "Ordered game IDs cannot be empty.")
+    private List<Integer> orderedGameIds;
+
+    @NotBlank(message = "Payment information ID cannot be empty.")
+    private Integer paymentInformationId;
+
+    @NotBlank(message = "Customer ID cannot be empty.")
+    private Integer customerId;
+
+    // Constructors
     public CustomerOrderRequestDto() {
     }
 
-    public CustomerOrderRequestDto(Date orderDate, List<Integer> orderedGameIds, int orderedById,
-            int paymentInformationId) {
-        this.orderDate = orderDate;
+    public CustomerOrderRequestDto(List<Integer> orderedGameIds, Integer paymentInformationId, Integer customerId) {
         this.orderedGameIds = orderedGameIds;
-        this.orderedById = orderedById;
         this.paymentInformationId = paymentInformationId;
+        this.customerId = customerId;
     }
 
-    public Date getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
-
+    // Getters and setters
     public List<Integer> getOrderedGameIds() {
         return orderedGameIds;
     }
@@ -36,19 +34,19 @@ public class CustomerOrderRequestDto {
         this.orderedGameIds = orderedGameIds;
     }
 
-    public int getOrderedById() {
-        return orderedById;
-    }
-
-    public void setOrderedById(int orderedById) {
-        this.orderedById = orderedById;
-    }
-
-    public int getPaymentInformationId() {
+    public Integer getPaymentInformationId() {
         return paymentInformationId;
     }
 
-    public void setPaymentInformationId(int paymentInformationId) {
+    public void setPaymentInformationId(Integer paymentInformationId) {
         this.paymentInformationId = paymentInformationId;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 }
