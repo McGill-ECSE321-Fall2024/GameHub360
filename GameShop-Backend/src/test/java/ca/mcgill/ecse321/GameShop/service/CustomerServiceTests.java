@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,7 +52,8 @@ public class CustomerServiceTests {
     @Test
     public void testCreateCustomerSuccessfully() {
         // Arrange
-        CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "ValidP@ss123", "Alice", "123-456-7890");
+        CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "ValidP@ss123", "Alice",
+                "123-456-7890");
         CustomerAccount customer = new CustomerAccount("customer@example.com", "ValidP@ss123");
         customer.setName("Alice");
         customer.setPhoneNumber("123-456-7890");
@@ -77,7 +77,7 @@ public class CustomerServiceTests {
     public void testCreateCustomerEmailAlreadyExists() {
         // Arrange
         CustomerRequestDto requestDto = new CustomerRequestDto("existing@example.com", "password123");
-        
+
         when(customerAccountRepository.findCustomerAccountByEmail(requestDto.getEmail()))
                 .thenReturn(new CustomerAccount());
 
@@ -108,7 +108,8 @@ public class CustomerServiceTests {
     @Test
     public void testCreateCustomerInvalidPhoneNumber() {
         // Arrange
-        CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "ValidP@ss123", "Alice", "invalidPhone");
+        CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "ValidP@ss123", "Alice",
+                "invalidPhone");
         when(customerAccountRepository.findCustomerAccountByEmail(any(String.class))).thenReturn(null);
 
         // Act
@@ -126,7 +127,8 @@ public class CustomerServiceTests {
     public void testUpdateCustomerSuccessfully() {
         // Arrange
         Integer customerId = 1;
-        CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "NewStr0ngP@ssw0rd", "Alice Updated", "123-456-7890");
+        CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "NewStr0ngP@ssw0rd",
+                "Alice Updated", "123-456-7890");
         CustomerAccount existingCustomer = new CustomerAccount("customer@example.com", "encryptedOldPassword");
         existingCustomer.setName("Alice");
         existingCustomer.setPhoneNumber("987-654-3210");
@@ -156,7 +158,8 @@ public class CustomerServiceTests {
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
 
         // Act
-        GameShopException e = assertThrows(GameShopException.class, () -> customerService.updateCustomer(customerId, requestDto));
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> customerService.updateCustomer(customerId, requestDto));
 
         // Assert
         assertEquals("Customer not found.", e.getMessage());
@@ -175,7 +178,8 @@ public class CustomerServiceTests {
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(existingCustomer);
 
         // Act
-        GameShopException e = assertThrows(GameShopException.class, () -> customerService.updateCustomer(customerId, requestDto));
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> customerService.updateCustomer(customerId, requestDto));
 
         // Assert
         assertEquals("Password does not meet security requirements.", e.getMessage());
@@ -187,14 +191,16 @@ public class CustomerServiceTests {
     public void testUpdateCustomerInvalidPhoneNumber() {
         // Arrange
         Integer customerId = 1;
-        CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "NewStr0ngP@ssw0rd", "Alice Updated", "invalidPhone");
+        CustomerRequestDto requestDto = new CustomerRequestDto("customer@example.com", "NewStr0ngP@ssw0rd",
+                "Alice Updated", "invalidPhone");
         CustomerAccount existingCustomer = new CustomerAccount("customer@example.com", "encryptedOldPassword");
 
         // Mock repository behavior
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(existingCustomer);
 
         // Act
-        GameShopException e = assertThrows(GameShopException.class, () -> customerService.updateCustomer(customerId, requestDto));
+        GameShopException e = assertThrows(GameShopException.class,
+                () -> customerService.updateCustomer(customerId, requestDto));
 
         // Assert
         assertEquals("Phone Number does not meet formatting criteria.", e.getMessage());
@@ -251,7 +257,8 @@ public class CustomerServiceTests {
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
 
         // Act
-        GameShopException exception = assertThrows(GameShopException.class, () -> customerService.getCustomerById(customerId));
+        GameShopException exception = assertThrows(GameShopException.class,
+                () -> customerService.getCustomerById(customerId));
 
         // Assert
         assertEquals("Customer not found.", exception.getMessage());
@@ -382,7 +389,8 @@ public class CustomerServiceTests {
         customer.setName("John Doe");
 
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
-        when(paymentDetailsRepository.save(any(PaymentDetails.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(paymentDetailsRepository.save(any(PaymentDetails.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
         PaymentDetails result = customerService.createPaymentCard(customerId, requestDto);
@@ -650,7 +658,6 @@ public class CustomerServiceTests {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("Customer not found.", exception.getMessage());
     }
-
 
     // Tests for addToWishlist service method
 
