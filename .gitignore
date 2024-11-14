@@ -3,5 +3,6 @@
 
 ### VS Code ###
 .vscode/
-/.idea
-/.idea
+
+### IntelliJ IDEA ###
+.idea/
