@@ -53,7 +53,8 @@ public class CustomerOrderService {
 
         List<Game> games = validateAndFetchGames(customerOrderRequestDto.getOrderedGameIds());
         CustomerAccount customer = validateCustomer(customerOrderRequestDto.getCustomerId());
-        PaymentDetails paymentDetails = validatePaymentDetails(customer, customerOrderRequestDto.getPaymentInformationId());
+        PaymentDetails paymentDetails = validatePaymentDetails(customer,
+                customerOrderRequestDto.getPaymentInformationId());
 
         // Create CustomerOrder object
         CustomerOrder customerOrder = new CustomerOrder(java.sql.Date.valueOf(LocalDate.now()), customer,
