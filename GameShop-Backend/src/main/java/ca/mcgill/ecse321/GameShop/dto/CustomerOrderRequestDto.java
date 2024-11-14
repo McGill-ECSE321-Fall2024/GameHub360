@@ -3,16 +3,18 @@ package ca.mcgill.ecse321.GameShop.dto;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
 
 public class CustomerOrderRequestDto {
     // Attributes
-    @NotBlank(message = "Ordered game IDs cannot be empty.")
+    @NotEmpty(message = "Ordered game IDs cannot be empty.")
     private List<Integer> orderedGameIds;
 
-    @NotBlank(message = "Payment information ID cannot be empty.")
+    @Positive(message = "Payment information ID cannot be empty.")
     private Integer paymentInformationId;
 
-    @NotBlank(message = "Customer ID cannot be empty.")
+    @Positive(message = "Customer ID cannot be empty.")
     private Integer customerId;
 
     // Constructors

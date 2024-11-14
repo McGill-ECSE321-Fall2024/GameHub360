@@ -28,7 +28,7 @@ public class CustomerOrderController {
      * @param customerOrderRequestDto
      * @return CustomerOrderResponseDto
      */
-    @PostMapping("/")
+    @PostMapping
     public CustomerOrderResponseDto createCustomerOrder(
             @Valid @RequestBody CustomerOrderRequestDto customerOrderRequestDto) {
         CustomerOrder customerOrder = customerOrderService.createCustomerOrder(customerOrderRequestDto);

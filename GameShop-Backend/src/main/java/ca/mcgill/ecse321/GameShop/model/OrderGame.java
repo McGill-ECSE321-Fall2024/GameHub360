@@ -28,7 +28,7 @@ public class OrderGame
   @JoinColumn(name = "order_id")
   private CustomerOrder customerOrder;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne
   @JoinColumn(name = "game_entity_id")
   private Game game;
 
