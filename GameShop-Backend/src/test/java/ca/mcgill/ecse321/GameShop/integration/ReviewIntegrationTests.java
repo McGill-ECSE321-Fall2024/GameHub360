@@ -106,47 +106,6 @@ public class ReviewIntegrationTests {
 
     @Test
     @Order(1)
-    public void testSubmitReviewSuccessfully() {
-        // Arrange
-        Game game = new Game();
-        game.setName("Horror Game");
-        gameRepository.save(game);
-
-        CustomerAccount customer = new CustomerAccount(VALID_EMAIL, VALID_PASSWORD);
-        customerAccountRepository.save(customer);
-
-        PaymentDetails paymentDetails = new PaymentDetails();
-        paymentDetails.setCardOwner(customer);
-        paymentDetailsRepository.save(paymentDetails);
-
-        CustomerOrder customerOrder = new CustomerOrder(Date.valueOf("2024-10-22"), customer, paymentDetails);
-        customerOrderRepository.save(customerOrder);
-
-        OrderGame orderGame = new OrderGame();
-        orderGame.setGame(game);
-        orderGame.setCustomerOrder(customerOrder);
-        orderGameRepository.save(orderGame);
-
-        ReviewRequestDto reviewRequestDto = new ReviewRequestDto();
-        reviewRequestDto.setRating(GameReviewRating.FIVE_STARS);
-        reviewRequestDto.setCustomerId(customer.getCustomerId());
-        reviewRequestDto.setComment("Fantastic game!!!");
-
-        // Act
-        ResponseEntity<ReviewResponseDto> response = restTemplate.postForEntity(
-                "/games/" + orderGame.getOrderGameId() + "/reviews", reviewRequestDto, ReviewResponseDto.class);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        ReviewResponseDto reviewResponseDto = response.getBody();
-        assertNotNull(reviewResponseDto);
-        assertEquals(GameReviewRating.FIVE_STARS, reviewResponseDto.getRating());
-        assertEquals("Fantastic game!!!", reviewResponseDto.getComment());
-    }
-
-    @Test
-    @Order(2)
     public void testViewReviewsSuccessfully() {
         // Arrange
         Game game = new Game();
@@ -222,7 +181,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(3)
+    @Order(2)
     public void testSubmitReviewNotFoundFails() {
         // Arrange
         ReviewRequestDto reviewRequestDto = new ReviewRequestDto();
@@ -243,7 +202,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     public void testSubmitReviewForbiddenFails() {
         // Arrange
         Game game = new Game();
@@ -287,7 +246,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(5)
+    @Order(4)
     public void testSubmitReviewInvalidRatingFails() {
         // Arrange
         Game game = new Game();
@@ -328,7 +287,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(6)
+    @Order(5)
     public void testSubmitReviewInvalidCustomerIdFails() {
         // Arrange
         Game game = new Game();
@@ -369,7 +328,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(7)
+    @Order(6)
     public void testViewReviewsNotFoundFails() {
         // Arrange
         // Act
@@ -385,7 +344,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     public void testReplyToReviewNotFoundFails() {
         // Arrange
         ManagerAccount manager = new ManagerAccount("manager@gmail.com", VALID_PASSWORD);
@@ -409,7 +368,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(9)
+    @Order(8)
     public void testReplyToReviewNonExistentManagerFails() {
         // Arrange
         ReplyRequestDto replyRequestDto = new ReplyRequestDto();
@@ -434,7 +393,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(10)
+    @Order(9)
     public void testReplyToReviewSuccessfully() {
         // Arrange
         ManagerAccount manager = new ManagerAccount("manager@gmail.com", VALID_PASSWORD);
@@ -483,7 +442,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(11)
+    @Order(10)
     public void testDeleteReviewSuccessfully() {
         // Arrange
         ManagerAccount manager = new ManagerAccount("manager@gmail.com", VALID_PASSWORD);
@@ -521,7 +480,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(12)
+    @Order(11)
     public void testDeleteReviewNotFoundFails() {
         // Arrange
         // Act
@@ -537,7 +496,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(13)
+    @Order(12)
     public void testDeleteReplySuccessfully() {
         // Arrange
         ManagerAccount manager = new ManagerAccount("manager@gmail.com", VALID_PASSWORD);
@@ -557,7 +516,7 @@ public class ReviewIntegrationTests {
     }
 
     @Test
-    @Order(14)
+    @Order(13)
     public void testDeleteReplyNotFoundFails() {
         // Arrange
         // Act

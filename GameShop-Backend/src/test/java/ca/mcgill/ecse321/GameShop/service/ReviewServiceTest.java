@@ -75,7 +75,7 @@ public class ReviewServiceTest {
         review.setComment("Great game!");
         review.setRating(Review.GameReviewRating.FIVE_STARS);
         ReflectionTestUtils.setField(review, "reviewReplies", new ArrayList<Reply>());
-        
+
         orderGame.setReview(review);
         review.setReviewedGame(orderGame);
 
@@ -101,13 +101,13 @@ public class ReviewServiceTest {
         when(reviewRepository.save(any(Review.class))).thenAnswer(invocation -> {
             Review savedReview = invocation.getArgument(0);
             ReflectionTestUtils.setField(savedReview, "reviewId", 1);
-            
+
             // If the review has a reviewedGame, maintain the bidirectional relationship
             OrderGame game = savedReview.getReviewedGame();
             if (game != null) {
                 game.setReview(savedReview);
             }
-            
+
             return savedReview;
         });
 
