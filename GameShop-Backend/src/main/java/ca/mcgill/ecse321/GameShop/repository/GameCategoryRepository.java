@@ -18,7 +18,4 @@ public interface GameCategoryRepository extends CrudRepository<GameCategory, Int
 
     // Find game categories by containing a specific game
     public List<GameCategory> findByGamesContaining(Game game);
-
-    // Find all game categories
-    public List<GameCategory> findAll();
 }

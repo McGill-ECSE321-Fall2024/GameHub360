@@ -35,7 +35,7 @@ public class GameCategoryService {
      */
     @Transactional
     public List<GameCategory> getAllCategories() {
-        return gameCategoryRepository.findAll();
+        return (List<GameCategory>) gameCategoryRepository.findAll();
     }
 
     /**
