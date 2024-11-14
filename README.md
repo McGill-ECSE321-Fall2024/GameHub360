@@ -3,6 +3,13 @@
 The goal of this project is to create a software system that could be used by customers, employees, and the manager to service an Online Game Shop.
 Our Game Shop Management System offers a seamless way to manage inventory, customer orders, and reviews for an independent game shop 🕹️
 
+## Table of Contents
+
+1. [Our Team](#our-team)
+2. [Getting Started](#getting-started)
+3. [Deliverable 2](#deliverable-2)
+4. [Deliverable 1](#deliverable-1)
+
 ## Our Team
 
 #### Ahmed Mossa
