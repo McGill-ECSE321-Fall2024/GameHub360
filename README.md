@@ -92,6 +92,39 @@ Start the Spring Boot application:
    ./gradlew integrationTest
    ```
 
+### Frontend
+
+Navigate to the frontend directory:
+
+```bash
+cd GameShop-Frontend
+```
+
+#### Installing Dependencies
+
+```bash
+npm install
+```
+
+#### Running the Application Locally
+
+```bash
+npm run start
+```
+
+#### Building the Application
+
+```bash
+npm run build
+```
+
+#### Testing the Application
+
+```bash
+npm run test
+```
+
+
 ## Deliverable 2
 
 ### Links
