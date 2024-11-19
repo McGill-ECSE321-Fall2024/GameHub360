@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { SignupUser } from '../model/user/SignupUser';
-import { RouteNames } from '../model/RouteNames';
-import { registerCustomer } from '../api/authService';
-import { setAuthUser } from '../state/authState';
-import { UserType } from '../model/user/UserType';
+import { SignupUser } from '../../model/user/SignupUser';
+import { GeneralRouteNames } from '../../model/routeNames/GeneralRouteNames';
+import { registerCustomer } from '../../api/authService';
+import { setAuthUser } from '../../state/authState';
+import { UserType } from '../../model/user/UserType';
 
 const SignUpPage = () => {
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -153,7 +153,7 @@ const SignUpPage = () => {
         <p className="mt-10 text-center text-sm text-gray-500">
           Already have an account?{' '}
           <Link
-            to={RouteNames.LOGIN}
+            to={GeneralRouteNames.LOGIN}
             className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
           >
             Click here to log in

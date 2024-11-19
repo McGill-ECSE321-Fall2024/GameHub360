@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { LoginUser } from '../model/user/LoginUser';
-import { RouteNames } from '../model/RouteNames';
-import { UserType } from '../model/user/UserType';
+import { LoginUser } from '../../model/user/LoginUser';
+import { UserType } from '../../model/user/UserType';
 import { AxiosError } from 'axios';
-import { login } from '../api/authService';
-import { setAuthUser } from '../state/authState';
+import { login } from '../../api/authService';
+import { setAuthUser } from '../../state/authState';
+import { GeneralRouteNames } from '../../model/routeNames/GeneralRouteNames';
 
 const LoginPage = () => {
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -152,7 +152,7 @@ const LoginPage = () => {
         <p className="mt-10 text-center text-sm text-gray-500">
           Don&apos;t have an account?{' '}
           <Link
-            to={RouteNames.SIGNUP}
+            to={GeneralRouteNames.SIGNUP}
             className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
           >
             Click here to register
