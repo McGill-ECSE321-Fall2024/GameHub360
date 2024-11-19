@@ -5,9 +5,25 @@ import CustomerRouter from './CustomerRouter';
 import EmployeeRouter from './EmployeeRouter';
 import ManagerRouter from './ManagerRouter';
 import { getAuthState } from '../state/authState';
+import { useState, useEffect } from 'react';
 
 const AppRouter = () => {
-  const authState = getAuthState();
+  const [authState, setAuthState] = useState<AuthState>(getAuthState());
+
+  // Effect to update authState when local storage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setAuthState(getAuthState());
+    };
+
+    // Listen for storage changes
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   let RouterComponent;
 
