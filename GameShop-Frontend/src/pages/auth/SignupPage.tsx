@@ -15,17 +15,70 @@ const SignUpPage = () => {
     phoneNumber: '',
   });
 
+  // Email validation function
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Password validation function
+  const isValidPassword = (password: string): boolean => {
+    const MIN_PASSWORD_LENGTH = 8;
+    return (
+      !!password &&
+      password.length >= MIN_PASSWORD_LENGTH &&
+      /[A-Z]/.test(password) && // At least one uppercase letter
+      /[a-z]/.test(password) && // At least one lowercase letter
+      /\d/.test(password) && // At least one digit
+      /[@#$%^&+=!]/.test(password) // At least one special character
+    );
+  };
+
   // Function to handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
+    const { name, value } = e.target;
+
+    if (name === 'phoneNumber') {
+      // Remove any non-digit characters
+      const sanitizedValue = value.replace(/\D/g, '');
+      setFormData({ ...formData, [name]: sanitizedValue });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   // Function to validate the form fields
   const validateForm = () => {
-    if (!formData.email.trim() || !formData.password.trim()) {
-      setErrorMsg('Email and password are required.');
+    if (!formData.email.trim()) {
+      setErrorMsg('Email is required.');
       return false;
     }
+
+    // Validate email format
+    if (!isValidEmail(formData.email)) {
+      setErrorMsg('Please enter a valid email address.');
+      return false;
+    }
+
+    if (!formData.password.trim()) {
+      setErrorMsg('Password is required.');
+      return false;
+    }
+
+    // Validate password strength
+    if (!isValidPassword(formData.password)) {
+      setErrorMsg(
+        'Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a digit, and a special character (@#$%^&+=!).'
+      );
+      return false;
+    }
+
+    // If phone number is provided, ensure it contains only digits
+    if (formData.phoneNumber && !/^\d+$/.test(formData.phoneNumber)) {
+      setErrorMsg('Phone number must contain only digits.');
+      return false;
+    }
+
     return true;
   };
 
@@ -44,7 +97,7 @@ const SignUpPage = () => {
       await registerCustomer(formData);
       console.log('Registration successful');
 
-      // Build user state for psuedo-login
+      // Build user state for pseudo-login
       const loginData = {
         email: formData.email,
         password: formData.password,
