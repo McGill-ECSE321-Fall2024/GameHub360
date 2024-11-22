@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomerService {
-    
+
     @Autowired
     private CustomerAccountRepository customerAccountRepository;
     @Autowired
@@ -33,14 +33,14 @@ public class CustomerService {
     private PaymentDetailsRepository paymentDetailsRepository;
     @Autowired
     private GameRepository gameRepository;
-    
+
     /**
      * Creates a new customer account.
      * 
      * @param customerRequestDto the details for creating the customer.
      * @return the created CustomerAccount.
      * @throws GameShopException if the customer already exists or if password
-     *                          requirements are not met.
+     *                           requirements are not met.
      */
     @Transactional
     public CustomerAccount createCustomer(CustomerRequestDto customerRequestDto) {
@@ -56,15 +56,25 @@ public class CustomerService {
         }
         String encryptedPassword = EncryptionUtils.encrypt(customerRequestDto.getPassword());
 
-        // Validate phone number format
-        if (!PhoneUtils.isValidPhoneNumber(customerRequestDto.getPhoneNumber())) {
-            throw new GameShopException(HttpStatus.BAD_REQUEST, "Phone Number does not meet formatting criteria.");
+        // Validate phone number format if provided
+        if (customerRequestDto.getPhoneNumber() != null && !customerRequestDto.getPhoneNumber().isEmpty()) {
+            if (!PhoneUtils.isValidPhoneNumber(customerRequestDto.getPhoneNumber())) {
+                throw new GameShopException(HttpStatus.BAD_REQUEST, "Phone Number does not meet formatting criteria.");
+            }
         }
 
         // Set up and save the new customer account
         CustomerAccount customer = new CustomerAccount(customerRequestDto.getEmail(), encryptedPassword);
-        customer.setName(customerRequestDto.getName());
-        customer.setPhoneNumber(customerRequestDto.getPhoneNumber());
+
+        // Set name if provided
+        if (customerRequestDto.getName() != null && !customerRequestDto.getName().isEmpty()) {
+            customer.setName(customerRequestDto.getName());
+        }
+
+        // Set phone number if provided
+        if (customerRequestDto.getPhoneNumber() != null && !customerRequestDto.getPhoneNumber().isEmpty()) {
+            customer.setPhoneNumber(customerRequestDto.getPhoneNumber());
+        }
 
         return customerAccountRepository.save(customer);
     }
@@ -72,10 +82,11 @@ public class CustomerService {
     /**
      * Updates an existing customer account.
      *
-     * @param customerId the ID of the customer to update
+     * @param customerId         the ID of the customer to update
      * @param customerRequestDto the updated customer data
      * @return the updated CustomerAccount
-     * @throws GameShopException if customer is not found or if data validation fails
+     * @throws GameShopException if customer is not found or if data validation
+     *                           fails
      */
     @Transactional
     public CustomerAccount updateCustomer(Integer customerId, CustomerRequestDto customerRequestDto) {
@@ -140,9 +151,11 @@ public class CustomerService {
     /**
      * Authenticates a customer based on their email and password.
      *
-     * @param customerRequestDto The DTO containing the customer's email and password for authentication.
+     * @param customerRequestDto The DTO containing the customer's email and
+     *                           password for authentication.
      * @return The CustomerAccount object of the authenticated customer.
-     * @throws GameShopException if the email is not found or if the password does not match.
+     * @throws GameShopException if the email is not found or if the password does
+     *                           not match.
      */
     @Transactional
     public CustomerAccount login(CustomerRequestDto customerRequestDto) {
@@ -161,7 +174,8 @@ public class CustomerService {
      * Retrieves the order history for a specific customer by their ID.
      *
      * @param customerId The ID of the customer.
-     * @return A list of CustomerOrder objects representing the customer's order history.
+     * @return A list of CustomerOrder objects representing the customer's order
+     *         history.
      * @throws GameShopException if the customer with customerId is not found.
      */
     @Transactional
@@ -179,7 +193,8 @@ public class CustomerService {
      * @param customerId               The ID of the customer.
      * @param paymentDetailsRequestDto The payment details data for creation.
      * @return PaymentDetails representing the created payment card.
-     * @throws GameShopException if the customer is not found or already has payment details.
+     * @throws GameShopException if the customer is not found or already has payment
+     *                           details.
      */
     @Transactional
     public PaymentDetails createPaymentCard(Integer customerId, PaymentDetailsRequestDto paymentDetailsRequestDto) {
@@ -188,7 +203,7 @@ public class CustomerService {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
         }
 
-        for (PaymentDetails card: customer.getPaymentCards()){
+        for (PaymentDetails card : customer.getPaymentCards()) {
             if (card.getCardNumber() == paymentDetailsRequestDto.getCardNumber()) {
                 throw new GameShopException(HttpStatus.CONFLICT, "Payment details already exist.");
             }
@@ -217,7 +232,8 @@ public class CustomerService {
      * @throws GameShopException if the customer or payment details are not found.
      */
     @Transactional
-    public PaymentDetails updatePaymentCard(Integer customerId, int cardId, PaymentDetailsRequestDto paymentDetailsRequestDto) {
+    public PaymentDetails updatePaymentCard(Integer customerId, int cardId,
+            PaymentDetailsRequestDto paymentDetailsRequestDto) {
         CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
         if (customer == null) {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
@@ -249,7 +265,8 @@ public class CustomerService {
      * @param customerId The ID of the customer.
      * @param cardId     The ID of the payment card.
      * @return The specific PaymentDetails object.
-     * @throws GameShopException if the customer or the card with customerId and cardId respectively are not found
+     * @throws GameShopException if the customer or the card with customerId and
+     *                           cardId respectively are not found
      */
     @Transactional
     public PaymentDetails getPaymentCardById(Integer customerId, Integer cardId) {

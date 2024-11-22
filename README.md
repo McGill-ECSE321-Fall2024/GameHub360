@@ -76,6 +76,8 @@ Start the Spring Boot application:
 ./gradlew bootRun
 ```
 
+The application will be accessible at `http://localhost:8080`.
+
 #### Testing
 
 1. Ensure the database is correctly set up and accessible.
@@ -92,9 +94,44 @@ Start the Spring Boot application:
    ./gradlew integrationTest
    ```
 
+### Frontend
+
+Navigate to the frontend directory:
+
+```bash
+cd GameShop-Frontend
+```
+
+#### Installing Dependencies
+
+```bash
+npm install
+```
+
+#### Running the Application Locally
+
+```bash
+npm run start
+```
+
+The application will be accessible at `http://localhost:3000`.
+
+#### Building the Application
+
+```bash
+npm run build
+```
+
+#### Testing the Application
+
+```bash
+npm run test
+```
+
 ## Deliverable 2
 
 ### Links
+
 - [Wiki Home Page](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki)
 - [Project Report D2](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Project-Report-D2)
 - [API Documentation](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/API-Documentation)
@@ -102,14 +139,15 @@ Start the Spring Boot application:
 - [QA Report](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/QA-Report)
 
 ### Effort Table (D2)
-| Team Member           | Time Spent (h) | Responsibilities                                                                                                                         |
-|-----------------------|----------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| Ismail Sentissi       | 27             | API design for Categories, Project Management and Report, Integration tests, cleaned up backlog, QA Plan                             |
-| Ahmed Mossa           | 37             | API implementation for Employees, created QA report, unit & integration tests, assisted colleagues with debugging                     |
-| Nicolas Bolouri       | 35             | API design for Manager and Store, project minutes organizer and scribe, GitHub setup, created API documentation                       |
-| Hamza Alfarrash       | 23             | API implementation for Reviews and Orders, wiki documentation, integration tests                                                      |
-| Amgad Elgamal         | 32             | API implementation for Games, cleaned up backlog, domain model rationale, testing                                                     |
-| Mohamed-Amine Benzaid | 31             | API implementation for Customers, QA plan, unit tests, integration tests                                                              |
+
+| Team Member           | Time Spent (h) | Responsibilities                                                                                                  |
+| --------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Ismail Sentissi       | 27             | API design for Categories, Project Management and Report, Integration tests, cleaned up backlog, QA Plan          |
+| Ahmed Mossa           | 37             | API implementation for Employees, created QA report, unit & integration tests, assisted colleagues with debugging |
+| Nicolas Bolouri       | 35             | API design for Manager and Store, project minutes organizer and scribe, GitHub setup, created API documentation   |
+| Hamza Alfarrash       | 23             | API implementation for Reviews and Orders, wiki documentation, integration tests                                  |
+| Amgad Elgamal         | 32             | API implementation for Games, cleaned up backlog, domain model rationale, testing                                 |
+| Mohamed-Amine Benzaid | 31             | API implementation for Customers, QA plan, unit tests, integration tests                                          |
 
 ## Deliverable 1
 
