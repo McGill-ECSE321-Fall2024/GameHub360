@@ -4,6 +4,12 @@ import { UserType } from '../model/user/UserType';
 import apiService from '../config/axiosConfig';
 import { SignupUser } from '../model/user/SignupUser';
 
+export interface StoredUserData {
+  email: string;
+  customerId?: number;
+  userType: string;
+}
+
 // Function to log in a user
 export async function login(user: LoginUser) {
   const { email, password, userType } = user;
@@ -28,7 +34,19 @@ export async function login(user: LoginUser) {
   try {
     // Make a POST request to the appropriate endpoint
     const response = await apiService.post(endpoint, { email, password });
-    return response.data;
+    
+    let userData: StoredUserData = {
+      email,
+      userType
+    };
+
+    if (userType === UserType.CUSTOMER) {
+      const customerResponse = await apiService.get(`/customers/email/${email}`);
+      console.log('Customer response:', customerResponse.data);
+      userData.customerId = customerResponse.data.customerId;
+    }
+    
+    return userData;
   } catch (error) {
     if (isAxiosError(error) && error.response?.status === 400) {
       throw new Error('Invalid email or password.');

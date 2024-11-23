@@ -7,6 +7,7 @@ import DashboardPage from '../pages/manager/DashboardPage';
 import { ManagerRouteNames } from '../model/routeNames/ManagerRouteNames';
 import BrowsePage from '../pages/BrowsePage';
 import NotFoundPage from '../pages/NotFoundPage';
+import GameDetailsPage from '../pages/GameDetailsPage';
 
 const ManagerRouter = () => {
   return (
@@ -14,6 +15,7 @@ const ManagerRouter = () => {
       <Navbar userType={UserType.MANAGER} />
       <Routes>
         <Route path={GeneralRouteNames.BROWSE} element={<BrowsePage />} />
+        <Route path={`${GeneralRouteNames.BROWSE}/game/:id`} element={<GameDetailsPage />} />
         <Route path={GeneralRouteNames.PROFILE} element={<ProfilePage />} />
 
         <Route path={ManagerRouteNames.DASHBOARD} element={<DashboardPage />} />
