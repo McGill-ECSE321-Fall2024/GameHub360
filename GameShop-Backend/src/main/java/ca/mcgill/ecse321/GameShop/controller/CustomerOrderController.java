@@ -1,12 +1,21 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import ca.mcgill.ecse321.GameShop.dto.CustomerOrderListDto;
+import ca.mcgill.ecse321.GameShop.dto.CustomerOrderRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.CustomerOrderResponseDto;
 import ca.mcgill.ecse321.GameShop.model.CustomerOrder;
-import ca.mcgill.ecse321.GameShop.dto.CustomerOrderRequestDto;
-
 import ca.mcgill.ecse321.GameShop.service.CustomerOrderService;
 import jakarta.validation.Valid;
 
@@ -53,5 +62,19 @@ public class CustomerOrderController {
     public CustomerOrderResponseDto getCustomerOrderById(@PathVariable("orderId") Integer orderId) {
         CustomerOrder customerOrder = customerOrderService.getCustomerOrderById(orderId);
         return new CustomerOrderResponseDto(customerOrder);
+    }
+
+    /**
+     * Endpoint to get all orders.
+     * 
+     * @return CustomerOrderListDto
+     */
+    @GetMapping("/")
+    public CustomerOrderListDto getAllCustomerOrders() {
+        List<CustomerOrderResponseDto> customerOrderDtos = new ArrayList<CustomerOrderResponseDto>();
+        for (CustomerOrder customerOrder : customerOrderService.getAllCustomerOrders()) {
+            customerOrderDtos.add(new CustomerOrderResponseDto(customerOrder));
+        }
+        return new CustomerOrderListDto(customerOrderDtos);
     }
 }

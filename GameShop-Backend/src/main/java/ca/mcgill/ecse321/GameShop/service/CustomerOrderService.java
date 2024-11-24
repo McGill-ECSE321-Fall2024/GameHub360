@@ -143,6 +143,16 @@ public class CustomerOrderService {
     }
 
     /**
+     * Get all customer orders.
+     * 
+     * @return List of all customer orders
+     */
+    @Transactional
+    public List<CustomerOrder> getAllCustomerOrders() {
+        return (List<CustomerOrder>) customerOrderRepository.findAll();
+    }
+
+    /**
      * Validates and retrieves a list of games by their IDs.
      * 
      * @param gameIds the list of game IDs to validate and fetch
