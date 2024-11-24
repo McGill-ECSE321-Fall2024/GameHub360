@@ -131,7 +131,7 @@ const Navbar = ({ userType }: NavbarProps) => {
                               <button
                                 onClick={() => {
                                   clearAuthUser(); // Call the sign-out function
-                                  window.location.reload(); // Reload the page
+                                  window.location.href = GeneralRouteNames.BASE; // Redirect to the base route
                                   console.log('User signed out');
                                 }}
                                 className={classNames(
