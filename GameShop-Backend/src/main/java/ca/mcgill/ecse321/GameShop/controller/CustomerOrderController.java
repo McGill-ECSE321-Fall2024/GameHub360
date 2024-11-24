@@ -69,7 +69,7 @@ public class CustomerOrderController {
      * 
      * @return CustomerOrderListDto
      */
-    @GetMapping("/")
+    @GetMapping
     public CustomerOrderListDto getAllCustomerOrders() {
         List<CustomerOrderResponseDto> customerOrderDtos = new ArrayList<CustomerOrderResponseDto>();
         for (CustomerOrder customerOrder : customerOrderService.getAllCustomerOrders()) {
