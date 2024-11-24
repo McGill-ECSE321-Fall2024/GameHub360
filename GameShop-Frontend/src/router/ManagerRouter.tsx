@@ -15,6 +15,7 @@ import GameRequestsPage from '../pages/manager/GameRequestsPage';
 import GamesPage from '../pages/manager/GamesPage';
 import ManagerProfilePage from '../pages/manager/ManagerProfilePage';
 import CategoriesPage from '../pages/manager/CategoriesPage';
+import NotFoundPage from '../pages/NotFoundPage';
 
 const ManagerRouter = () => {
   return (
