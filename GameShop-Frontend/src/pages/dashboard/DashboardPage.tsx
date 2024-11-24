@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import SalesMetricsBanner from '../../components/SalesMetricsBanner';
+import SalesMetricsBanner from '../../components/dashboard/SalesMetricsBanner';
 import {
   viewStorePolicy,
   manageStorePolicy,
   createStorePolicy,
 } from '../../api/storeInfoService';
+import DashboardOrdersList from '../../components/dashboard/DashboardOrderTable';
 
 const DashboardPage = () => {
   const [storePolicy, setStorePolicy] = useState<string | null>(null);
@@ -61,12 +62,12 @@ const DashboardPage = () => {
 
   return (
     <>
-      <h2 className="mt-5 mb-3 ml-5 text-xl font-bold tracking-tight text-gray-900">
+      <h2 className="mt-5 mb-3 ml-6 text-xl font-bold tracking-tight text-gray-900">
         Sales Metrics
       </h2>
       <SalesMetricsBanner />
 
-      <div className="mt-7 mb-3 ml-5 flex items-center justify-between pr-5">
+      <div className="mt-10 mb-3 ml-6 flex items-center justify-between pr-5">
         <h2 className="text-xl font-bold tracking-tight text-gray-900">
           Store Policies
         </h2>
@@ -116,9 +117,11 @@ const DashboardPage = () => {
         )}
       </div>
 
-      <h2 className="mt-7 mb-3 ml-5  text-xl font-bold tracking-tight text-gray-900">
+      <h2 className="mt-10 ml-6 text-xl font-bold tracking-tight text-gray-900">
         Customer Orders
       </h2>
+
+      <DashboardOrdersList />
     </>
   );
 };
