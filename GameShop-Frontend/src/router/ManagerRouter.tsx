@@ -3,7 +3,7 @@ import { GeneralRouteNames } from '../model/routeNames/GeneralRouteNames';
 import Navbar from '../components/Navbar';
 import { UserType } from '../model/user/UserType';
 import ProfilePage from '../pages/ProfilePage';
-import DashboardPage from '../pages/dashboard/DashboardPage';
+import DashboardPage from '../pages/manager/DashboardPage';
 import { ManagerRouteNames } from '../model/routeNames/ManagerRouteNames';
 import BrowsePage from '../pages/BrowsePage';
 import GameRequestsPage from '../pages/manager/GameRequestsPage';
