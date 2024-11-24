@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getSalesMetrics } from '../api/storeInfoService';
+import { getSalesMetrics } from '../../api/storeInfoService';
 
 const SalesMetricsBanner = () => {
   const [stats, setStats] = useState([
