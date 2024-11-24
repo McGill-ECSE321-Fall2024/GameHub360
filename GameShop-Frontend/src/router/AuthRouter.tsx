@@ -4,6 +4,7 @@ import LoginPage from '../pages/auth/LoginPage';
 import SignupPage from '../pages/auth/SignupPage';
 import BrowsePage from '../pages/BrowsePage';
 import Navbar from '../components/Navbar';
+import NotFoundPage from '../pages/NotFoundPage';
 
 const AuthRouter = () => {
   return (
@@ -20,11 +21,8 @@ const AuthRouter = () => {
           element={<Navigate to={GeneralRouteNames.BROWSE} replace />}
         />
 
-        {/* TEMP (will need a 404)*/}
-        <Route
-          path="*"
-          element={<Navigate to={GeneralRouteNames.BROWSE} replace />}
-        />
+        {/* 404 Page */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );
