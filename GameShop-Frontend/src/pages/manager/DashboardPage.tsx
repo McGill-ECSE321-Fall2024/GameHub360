@@ -81,7 +81,7 @@ const DashboardPage = () => {
           {storePolicy ? 'Edit' : 'Create'}
         </button>
       </div>
-      <div className="my-5">
+      <div className="my-5 ml-1">
         {loadingPolicy ? (
           <p className="ml-5 text-gray-700">Loading store policy...</p>
         ) : editing ? (
