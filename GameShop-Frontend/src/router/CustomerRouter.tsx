@@ -7,6 +7,7 @@ import { CustomerRouteNames } from '../model/routeNames/CustomerRouteNames';
 import OrdersPage from '../pages/customer/OrdersPage';
 import WishlistPage from '../pages/customer/WishlistPage';
 import BrowsePage from '../pages/BrowsePage';
+import NotFoundPage from '../pages/NotFoundPage';
 
 const CustomerRouter = () => {
   return (
@@ -26,11 +27,8 @@ const CustomerRouter = () => {
           element={<Navigate to={GeneralRouteNames.BROWSE} replace />}
         />
 
-        {/* TEMP (will need a 404) */}
-        <Route
-          path="*"
-          element={<Navigate to={GeneralRouteNames.BASE} replace />}
-        />
+        {/* 404 Page */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );
