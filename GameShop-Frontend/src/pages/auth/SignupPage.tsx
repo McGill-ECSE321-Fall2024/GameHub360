@@ -108,7 +108,7 @@ const SignUpPage = () => {
       setAuthUser(loginData);
 
       // Refresh to update the router
-      window.location.reload();
+      window.location.href = GeneralRouteNames.BASE;
     } catch (error) {
       setErrorMsg((error as Error).message);
       console.error('Registration failed:', error);
