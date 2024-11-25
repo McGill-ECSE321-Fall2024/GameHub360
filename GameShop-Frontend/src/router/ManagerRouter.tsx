@@ -11,6 +11,7 @@ import GamesPage from '../pages/manager/GamesPage';
 import ManagerProfilePage from '../pages/manager/ManagerProfilePage';
 import CategoriesPage from '../pages/manager/CategoriesPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import GameRequestDetailPage from '../pages/manager/GameRequestDetailPage';
 
 const ManagerRouter = () => {
   return (
@@ -24,6 +25,7 @@ const ManagerRouter = () => {
         <Route path={ManagerRouteNames.GAME_REQUESTS} element={<GameRequestsPage />} />
         <Route path={ManagerRouteNames.GAMES} element={<GamesPage />} />
         <Route path={ManagerRouteNames.CATEGORIES} element={<CategoriesPage />} />
+        <Route path={ManagerRouteNames.GAME_REQUEST_DETAIL} element={<GameRequestDetailPage />} />
 
 
         {/* Redirect base route to browse */}
