@@ -25,7 +25,7 @@ const WishlistPage = () => {
           {wishlist.items.map((game) => (
             <div key={game.gameId} className="relative">
               <div className={game.isArchived ? 'opacity-50' : ''}>
-                <GameCard game={game} />
+                <GameCard game={game} returnPath="/wishlist" />
               </div>
               {game.isArchived && (
                 <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-sm">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import apiService from '../config/axiosConfig';
 import { getAuthState } from '../state/authState';
 import { AuthState } from '../model/AuthState';
@@ -8,13 +8,14 @@ import { useWishlist } from '../Context/WishlistContext';
 
 interface Game {
   gameId: number;
-  title: string;
+  name: string;
+  description: string;
   price: number;
   imageUrl: string;
+  quantityInStock: number;
   console?: string;
   category?: string;
-  description: string;
-  quantityInStock: number;
+  categoryId?: number;
 }
 
 interface Review {
@@ -36,22 +37,58 @@ interface Reply {
 const GameDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [game, setGame] = useState<Game | null>(null);
+  const location = useLocation();
+  const returnPath = location.state?.returnPath || '/games';
+  const initialGame = location.state?.game;
+  const [game, setGame] = useState<Game | null>(initialGame);
   const [reviews, setReviews] = useState<Review[]>([]);
   const authState = getAuthState();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
-    const fetchGameDetails = async () => {
+    const fetchGameData = async () => {
       try {
-        const response = await apiService.get(`/games/${id}`);
-        setGame(response.data);
+        let gameData = initialGame;
+        
+        // If no initial game, fetch it
+        if (!initialGame && id) {
+          const gameResponse = await apiService.get(`/games/${id}`);
+          gameData = gameResponse.data;
+        }
+
+        // Always fetch categories for the game
+        if (gameData && id) {
+          try {
+            const categoryResponse = await apiService.get(`/categories/game/${id}`);
+            const categories = categoryResponse.data.gameCategories;
+            setGame({
+              ...gameData,
+              category: categories.length > 0 ? categories[0].name : 'Uncategorized'
+            });
+          } catch (error) {
+            setGame({
+              ...gameData,
+              category: 'Uncategorized'
+            });
+          }
+        }
       } catch (error) {
-        console.error('Error fetching game details:', error);
-        navigate('/browse');
+        console.error('Error fetching game:', error);
+        navigate(returnPath);
       }
     };
+
+    if (id) {
+      fetchGameData();
+    }
+  }, [id, initialGame, navigate, returnPath]);
+
+  useEffect(() => {
+    if (!game) {
+      navigate(returnPath);
+      return;
+    }
 
     const fetchReviews = async () => {
       try {
@@ -62,9 +99,8 @@ const GameDetailsPage = () => {
       }
     };
 
-    fetchGameDetails();
     fetchReviews();
-  }, [id, navigate]);
+  }, [id, game, navigate, returnPath]);
 
   const handleWishlistToggle = async () => {
     if (!game) return;
@@ -75,7 +111,7 @@ const GameDetailsPage = () => {
       } else {
         addToWishlist({
           gameId: game.gameId,
-          name: game.title,
+          name: game.name,
           price: game.price,
           imageUrl: game.imageUrl,
           console: game.console,
@@ -91,7 +127,7 @@ const GameDetailsPage = () => {
     if (!game) return;
     addToCart({
       gameId: game.gameId,
-      title: game.title,
+      name: game.name,
       price: game.price,
       imageUrl: game.imageUrl,
       quantity: 1
@@ -99,98 +135,111 @@ const GameDetailsPage = () => {
   };
 
   if (!game) {
-    return <div className="text-center p-8">Loading...</div>;
+    navigate(returnPath);
+    return null;
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Game Image */}
-        <div>
-          <img
-            src={game.imageUrl}
-            alt={game.title}
-            className="w-full rounded-lg shadow-lg"
-          />
-        </div>
-
-        {/* Game Details */}
-        <div>
-          <h1 className="text-3xl font-bold mb-4">{game.title}</h1>
-          <p className="text-gray-600 mb-4">{game.description}</p>
-          
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-2xl font-bold">${game.price.toFixed(2)}</span>
-            <span className="text-gray-600">
-              {game.quantityInStock > 0 
-                ? `${game.quantityInStock} in stock` 
-                : 'Out of stock'}
-            </span>
+      <button
+        onClick={() => navigate(returnPath)}
+        className="mb-6 text-blue-500 hover:text-blue-600 flex items-center gap-2"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to {returnPath === '/wishlist' ? 'Wishlist' : 'Browse'}
+      </button>
+      
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+          {/* Game Image */}
+          <div className="relative">
+            <img
+              src={game.imageUrl}
+              alt={game.name}
+              className="w-full rounded-lg shadow-md object-cover aspect-video"
+            />
+            {game.quantityInStock === 0 && (
+              <div className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+                Out of Stock
+              </div>
+            )}
           </div>
 
-          {game.console && (
-            <div className="mb-4">
-              <span className="font-semibold">Console:</span> {game.console}
+          {/* Game Details */}
+          <div className="space-y-6">
+            <h1 className="text-3xl font-bold">{game.name}</h1>
+            <p className="text-gray-600">{game.description}</p>
+            
+            <div className="flex flex-wrap gap-4">
+              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                {game.category}
+              </span>
             </div>
-          )}
 
-          {game.category && (
-            <div className="mb-4">
-              <span className="font-semibold">Category:</span> {game.category}
+            <div className="flex items-center justify-between py-4 border-t border-gray-100">
+              <div>
+                <span className="text-3xl font-bold">${game.price.toFixed(2)}</span>
+                <span className="ml-2 text-sm text-gray-500">
+                  {game.quantityInStock > 0 && `${game.quantityInStock} in stock`}
+                </span>
+              </div>
             </div>
-          )}
 
-          {authState === AuthState.CUSTOMER && (
-            <div className="flex gap-4">
-              <button
-                onClick={handleWishlistToggle}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                {isInWishlist(game.gameId) ? 'Remove from Wishlist' : 'Add to Wishlist'}
-              </button>
-              <button
-                disabled={game.quantityInStock === 0}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
-                onClick={handleAddToCart}
-              >
-                Add to Cart
-              </button>
-            </div>
-          )}
+            {authState === AuthState.CUSTOMER && (
+              <div className="flex gap-4">
+                <button
+                  onClick={handleWishlistToggle}
+                  className="flex-1 bg-white border-2 border-blue-500 text-blue-500 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+                >
+                  {isInWishlist(game.gameId) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                </button>
+                <button
+                  disabled={game.quantityInStock === 0}
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Reviews Section */}
-      <div className="mt-12">
+      <div className="mt-12 bg-white rounded-xl shadow-lg p-6">
         <h2 className="text-2xl font-bold mb-6">Reviews</h2>
         {reviews.length > 0 ? (
           <div className="space-y-6">
             {reviews.map((review) => (
-              <div key={review.id} className="border rounded-lg p-4">
+              <div key={review.id} className="border-b border-gray-100 pb-6 last:border-0">
                 <div className="flex justify-between mb-2">
                   <span className="font-semibold">{review.customerName}</span>
-                  <span className="text-gray-600">{review.reviewDate}</span>
+                  <span className="text-gray-500 text-sm">{review.reviewDate}</span>
                 </div>
-                <div className="mb-2">
-                  {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                <div className="text-yellow-400 mb-2">
+                  {'★'.repeat(review.rating)}
+                  <span className="text-gray-300">{'★'.repeat(5 - review.rating)}</span>
                 </div>
                 <p className="text-gray-700">{review.comment}</p>
 
                 {/* Manager Replies */}
                 {review.replies.map((reply) => (
-                  <div key={reply.id} className="ml-8 mt-4 bg-gray-50 p-3 rounded">
+                  <div key={reply.id} className="ml-8 mt-4 bg-gray-50 p-4 rounded-lg">
                     <div className="flex justify-between mb-1">
-                      <span className="font-semibold text-sm">{reply.managerName}</span>
-                      <span className="text-gray-600 text-sm">{reply.replyDate}</span>
+                      <span className="font-semibold text-sm text-blue-600">{reply.managerName}</span>
+                      <span className="text-gray-500 text-sm">{reply.replyDate}</span>
                     </div>
-                    <p className="text-gray-700">{reply.content}</p>
+                    <p className="text-gray-600">{reply.content}</p>
                   </div>
                 ))}
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-600">No reviews yet.</p>
+          <p className="text-gray-500 text-center py-8">No reviews yet.</p>
         )}
       </div>
     </div>

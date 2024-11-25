@@ -1,6 +1,6 @@
 export interface CartItem {
   gameId: number;
-  title: string;
+  name: string;
   price: number;
   imageUrl: string;
   quantity: number;

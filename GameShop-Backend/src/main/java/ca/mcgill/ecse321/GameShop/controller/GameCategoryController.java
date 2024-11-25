@@ -26,7 +26,7 @@ public class GameCategoryController {
      *
      * @return A DTO containing a list of all current categories.
      */
-    @GetMapping("/")
+    @GetMapping
     public GameCategoryListDto getAllGameCategories() {
         List<GameCategoryResponseDto> gameCategoryDtos = new ArrayList<>();
         for (GameCategory gameCategory : gameCategoryService.getAllCategories()) {
@@ -72,7 +72,7 @@ public class GameCategoryController {
      * @param gameCategoryRequestDto The details of the new category.
      * @return The created category details.
      */
-    @PostMapping("/")
+    @PostMapping
     public GameCategoryResponseDto createGameCategory(
             @Valid @RequestBody GameCategoryRequestDto gameCategoryRequestDto) {
         GameCategory gameCategory = gameCategoryService.createGameCategory(gameCategoryRequestDto);

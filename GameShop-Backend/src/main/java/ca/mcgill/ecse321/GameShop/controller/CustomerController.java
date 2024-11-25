@@ -29,7 +29,7 @@ public class CustomerController {
      *                           (optional).
      * @return A response containing the newly created customer's details.
      */
-    @PostMapping("/")
+    @PostMapping
     public CustomerResponseDto createCustomer(
             @Validated({ ValidationGroups.Post.class }) @RequestBody CustomerRequestDto customerRequestDto) {
         CustomerAccount customer = customerService.createCustomer(customerRequestDto);

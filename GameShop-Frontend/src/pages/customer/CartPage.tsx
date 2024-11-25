@@ -35,11 +35,11 @@ const CartPage = () => {
               <div className="flex items-center space-x-4">
                 <img
                   src={item.imageUrl}
-                  alt={item.title}
+                  alt={item.name}
                   className="w-24 h-24 object-cover rounded"
                 />
                 <div>
-                  <h3 className="font-bold">{item.title}</h3>
+                  <h3 className="font-bold">{item.name}</h3>
                   <p className="text-gray-600">${item.price.toFixed(2)}</p>
                 </div>
               </div>

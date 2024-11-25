@@ -27,7 +27,7 @@ public class GameController {
      * @param gameRequestDto the game data transfer object containing game details
      * @return the created game as a GameResponseDto
      */
-    @PostMapping("/")
+    @PostMapping
     public GameResponseDto createGame(
             @Validated(ValidationGroups.Post.class) @RequestBody GameRequestDto gameRequestDto) {
         Game createdGame = gameService.createGame(gameRequestDto);
