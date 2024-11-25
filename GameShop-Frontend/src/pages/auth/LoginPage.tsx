@@ -52,7 +52,7 @@ const LoginPage = () => {
       setAuthUser(formData);
 
       // Refresh to update the router
-      window.location.reload();
+      window.location.href = GeneralRouteNames.BASE;
     } catch (error) {
       setErrorMsg((error as AxiosError).message);
       console.error('Login failed:', error);

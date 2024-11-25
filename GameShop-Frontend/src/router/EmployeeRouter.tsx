@@ -6,6 +6,7 @@ import ProfilePage from '../pages/ProfilePage';
 import GameRequestsPage from '../pages/employee/GameRequestsPage';
 import { EmployeeRouteNames } from '../model/routeNames/EmployeeRouteNames';
 import BrowsePage from '../pages/BrowsePage';
+import NotFoundPage from '../pages/NotFoundPage';
 
 const EmployeeRouter = () => {
   return (
@@ -27,11 +28,8 @@ const EmployeeRouter = () => {
           element={<Navigate to={GeneralRouteNames.BROWSE} replace />}
         />
 
-        {/* TEMP (will need a 404)*/}
-        <Route
-          path="*"
-          element={<Navigate to={GeneralRouteNames.BASE} replace />}
-        />
+        {/* 404 Page */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

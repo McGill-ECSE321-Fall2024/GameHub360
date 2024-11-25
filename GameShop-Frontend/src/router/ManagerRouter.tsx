@@ -3,9 +3,10 @@ import { GeneralRouteNames } from '../model/routeNames/GeneralRouteNames';
 import Navbar from '../components/Navbar';
 import { UserType } from '../model/user/UserType';
 import ProfilePage from '../pages/ProfilePage';
-import DashboardPage from '../pages/dashboard/DashboardPage';
+import DashboardPage from '../pages/manager/DashboardPage';
 import { ManagerRouteNames } from '../model/routeNames/ManagerRouteNames';
 import BrowsePage from '../pages/BrowsePage';
+import NotFoundPage from '../pages/NotFoundPage';
 
 const ManagerRouter = () => {
   return (
@@ -24,11 +25,8 @@ const ManagerRouter = () => {
           element={<Navigate to={GeneralRouteNames.BROWSE} replace />}
         />
 
-        {/* TEMP (will need a 404) */}
-        <Route
-          path="*"
-          element={<Navigate to={GeneralRouteNames.BASE} replace />}
-        />
+        {/* 404 Page */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );
