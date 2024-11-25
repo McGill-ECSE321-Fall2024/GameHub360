@@ -6,7 +6,7 @@ import { SignupUser } from '../model/user/SignupUser';
 
 // Function to log in a user
 export async function login(user: LoginUser) {
-  const { email, password, userType } = user;
+  const { id, email, password, userType } = user;
 
   let endpoint = '';
 

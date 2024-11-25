@@ -94,12 +94,13 @@ const SignUpPage = () => {
 
     try {
       // Call the register function
-      await registerCustomer(formData);
-      console.log('Registration successful');
+      const registeredCustomer = await registerCustomer(formData);
+      console.log('Registration successful:', registeredCustomer);
 
-      // Build user state for pseudo-login
+      // Build user state for pseudo-login, including customer ID
       const loginData = {
-        email: formData.email,
+        id: registeredCustomer.id, // Store the customer ID
+        email: registeredCustomer.email,
         password: formData.password,
         userType: UserType.CUSTOMER,
       };

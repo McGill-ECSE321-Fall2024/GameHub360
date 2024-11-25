@@ -8,6 +8,7 @@ import OrdersPage from '../pages/customer/OrdersPage';
 import WishlistPage from '../pages/customer/WishlistPage';
 import BrowsePage from '../pages/BrowsePage';
 import NotFoundPage from '../pages/NotFoundPage';
+import CustomerProfilePage from '../pages/customer/CustomerProfilePage';
 
 const CustomerRouter = () => {
   return (
@@ -15,7 +16,7 @@ const CustomerRouter = () => {
       <Navbar userType={UserType.CUSTOMER} />
       <Routes>
         <Route path={GeneralRouteNames.BROWSE} element={<BrowsePage />} />
-        <Route path={GeneralRouteNames.PROFILE} element={<ProfilePage />} />
+        <Route path={GeneralRouteNames.PROFILE} element={<CustomerProfilePage />} />
 
         <Route path={CustomerRouteNames.ORDERS} element={<OrdersPage />} />
         <Route path={CustomerRouteNames.WISHLIST} element={<WishlistPage />} />

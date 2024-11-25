@@ -10,6 +10,7 @@ import { GeneralRouteNames } from '../../model/routeNames/GeneralRouteNames';
 const LoginPage = () => {
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [formData, setFormData] = useState<LoginUser>({
+    id: null,
     email: '',
     password: '',
     userType: UserType.CUSTOMER,
@@ -48,8 +49,14 @@ const LoginPage = () => {
       const responseData = await login(formData);
       console.log('Login successful:', responseData);
 
+      // Update formData with the ID from response
+      const updatedUser: LoginUser = {
+        ...formData,
+        id: responseData.customerId, // Set the ID from the server response
+      };
+
       // Set the auth user in the state
-      setAuthUser(formData);
+      setAuthUser(updatedUser);
 
       // Refresh to update the router
       window.location.href = GeneralRouteNames.BASE;

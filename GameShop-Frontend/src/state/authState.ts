@@ -32,6 +32,12 @@ export const setAuthUser = (user: LoginUser) => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user));
 };
 
+// Utility function to retrieve the logged-in user object from localStorage
+export const getAuthUser = () => {
+  const storedUser = localStorage.getItem('loggedInUser');
+  return storedUser ? JSON.parse(storedUser) : null;
+};
+
 // Function to remove the logged-in user from local storage (logout)
 export const clearAuthUser = () => {
   localStorage.removeItem(LOCAL_STORAGE_KEY);
