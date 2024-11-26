@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getAllGameRequests, GameRequest } from '../../api/gameRequestService';
 import { ManagerRouteNames } from '../../model/routeNames/ManagerRouteNames';
 
@@ -8,6 +8,7 @@ const GameRequestsPage = () => {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [filter, setFilter] = useState<'ALL' | 'SUBMITTED' | 'APPROVED' | 'REFUSED'>('ALL');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -38,38 +39,17 @@ const GameRequestsPage = () => {
 
       {/* Filter Buttons */}
       <div className="mb-4 flex gap-4">
-        <button
-          className={`px-4 py-2 rounded-md ${
-            filter === 'ALL' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-          }`}
-          onClick={() => setFilter('ALL')}
-        >
-          All
-        </button>
-        <button
-          className={`px-4 py-2 rounded-md ${
-            filter === 'SUBMITTED' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-          }`}
-          onClick={() => setFilter('SUBMITTED')}
-        >
-          Submitted
-        </button>
-        <button
-          className={`px-4 py-2 rounded-md ${
-            filter === 'APPROVED' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-          }`}
-          onClick={() => setFilter('APPROVED')}
-        >
-          Approved
-        </button>
-        <button
-          className={`px-4 py-2 rounded-md ${
-            filter === 'REFUSED' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-          }`}
-          onClick={() => setFilter('REFUSED')}
-        >
-          Refused
-        </button>
+        {['ALL', 'SUBMITTED', 'APPROVED', 'REFUSED'].map((status) => (
+          <button
+            key={status}
+            className={`px-4 py-2 rounded-md ${
+              filter === status ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+            }`}
+            onClick={() => setFilter(status as 'ALL' | 'SUBMITTED' | 'APPROVED' | 'REFUSED')}
+          >
+            {status}
+          </button>
+        ))}
       </div>
 
       {loading ? (
@@ -101,15 +81,17 @@ const GameRequestsPage = () => {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredRequests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-100">
+                <tr
+                  key={request.id}
+                  className="hover:bg-gray-100 cursor-pointer"
+                  onClick={() =>
+                    navigate(
+                      ManagerRouteNames.GAME_REQUEST_DETAIL.replace(':id', request.id.toString())
+                    )
+                  }
+                >
                   <td className="px-6 py-4 text-sm text-gray-900">{request.id}</td>
-                  <td className="px-6 py-4 text-sm text-blue-600 hover:underline">
-                    <Link
-                      to={`${ManagerRouteNames.GAME_REQUEST_DETAIL.replace(':id', request.id.toString())}`}
-                    >
-                      {request.name}
-                    </Link>
-                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{request.name}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{request.description}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{request.requestStatus}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{request.staffId}</td>

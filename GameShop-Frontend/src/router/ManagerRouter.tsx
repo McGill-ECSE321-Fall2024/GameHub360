@@ -5,16 +5,16 @@ import { UserType } from '../model/user/UserType';
 import DashboardPage from '../pages/manager/DashboardPage';
 import { ManagerRouteNames } from '../model/routeNames/ManagerRouteNames';
 import BrowsePage from '../pages/BrowsePage';
-import GameRequestsPage from '../pages/manager/GameRequestsPage';
+import GameRequestsPage from '../pages/manager/ManagerGameRequestsPage';
 import GamesPage from '../pages/manager/ManagerGamesPage';
 import ManagerProfilePage from '../pages/manager/ManagerProfilePage';
-import CategoriesPage from '../pages/manager/CategoriesPage';
+import CategoriesPage from '../pages/manager/ManagerCategoriesPage';
 import NotFoundPage from '../pages/NotFoundPage';
-import GameRequestDetailPage from '../pages/manager/GameRequestDetailPage';
+import GameRequestDetailPage from '../pages/manager/ManagerGameRequestDetailPage';
 import CreateGamePage from '../pages/manager/CreateGamePage';
 import GameDetailPage from '../pages/manager/ManagerGameDetailPage';
-import CreateGameCategoryPage from '../pages/manager/CreateCategoryPage';
-import GameCategoryDetailPage from '../pages/manager/CategoryDetailPage';
+import CreateGameCategoryPage from '../pages/manager/ManagerCreateCategoryPage';
+import GameCategoryDetailPage from '../pages/manager/ManagerCategoryDetailPage';
 
 const ManagerRouter = () => {
   return (

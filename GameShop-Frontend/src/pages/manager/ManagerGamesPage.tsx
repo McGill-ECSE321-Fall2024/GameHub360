@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getAllGames, getArchivedGames, Game } from '../../api/gameService';
 import { ManagerRouteNames } from '../../model/routeNames/ManagerRouteNames';
 
 const ManagerGamesPage = () => {
-  const [games, setGames] = useState<Game[]>([]); // Store fetched games
-  const [loading, setLoading] = useState(true); // Loading state
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error state
-  const [filter, setFilter] = useState<'ALL' | 'ARCHIVED' | 'ACTIVE'>('ALL'); // Filter state
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'ALL' | 'ARCHIVED' | 'ACTIVE'>('ALL');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -71,12 +72,12 @@ const ManagerGamesPage = () => {
             Active Games
           </button>
         </div>
-        <Link
-          to={ManagerRouteNames.CREATE_GAME}
+        <button
+          onClick={() => navigate(ManagerRouteNames.CREATE_GAME)}
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
           Create Game
-        </Link>
+        </button>
       </div>
 
       {loading ? (
@@ -108,15 +109,13 @@ const ManagerGamesPage = () => {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {games.map((game) => (
-                <tr key={game.gameId} className="hover:bg-gray-100">
+                <tr
+                  key={game.gameId}
+                  className="hover:bg-gray-100 cursor-pointer"
+                  onClick={() => navigate(ManagerRouteNames.GAME_DETAIL.replace(':id', game.gameId.toString()))}
+                >
                   <td className="px-6 py-4 text-sm text-gray-900">{game.gameId}</td>
-                  <td className="px-6 py-4 text-sm text-blue-600 hover:underline">
-                    <Link
-                      to={`${ManagerRouteNames.GAME_DETAIL.replace(':id', game.gameId.toString())}`}
-                    >
-                      {game.name}
-                    </Link>
-                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{game.name}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{game.description}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">${game.price.toFixed(2)}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{game.quantityInStock}</td>
