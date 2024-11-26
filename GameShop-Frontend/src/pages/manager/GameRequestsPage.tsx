@@ -4,12 +4,11 @@ import { getAllGameRequests, GameRequest } from '../../api/gameRequestService';
 import { ManagerRouteNames } from '../../model/routeNames/ManagerRouteNames';
 
 const GameRequestsPage = () => {
-  const [gameRequests, setGameRequests] = useState<GameRequest[]>([]); // Store game requests
-  const [loading, setLoading] = useState(true); // Loading state
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error state
-  const [filter, setFilter] = useState<'ALL' | 'SUBMITTED' | 'APPROVED' | 'REFUSED'>('ALL'); // Filter state
+  const [gameRequests, setGameRequests] = useState<GameRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'ALL' | 'SUBMITTED' | 'APPROVED' | 'REFUSED'>('ALL');
 
-  // Fetch game requests on component load
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -26,7 +25,6 @@ const GameRequestsPage = () => {
     fetchRequests();
   }, []);
 
-  // Filtered game requests based on the current filter
   const filteredRequests = gameRequests.filter((request) => {
     if (filter === 'ALL') return true;
     return request.requestStatus === filter;
@@ -82,6 +80,9 @@ const GameRequestsPage = () => {
             <thead>
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  ID
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -101,6 +102,7 @@ const GameRequestsPage = () => {
             <tbody className="divide-y divide-gray-200">
               {filteredRequests.map((request) => (
                 <tr key={request.id} className="hover:bg-gray-100">
+                  <td className="px-6 py-4 text-sm text-gray-900">{request.id}</td>
                   <td className="px-6 py-4 text-sm text-blue-600 hover:underline">
                     <Link
                       to={`${ManagerRouteNames.GAME_REQUEST_DETAIL.replace(':id', request.id.toString())}`}

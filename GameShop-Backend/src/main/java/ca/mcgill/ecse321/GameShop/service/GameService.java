@@ -126,6 +126,16 @@ public class GameService {
     }
 
     /**
+     * View all games.
+     * 
+     * @return a list of all games as Game objects
+     */
+    @Transactional
+    public List<Game> viewAllGames() {
+        return (List<Game>) gameRepository.findAll();
+    }
+
+    /**
      * Reactivate an archived game.
      * 
      * @param gameId the ID of the game to reactivate

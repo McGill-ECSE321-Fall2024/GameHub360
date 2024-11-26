@@ -27,7 +27,7 @@ public class GameController {
      * @param gameRequestDto the game data transfer object containing game details
      * @return the created game as a GameResponseDto
      */
-    @PostMapping("/")
+    @PostMapping
     public GameResponseDto createGame(
             @Validated(ValidationGroups.Post.class) @RequestBody GameRequestDto gameRequestDto) {
         Game createdGame = gameService.createGame(gameRequestDto);
@@ -70,6 +70,20 @@ public class GameController {
     public GameListDto viewArchivedGames() {
         List<Game> archivedGames = gameService.viewArchivedGames();
         List<GameResponseDto> responseDtos = archivedGames.stream()
+                .map(GameResponseDto::new)
+                .toList();
+        return new GameListDto(responseDtos);
+    }
+
+    /**
+     * Retrieves all games
+     *
+     * @return a list of all games as GameListDto objects
+     */
+    @GetMapping("/all")
+    public GameListDto viewAllGames() {
+        List<Game> games = gameService.viewAllGames();
+        List<GameResponseDto> responseDtos = games.stream()
                 .map(GameResponseDto::new)
                 .toList();
         return new GameListDto(responseDtos);

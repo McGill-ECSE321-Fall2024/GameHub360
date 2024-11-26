@@ -15,8 +15,7 @@ export interface GameRequest {
     price?: number; // Nullable, only present if APPROVED
     quantityInStock?: number; // Nullable, only present if APPROVED
     rejectionReason?: string; // Nullable, only present if REFUSED
-  }
-  
+  }  
 
 export interface RequestNote {
   noteId: number;
