@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { GeneralRouteNames } from '../model/routeNames/GeneralRouteNames';
 import Navbar from '../components/Navbar';
 import { UserType } from '../model/user/UserType';
+
 import DashboardPage from '../pages/manager/DashboardPage';
 import { ManagerRouteNames } from '../model/routeNames/ManagerRouteNames';
 import BrowsePage from '../pages/BrowsePage';
@@ -15,6 +16,7 @@ import CreateGamePage from '../pages/manager/CreateGamePage';
 import GameDetailPage from '../pages/manager/ManagerGameDetailPage';
 import CreateGameCategoryPage from '../pages/manager/ManagerCreateCategoryPage';
 import GameCategoryDetailPage from '../pages/manager/ManagerCategoryDetailPage';
+
 
 const ManagerRouter = () => {
   return (
