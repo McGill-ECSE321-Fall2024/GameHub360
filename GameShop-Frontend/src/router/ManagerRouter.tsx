@@ -12,7 +12,7 @@ import CategoriesPage from '../pages/manager/CategoriesPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import GameRequestDetailPage from '../pages/manager/GameRequestDetailPage';
 import CreateGamePage from '../pages/manager/CreateGamePage';
-import GameDetailPage from '../pages/manager/GameDetailPage';
+import GameDetailPage from '../pages/manager/ManagerGameDetailPage';
 
 const ManagerRouter = () => {
   return (

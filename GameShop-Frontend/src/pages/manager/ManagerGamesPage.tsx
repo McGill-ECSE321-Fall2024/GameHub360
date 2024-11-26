@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getAllGames, getArchivedGames, Game } from '../../api/gameService';
+import { ManagerRouteNames } from '../../model/routeNames/ManagerRouteNames';
 
 const ManagerGamesPage = () => {
-  const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [filter, setFilter] = useState<'ALL' | 'ARCHIVED' | 'ACTIVE'>('ALL');
-
-  const navigate = useNavigate();
+  const [games, setGames] = useState<Game[]>([]); // Store fetched games
+  const [loading, setLoading] = useState(true); // Loading state
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Error state
+  const [filter, setFilter] = useState<'ALL' | 'ARCHIVED' | 'ACTIVE'>('ALL'); // Filter state
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -42,8 +41,10 @@ const ManagerGamesPage = () => {
     <div className="p-6">
       <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900">Games</h2>
 
-      {/* Filters and Create Button */}
-      <div className="mb-4 flex items-center justify-between">
+      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
+
+      {/* Filter Buttons */}
+      <div className="mb-4 flex justify-between">
         <div className="flex gap-4">
           <button
             className={`px-4 py-2 rounded-md ${
@@ -70,17 +71,13 @@ const ManagerGamesPage = () => {
             Active Games
           </button>
         </div>
-
-        {/* Create Button */}
-        <button
-          onClick={() => navigate('/manager/games/create')}
-          className="bg-green-500 text-white px-4 py-2 rounded"
+        <Link
+          to={ManagerRouteNames.CREATE_GAME}
+          className="bg-green-500 text-white px-4 py-2 rounded-md"
         >
-          Create New Game
-        </button>
+          Create Game
+        </Link>
       </div>
-
-      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
 
       {loading ? (
         <p className="text-gray-700">Loading games...</p>
@@ -111,9 +108,15 @@ const ManagerGamesPage = () => {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {games.map((game) => (
-                <tr key={game.gameId}>
+                <tr key={game.gameId} className="hover:bg-gray-100">
                   <td className="px-6 py-4 text-sm text-gray-900">{game.gameId}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{game.name}</td>
+                  <td className="px-6 py-4 text-sm text-blue-600 hover:underline">
+                    <Link
+                      to={`${ManagerRouteNames.GAME_DETAIL.replace(':id', game.gameId.toString())}`}
+                    >
+                      {game.name}
+                    </Link>
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-900">{game.description}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">${game.price.toFixed(2)}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{game.quantityInStock}</td>

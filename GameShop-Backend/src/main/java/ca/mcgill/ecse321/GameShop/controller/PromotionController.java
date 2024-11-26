@@ -26,7 +26,7 @@ public class PromotionController {
      *
      * @return A list of all current promotions.
      */
-    @GetMapping("/")
+    @GetMapping
     public PromotionListDto getAllPromotions() {
         List<PromotionResponseDto> promotionDtos = new ArrayList<PromotionResponseDto>();
         for (Promotion promotion : promotionService.getAllPromotions()) {
@@ -41,7 +41,7 @@ public class PromotionController {
      * @param promotionRequestDto The details of the new promotion.
      * @return The created promotion details.
      */
-    @PostMapping("/")
+    @PostMapping
     public PromotionResponseDto createPromotion(
             @Valid @RequestBody PromotionRequestDto promotionRequestDto) {
         Promotion promotion = promotionService.createPromotion(promotionRequestDto);

@@ -76,6 +76,29 @@ public class GameController {
     }
 
     /**
+     * Retrieves a game by ID.
+     * @param gameId the ID of the game to retrieve
+     * @return the game as a GameResponseDto
+     */
+    @GetMapping("/{gameId}")
+    public GameResponseDto viewGame(@PathVariable("gameId") Integer gameId) {
+        Game game = gameService.getGame(gameId);
+        return new GameResponseDto(game);
+    }
+
+    /**
+     * Add promotion to game
+     * @param gameId
+     * @param promotionId
+     * @return the updated game as a GameResponseDto
+     */
+    @PutMapping("/{gameId}/promotions/{promotionId}")
+    public GameResponseDto addPromotionToGame(@PathVariable Integer gameId, @PathVariable Integer promotionId) {
+        Game updatedGame = gameService.addPromotionToGame(gameId, promotionId);
+        return new GameResponseDto(updatedGame);
+    }
+
+    /**
      * Retrieves all games
      *
      * @return a list of all games as GameListDto objects
