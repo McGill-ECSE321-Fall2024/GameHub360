@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createCategory } from '../../api/gameCategoryService';
+import { createCategory } from '../../api/categoryService';
 
 const ManagerCreateCategoryPage = () => {
   const navigate = useNavigate();

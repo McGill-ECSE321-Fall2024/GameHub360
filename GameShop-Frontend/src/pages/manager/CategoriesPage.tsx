@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { getAllCategories, GameCategory } from '../../api/gameCategoryService';
+import { Link, useNavigate } from 'react-router-dom';
+import { getAllCategories, Category } from '../../api/categoryService';
 import { ManagerRouteNames } from '../../model/routeNames/ManagerRouteNames';
 
 const ManagerCategoriesPage = () => {
-  const [categories, setCategories] = useState<GameCategory[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<GameCategory[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
   const [filter, setFilter] = useState<'ALL' | 'GENRE' | 'CONSOLE'>('ALL'); // Filter by category type or show all
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -102,7 +103,11 @@ const ManagerCategoriesPage = () => {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredCategories.map((category) => (
-                <tr key={category.categoryId} className="hover:bg-gray-100">
+                <tr
+                  key={category.categoryId}
+                  className="hover:bg-gray-100 cursor-pointer"
+                  onClick={() => navigate(`/manager/categories/${category.categoryId}`)}
+                >
                   <td className="px-6 py-4 text-sm text-gray-900">{category.categoryId}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{category.name}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{category.categoryType}</td>
