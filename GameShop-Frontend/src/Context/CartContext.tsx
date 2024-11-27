@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Cart, CartItem } from '../model/user/Cart';
-
+import { Cart } from '../model/user/Cart';
+import { CartItem } from '../model/user/CartItem';
 interface CartContextType {
   cart: Cart;
   addToCart: (item: CartItem) => void;

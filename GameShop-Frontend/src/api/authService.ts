@@ -7,7 +7,8 @@ import { SignupUser } from '../model/user/SignupUser';
 export interface StoredUserData {
   email: string;
   customerId?: number;
-  userType: string;
+  staffId?: number;
+  userType: UserType;
 }
 
 // Function to log in a user
@@ -41,9 +42,9 @@ export async function login(user: LoginUser) {
     };
 
     if (userType === UserType.CUSTOMER) {
-      const customerResponse = await apiService.get(`/customers/email/${email}`);
-      console.log('Customer response:', customerResponse.data);
-      userData.customerId = customerResponse.data.customerId;
+      userData.customerId = response.data.customerId;
+    } else if (userType === UserType.EMPLOYEE || userType === UserType.MANAGER) {
+      userData.staffId = response.data.staffId;
     }
     
     return userData;

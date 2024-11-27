@@ -38,7 +38,7 @@ const GameDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const returnPath = location.state?.returnPath || '/games';
+  const returnPath = location.state?.returnPath || '/browse';
   const initialGame = location.state?.game;
   const [game, setGame] = useState<Game | null>(initialGame);
   const [reviews, setReviews] = useState<Review[]>([]);

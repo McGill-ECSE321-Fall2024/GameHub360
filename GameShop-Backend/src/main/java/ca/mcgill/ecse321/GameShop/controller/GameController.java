@@ -91,6 +91,7 @@ public class GameController {
      * Browses all available games with optional filters.
      *
      * @param category the category to filter by (optional)
+     * @param categoryType the category type to filter by (optional)
      * @param minPrice the minimum price to filter by (optional)
      * @param maxPrice the maximum price to filter by (optional)
      * @return a GameListDto containing available games
@@ -98,9 +99,10 @@ public class GameController {
     @GetMapping
     public GameListDto browseGames(
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String categoryType,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice) {
-        List<Game> games = gameService.browseGames(category, minPrice, maxPrice);
+        List<Game> games = gameService.browseGames(category, categoryType, minPrice, maxPrice);
         List<GameResponseDto> responseDtos = games.stream()
                 .map(GameResponseDto::new)
                 .toList();

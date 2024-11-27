@@ -7,6 +7,7 @@ interface FilterState {
   category?: string;
   priceRange?: [number, number];
   name?: string;
+  categoryType?: 'GENRE' | 'CONSOLE';
 }
 
 interface Game {
@@ -16,6 +17,14 @@ interface Game {
   price: number;
   imageUrl: string;
   quantityInStock: number;
+  categoryIds: number[];
+}
+
+interface Category {
+  categoryId: number;
+  name: string;
+  categoryType: 'GENRE' | 'CONSOLE';
+  available: boolean;
 }
 
 const BrowsePage = () => {
@@ -23,17 +32,17 @@ const BrowsePage = () => {
   const [filters, setFilters] = useState<FilterState>({
     category: searchParams.get('category') || undefined,
     priceRange: searchParams.get('price_range')?.split('-').map(Number) as [number, number] || undefined,
-    name: searchParams.get('name') || undefined
+    name: searchParams.get('name') || undefined,
+    categoryType: (searchParams.get('categoryType') as 'GENRE' | 'CONSOLE') || undefined
   });
   const [games, setGames] = useState<Game[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const { data } = await apiService.get('/categories');
-        const categoryNames = data.gameCategories.map((category: { name: string }) => category.name);
-        setCategories(categoryNames);
+        setCategories(data.gameCategories);
       } catch (error) {
         console.error('Error fetching categories:', error);
         setCategories([]);
@@ -45,6 +54,7 @@ const BrowsePage = () => {
   useEffect(() => {
     const params = new URLSearchParams();
     if (filters.category) params.set('category', filters.category);
+    if (filters.categoryType) params.set('categoryType', filters.categoryType);
     if (filters.priceRange) params.set('price_range', filters.priceRange.join('-'));
     if (filters.name) params.set('name', filters.name);
     setSearchParams(params);
@@ -53,6 +63,7 @@ const BrowsePage = () => {
       try {
         const queryParams = {
           category: filters.category || undefined,
+          categoryType: filters.categoryType || undefined,
           minPrice: filters.priceRange?.[0],
           maxPrice: filters.priceRange?.[1],
         };
@@ -62,6 +73,7 @@ const BrowsePage = () => {
           params: filters.name ? { ...queryParams, query: filters.name } : queryParams 
         });
         
+        console.log('Fetched games:', data.games);
         setGames(data.games);
       } catch (error) {
         console.error('Error fetching games:', error);
@@ -98,6 +110,26 @@ const BrowsePage = () => {
             </div>
           </div>
 
+          {/* Category Type Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Category Type
+            </label>
+            <select
+              value={filters.categoryType || ''}
+              onChange={(e) => setFilters({ 
+                ...filters, 
+                categoryType: (e.target.value as 'GENRE' | 'CONSOLE' | '') || undefined,
+                category: undefined // Reset category when changing type
+              })}
+              className="w-full p-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+            >
+              <option value="">All Types</option>
+              <option value="GENRE">Genre</option>
+              <option value="CONSOLE">Console</option>
+            </select>
+          </div>
+
           {/* Category Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -109,9 +141,13 @@ const BrowsePage = () => {
               className="w-full p-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
             >
               <option value="">All Categories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
+              {categories
+                .filter(category => !filters.categoryType || category.categoryType === filters.categoryType)
+                .map(category => (
+                  <option key={category.categoryId} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -151,11 +187,31 @@ const BrowsePage = () => {
       </div>
 
       {/* Games Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {games.map((game) => (
-          <GameCard key={game.gameId} game={game} />
-        ))}
-      </div>
+      {games.length === 0 ? (
+        <div className="text-center py-8">
+          <h3 className="text-xl text-gray-600">No games found matching your filters</h3>
+          <button
+            onClick={() => setFilters({})}
+            className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Clear Filters
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {games
+            .filter(game => {
+              if (!filters.categoryType) return true;
+              return game.categoryIds?.some(categoryId => {
+                const category = categories.find(c => c.categoryId === categoryId);
+                return category?.categoryType === filters.categoryType;
+              });
+            })
+            .map((game) => (
+              <GameCard key={game.gameId} game={game} />
+            ))}
+        </div>
+      )}
     </div>
   );
 };

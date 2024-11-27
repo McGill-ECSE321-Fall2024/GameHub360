@@ -20,7 +20,7 @@ interface GameCardProps {
   returnPath?: string;
 }
 
-const GameCard = ({ game, returnPath = '/games' }: GameCardProps) => {
+const GameCard = ({ game, returnPath = '/browse' }: GameCardProps) => {
   const navigate = useNavigate();
   const authState = getAuthState();
   const { addToCart } = useCart();
