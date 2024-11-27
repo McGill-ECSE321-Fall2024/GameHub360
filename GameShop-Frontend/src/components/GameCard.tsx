@@ -32,7 +32,7 @@ const GameCard = ({ game, returnPath = '/browse' }: GameCardProps) => {
     try {
       if (isInWishlist(game.gameId)) {
         removeFromWishlist(game.gameId);
-        showToast('Removed from wishlist', 'success');
+        showToast('Removed from Wishlist', 'success');
       } else {
         await addToWishlist({
           gameId: game.gameId,
@@ -42,7 +42,7 @@ const GameCard = ({ game, returnPath = '/browse' }: GameCardProps) => {
           console: game.console,
           category: game.category
         });
-        showToast('Added to wishlist successfully!', 'success');
+        showToast('Added to Wishlist successfully!', 'success');
       }
     } catch (error) {
       console.error('Error updating wishlist:', error);
@@ -62,16 +62,21 @@ const GameCard = ({ game, returnPath = '/browse' }: GameCardProps) => {
     showToast('Added to cart successfully!', 'success');
   };
 
+  const handleClick = () => {
+    if (authState === AuthState.UNAUTHENTICATED) {
+      return; // Do nothing if user is not authenticated
+    }
+    
+    navigate(`/games/${game.gameId}`, {
+      state: { game, returnPath }
+    });
+  };
+
   return (
     <div className="relative bg-white border rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
       <div 
-        className="cursor-pointer"
-        onClick={() => navigate(`/games/${game.gameId}`, { 
-          state: { 
-            returnPath,
-            game
-          } 
-        })}
+        className={`cursor-${authState === AuthState.UNAUTHENTICATED ? 'not-allowed' : 'pointer'}`}
+        onClick={handleClick}
       >
         <div className="relative">
           <img 

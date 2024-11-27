@@ -5,6 +5,7 @@ import { getAuthState } from '../state/authState';
 import { AuthState } from '../model/AuthState';
 import { useCart } from '../Context/CartContext';
 import { useWishlist } from '../Context/WishlistContext';
+import { useToast } from '../Context/ToastContext';
 
 interface Game {
   gameId: number;
@@ -45,6 +46,13 @@ const GameDetailsPage = () => {
   const authState = getAuthState();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    if (authState === AuthState.UNAUTHENTICATED) {
+      navigate('/browse');
+    }
+  }, [authState, navigate]);
 
   useEffect(() => {
     const fetchGameData = async () => {
@@ -85,22 +93,19 @@ const GameDetailsPage = () => {
   }, [id, initialGame, navigate, returnPath]);
 
   useEffect(() => {
-    if (!game) {
-      navigate(returnPath);
-      return;
-    }
-
     const fetchReviews = async () => {
       try {
-        const response = await apiService.get(`/games/${id}/reviews`);
-        setReviews(response.data.reviews);
+        if (id) {
+          const response = await apiService.get(`/games/${id}/reviews`);
+          setReviews(response.data.reviews);
+        }
       } catch (error) {
         console.error('Error fetching reviews:', error);
       }
     };
 
     fetchReviews();
-  }, [id, game, navigate, returnPath]);
+  }, [id]);
 
   const handleWishlistToggle = async () => {
     if (!game) return;
@@ -108,8 +113,9 @@ const GameDetailsPage = () => {
     try {
       if (isInWishlist(game.gameId)) {
         removeFromWishlist(game.gameId);
+        showToast('Removed from Wishlist', 'success');
       } else {
-        addToWishlist({
+        await addToWishlist({
           gameId: game.gameId,
           name: game.name,
           price: game.price,
@@ -117,9 +123,11 @@ const GameDetailsPage = () => {
           console: game.console,
           category: game.category
         });
+        showToast('Added to Wishlist successfully!', 'success');
       }
     } catch (error) {
       console.error('Error updating wishlist:', error);
+      showToast('Failed to update wishlist', 'error');
     }
   };
 
@@ -132,6 +140,7 @@ const GameDetailsPage = () => {
       imageUrl: game.imageUrl,
       quantity: 1
     });
+    showToast('Added to cart successfully!', 'success');
   };
 
   if (!game) {
@@ -229,7 +238,7 @@ const GameDetailsPage = () => {
                 <p className="text-gray-700">{review.comment}</p>
 
                 {/* Manager Replies */}
-                {review.replies.map((reply) => (
+                {review.replies && review.replies.map((reply) => (
                   <div key={reply.id} className="ml-8 mt-4 bg-gray-50 p-4 rounded-lg">
                     <div className="flex justify-between mb-1">
                       <span className="font-semibold text-sm text-blue-600">{reply.managerName}</span>
