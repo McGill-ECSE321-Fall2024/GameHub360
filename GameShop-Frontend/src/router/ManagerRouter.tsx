@@ -15,7 +15,7 @@ const ManagerRouter = () => {
       <Navbar userType={UserType.MANAGER} />
       <Routes>
         <Route path={GeneralRouteNames.BROWSE} element={<BrowsePage />} />
-        <Route path={`${GeneralRouteNames.BROWSE}/game/:id`} element={<GameDetailsPage />} />
+        <Route path="/games/:id" element={<GameDetailsPage />} />
         <Route path={GeneralRouteNames.PROFILE} element={<ProfilePage />} />
 
         <Route path={ManagerRouteNames.DASHBOARD} element={<DashboardPage />} />

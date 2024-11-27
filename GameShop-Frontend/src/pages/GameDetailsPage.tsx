@@ -139,6 +139,9 @@ const GameDetailsPage = () => {
     return null;
   }
 
+  console.log('Current auth state:', authState);
+  console.log('Fetched game data:', game);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <button
@@ -187,7 +190,7 @@ const GameDetailsPage = () => {
               </div>
             </div>
 
-            {authState === AuthState.CUSTOMER && (
+            {(authState === AuthState.CUSTOMER || authState === AuthState.EMPLOYEE || authState === AuthState.MANAGER) && (
               <div className="flex gap-4">
                 <button
                   onClick={handleWishlistToggle}
