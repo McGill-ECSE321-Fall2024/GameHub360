@@ -10,6 +10,7 @@ public class PaymentDetailsResponseDto {
     // Attributes
     private int paymentDetailsId;
     private String cardName;
+    private int cardNumber;
     private String postalCode;
     private int expMonth;
     private int expYear;
@@ -20,6 +21,7 @@ public class PaymentDetailsResponseDto {
     public PaymentDetailsResponseDto(PaymentDetails paymentDetails) {
         this.paymentDetailsId = paymentDetails.getPaymentDetailsId();
         this.cardName = paymentDetails.getCardName();
+        this.cardNumber = paymentDetails.getCardNumber();
         this.postalCode = paymentDetails.getPostalCode();
         this.expMonth = paymentDetails.getExpMonth();
         this.expYear = paymentDetails.getExpYear();
@@ -39,6 +41,10 @@ public class PaymentDetailsResponseDto {
 
     public String getCardName() {
         return cardName;
+    }
+
+    public int getCardNumber(){
+        return cardNumber;
     }
 
     public String getPostalCode() {
