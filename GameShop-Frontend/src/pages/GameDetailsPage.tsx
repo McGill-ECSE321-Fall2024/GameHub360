@@ -222,36 +222,54 @@ const GameDetailsPage = () => {
 
       {/* Reviews Section */}
       <div className="mt-12 bg-white rounded-xl shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-6">Reviews</h2>
+        <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
         {reviews.length > 0 ? (
-          <div className="space-y-6">
+          <div className="space-y-8">
             {reviews.map((review) => (
-              <div key={review.id} className="border-b border-gray-100 pb-6 last:border-0">
-                <div className="flex justify-between mb-2">
-                  <span className="font-semibold">{review.customerName}</span>
-                  <span className="text-gray-500 text-sm">{review.reviewDate}</span>
+              <div key={review.id} className="border-b border-gray-100 pb-8 last:border-0">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <span className="font-semibold text-lg">{review.customerName}</span>
+                    <div className="text-yellow-400 text-lg mt-1">
+                      {'★'.repeat(review.rating)}
+                      <span className="text-gray-300">{'★'.repeat(5 - review.rating)}</span>
+                    </div>
+                  </div>
+                  <span className="text-gray-500 text-sm">
+                    {new Date(review.reviewDate).toLocaleDateString()}
+                  </span>
                 </div>
-                <div className="text-yellow-400 mb-2">
-                  {'★'.repeat(review.rating)}
-                  <span className="text-gray-300">{'★'.repeat(5 - review.rating)}</span>
-                </div>
-                <p className="text-gray-700">{review.comment}</p>
+                <p className="text-gray-700 mt-2 text-lg">{review.comment}</p>
 
                 {/* Manager Replies */}
                 {review.replies && review.replies.map((reply) => (
-                  <div key={reply.id} className="ml-8 mt-4 bg-gray-50 p-4 rounded-lg">
-                    <div className="flex justify-between mb-1">
-                      <span className="font-semibold text-sm text-blue-600">{reply.managerName}</span>
-                      <span className="text-gray-500 text-sm">{reply.replyDate}</span>
+                  <div key={reply.id} className="ml-8 mt-4 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-blue-600">
+                          {reply.managerName}
+                        </span>
+                        <span className="text-sm text-blue-500">Manager</span>
+                      </div>
+                      <span className="text-gray-500 text-sm">
+                        {new Date(reply.replyDate).toLocaleDateString()}
+                      </span>
                     </div>
-                    <p className="text-gray-600">{reply.content}</p>
+                    <p className="text-gray-700">{reply.content}</p>
                   </div>
                 ))}
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 text-center py-8">No reviews yet.</p>
+          <div className="text-center py-8">
+            <p className="text-gray-500 mb-2">No reviews yet</p>
+            {authState === AuthState.CUSTOMER && (
+              <p className="text-sm text-gray-400">
+                Be the first to review this game!
+              </p>
+            )}
+          </div>
         )}
       </div>
     </div>
