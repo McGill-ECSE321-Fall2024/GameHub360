@@ -2,11 +2,14 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { GeneralRouteNames } from '../model/routeNames/GeneralRouteNames';
 import Navbar from '../components/Navbar';
 import { UserType } from '../model/user/UserType';
-import ProfilePage from '../pages/ProfilePage';
-import GameRequestsPage from '../pages/employee/GameRequestsPage';
+import EmployeeProfilePage from '../pages/employee/EmployeeProfilePage';
+import EmployeeCategoriesPage from '../pages/employee/EmployeeCategoriesPage';
+import EmployeeCategoryDetailPage from '../pages/employee/EmployeeCategoryDetailPage';
+import EmployeeGameRequestsPage from '../pages/employee/EmployeeGameRequestsPage';
+import EmployeeGameRequestDetailPage from '../pages/employee/EmployeeGameRequestDetailPage';
+import EmployeeGameRequestCreatePage from '../pages/employee/EmployeeGameRequestCreatePage';
 import { EmployeeRouteNames } from '../model/routeNames/EmployeeRouteNames';
 import BrowsePage from '../pages/BrowsePage';
-import NotFoundPage from '../pages/NotFoundPage';
 import GameDetailsPage from '../pages/GameDetailsPage';
 
 const EmployeeRouter = () => {
@@ -15,14 +18,31 @@ const EmployeeRouter = () => {
       <Navbar userType={UserType.EMPLOYEE} />
       <Routes>
         <Route path={GeneralRouteNames.BROWSE} element={<BrowsePage />} />
+        <Route path={GeneralRouteNames.PROFILE} element={<EmployeeProfilePage />} />
+
         <Route path="/games/:id" element={<GameDetailsPage />} />
-        <Route path={GeneralRouteNames.PROFILE} element={<ProfilePage />} />
 
         <Route
           path={EmployeeRouteNames.GAME_REQUESTS}
-          element={<GameRequestsPage />}
+          element={<EmployeeGameRequestsPage />}
         />
-        {/* Continue adding routes here */}
+
+        <Route
+          path={EmployeeRouteNames.GAME_REQUEST_DETAIL}
+          element={<EmployeeGameRequestDetailPage />} />
+
+        <Route
+          path={EmployeeRouteNames.GAME_REQUEST_CREATE}
+          element={<EmployeeGameRequestCreatePage />} /> 
+
+        
+        <Route
+          path={EmployeeRouteNames.CATEGORIES}
+          element={<EmployeeCategoriesPage />} />
+
+        <Route
+          path={EmployeeRouteNames.CATEGORY_DETAIL}
+          element={<EmployeeCategoryDetailPage />} />
 
         {/* Redirect base route to browse */}
         <Route
@@ -30,8 +50,11 @@ const EmployeeRouter = () => {
           element={<Navigate to={GeneralRouteNames.BROWSE} replace />}
         />
 
-        {/* 404 Page */}
-        <Route path="*" element={<NotFoundPage />} />
+        {/* TEMP (will need a 404)*/}
+        <Route
+          path="*"
+          element={<Navigate to={GeneralRouteNames.BASE} replace />}
+        />
       </Routes>
     </>
   );

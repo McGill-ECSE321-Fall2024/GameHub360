@@ -40,47 +40,36 @@ public class GameCategoryResponseDto {
     public int getCategoryId() {
         return categoryId;
     }
-
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
     }
-
     public CategoryType getCategoryType() {
         return categoryType;
     }
-
     public void setCategoryType(CategoryType categoryType) {
         this.categoryType = categoryType;
     }
-
     public boolean isAvailable() {
         return available;
     }
-
     public void setAvailable(boolean available) {
         this.available = available;
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public List<Integer> getGameIds() {
         return gameIds;
     }
-
     public List<Integer> getPromotionIds() {
         return promotionIds;
     }
-
     public void setPromotionIds(List<Integer> promotionIds) {
         this.promotionIds = promotionIds;
     }
-
     public void setGameIds(List<Integer> gameIds) {
         this.gameIds = gameIds;
     }

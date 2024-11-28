@@ -126,4 +126,16 @@ public class EmployeeController {
         }
         return new ActivityLogListDto(activityLogsDto);
     }
+
+    /**
+     * Endpoint to retrieve an employee by employee ID.
+     * 
+     * @param employeeId The ID of the employee to retrieve.
+     * @return A response containing the employee's details.
+     */
+    @GetMapping("/{employeeId}")
+    public EmployeeResponseDto getEmployeeById(@PathVariable("employeeId") Integer employeeId) {
+        EmployeeAccount employee = employeeService.getEmployeeById(employeeId);
+        return new EmployeeResponseDto(employee);
+    }
 }

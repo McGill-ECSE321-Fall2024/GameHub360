@@ -1,7 +1,7 @@
 import { AuthState } from '../model/AuthState';
 import { LoginUser } from '../model/user/LoginUser';
 import { UserType } from '../model/user/UserType';
-import { StoredUserData } from '../api/authService';
+import { StoredUserData } from '../model/UserData';
 
 /*
 Note for TAs: we know that this authentication system is not secure, but we are not focusing on security in this project. 
