@@ -6,20 +6,20 @@ import EmployeeRouter from './EmployeeRouter';
 import ManagerRouter from './ManagerRouter';
 import { getAuthState } from '../state/authState';
 import { useState, useEffect } from 'react';
+import { CartProvider } from '../Context/CartContext';
+import { WishlistProvider } from '../Context/WishlistContext';
+import { ToastProvider } from '../Context/ToastContext';
 
 const AppRouter = () => {
   const [authState, setAuthState] = useState<AuthState>(getAuthState());
 
-  // Effect to update authState when local storage changes
   useEffect(() => {
     const handleStorageChange = () => {
       setAuthState(getAuthState());
     };
 
-    // Listen for storage changes
     window.addEventListener('storage', handleStorageChange);
 
-    // Cleanup listener on unmount
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -43,7 +43,17 @@ const AppRouter = () => {
       break;
   }
 
-  return <BrowserRouter>{RouterComponent}</BrowserRouter>;
+  return (
+    <BrowserRouter>
+      <ToastProvider>
+        <CartProvider>
+          <WishlistProvider>
+            {RouterComponent}
+          </WishlistProvider>
+        </CartProvider>
+      </ToastProvider>
+    </BrowserRouter>
+  );
 };
 
 export default AppRouter;
