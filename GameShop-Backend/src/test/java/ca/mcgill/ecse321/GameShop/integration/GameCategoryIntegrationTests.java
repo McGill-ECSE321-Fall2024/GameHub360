@@ -74,7 +74,7 @@ public class GameCategoryIntegrationTests {
                 GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE, true);
 
                 // Act
-                ResponseEntity<GameCategoryResponseDto> response = client.postForEntity("/categories/", request,
+                ResponseEntity<GameCategoryResponseDto> response = client.postForEntity("/categories", request,
                                 GameCategoryResponseDto.class);
 
                 // Assert
@@ -93,10 +93,10 @@ public class GameCategoryIntegrationTests {
                 // Arrange
                 GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE,
                                 ISAVAILABLE);
-                client.postForEntity("/categories/", request, GameCategoryResponseDto.class);
+                client.postForEntity("/categories", request, GameCategoryResponseDto.class);
 
                 // Act
-                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/categories/", request,
+                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/categories", request,
                                 ErrorResponseDto.class);
 
                 // Assert
@@ -113,7 +113,7 @@ public class GameCategoryIntegrationTests {
                 // Arrange
                 GameCategoryRequestDto createRequest = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE,
                                 ISAVAILABLE);
-                ResponseEntity<GameCategoryResponseDto> createResponse = client.postForEntity("/categories/",
+                ResponseEntity<GameCategoryResponseDto> createResponse = client.postForEntity("/categories",
                                 createRequest,
                                 GameCategoryResponseDto.class);
                 Integer categoryId = createResponse.getBody().getCategoryId();
@@ -162,7 +162,7 @@ public class GameCategoryIntegrationTests {
                 GameCategoryRequestDto request = new GameCategoryRequestDto(VALID_NAME, VALID_CATEGORY_TYPE,
                                 ISAVAILABLE);
 
-                ResponseEntity<GameCategoryResponseDto> response = client.postForEntity("/categories/", request,
+                ResponseEntity<GameCategoryResponseDto> response = client.postForEntity("/categories", request,
                                 GameCategoryResponseDto.class);
                 GameCategoryResponseDto responseBody = response.getBody();
 
@@ -175,7 +175,7 @@ public class GameCategoryIntegrationTests {
                 assertNotNull(deleteResponse);
                 assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
 
-                ResponseEntity<GameCategoryListDto> getResponse = client.getForEntity("/categories/",
+                ResponseEntity<GameCategoryListDto> getResponse = client.getForEntity("/categories",
                                 GameCategoryListDto.class);
 
                 List<GameCategoryResponseDto> categories = getResponse.getBody().getGameCategories();
