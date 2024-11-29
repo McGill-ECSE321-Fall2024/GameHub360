@@ -44,8 +44,8 @@ public class CustomerIntegrationTests {
     private static final String VALID_PHONE = "111-222-3333";
     private static final String INVALID_PHONE = "123";
     private static final String VALID_POSTAL_CODE = "A1A1A1";
-    private static final int VALID_CARD_NUMBER = 12345678;
-    private static final int EXISTING_CARD_NUMBER = 87654321;
+    private static final String VALID_CARD_NUMBER = "12345678";
+    private static final String EXISTING_CARD_NUMBER = "87654321";
     private static final int VALID_EXP_MONTH = 12;
     private static final int VALID_EXP_YEAR = 24;
 
@@ -445,7 +445,7 @@ public class CustomerIntegrationTests {
                 CustomerResponseDto.class);
         int otherCustomerId = customerResponse.getBody().getCustomerId();
 
-        PaymentDetailsRequestDto cardRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, 12121212,
+        PaymentDetailsRequestDto cardRequest = new PaymentDetailsRequestDto(VALID_NAME, VALID_POSTAL_CODE, "12121212",
                 VALID_EXP_MONTH, VALID_EXP_YEAR);
         String cardUrl = "/customers/" + otherCustomerId + "/payment";
         ResponseEntity<PaymentDetailsResponseDto> cardResponse = client.postForEntity(cardUrl, cardRequest,

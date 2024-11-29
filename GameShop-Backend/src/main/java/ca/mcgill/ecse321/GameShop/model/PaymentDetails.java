@@ -32,7 +32,7 @@ public class PaymentDetails
 
   private String cardName;
   private String postalCode;
-  private int cardNumber;
+  private String cardNumber;
   private int expMonth;
   private int expYear;
 
@@ -48,19 +48,18 @@ public class PaymentDetails
   // CONSTRUCTOR
   //------------------------
 
-  public PaymentDetails(String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear, CustomerAccount aCardOwner)
+  public PaymentDetails(String aCardName, String aPostalCode, String aCardNumber, int aExpMonth, int aExpYear, CustomerAccount aCardOwner) 
   {
-    cardName = aCardName;
-    postalCode = aPostalCode;
-    cardNumber = aCardNumber;
-    expMonth = aExpMonth;
-    expYear = aExpYear;
+    this.cardName = aCardName;
+    this.postalCode = aPostalCode;
+    this.cardNumber = aCardNumber;
+    this.expMonth = aExpMonth;
+    this.expYear = aExpYear;
     boolean didAddCardOwner = setCardOwner(aCardOwner);
-    if (!didAddCardOwner)
-    {
-      throw new RuntimeException("Unable to create paymentCard due to cardOwner. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    if (!didAddCardOwner) {
+        throw new RuntimeException("Unable to create paymentCard due to cardOwner. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    paidOrders = new ArrayList<CustomerOrder>();
+    this.paidOrders = new ArrayList<CustomerOrder>();
   }
 
   public PaymentDetails() {
@@ -95,10 +94,10 @@ public class PaymentDetails
     return wasSet;
   }
 
-  public boolean setCardNumber(int aCardNumber)
+  public boolean setCardNumber(String aCardNumber) 
   {
     boolean wasSet = false;
-    cardNumber = aCardNumber;
+    this.cardNumber = aCardNumber;
     wasSet = true;
     return wasSet;
   }
@@ -134,7 +133,7 @@ public class PaymentDetails
     return postalCode;
   }
 
-  public int getCardNumber()
+  public String getCardNumber() 
   {
     return cardNumber;
   }

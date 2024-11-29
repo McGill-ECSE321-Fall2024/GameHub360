@@ -204,7 +204,7 @@ public class CustomerService {
         }
 
         for (PaymentDetails card : customer.getPaymentCards()) {
-            if (card.getCardNumber() == paymentDetailsRequestDto.getCardNumber()) {
+            if (card.getCardNumber().equals(paymentDetailsRequestDto.getCardNumber())) {
                 throw new GameShopException(HttpStatus.CONFLICT, "Payment details already exist.");
             }
         }
@@ -295,6 +295,41 @@ public class CustomerService {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
         }
         return customer.getPaymentCards();
+    }
+
+    /**
+     * Deletes a payment card for a specific customer and returns the details of the deleted card.
+     *
+     * @param customerId The ID of the customer who owns the payment card.
+     * @param cardId     The ID of the payment card to be deleted.
+     * @return PaymentDetails The deleted payment card object.
+     * @throws GameShopException if the customer or card is not found, or if the card does not belong to the customer.
+     */
+    @Transactional
+    public PaymentDetails deletePaymentCard(Integer customerId, Integer cardId) {
+        CustomerAccount customer = customerAccountRepository.findCustomerAccountByCustomerId(customerId);
+        if (customer == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Customer not found.");
+        }
+
+        PaymentDetails card = paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(cardId);
+        if (card == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Card not found.");
+        }
+
+        if (!customer.getPaymentCards().contains(card)) {
+            throw new GameShopException(HttpStatus.FORBIDDEN, "Card does not belong to the specified customer.");
+        }
+
+        // Remove the card from the customer's collection
+        customer.removePaymentCard(card);
+
+        customerAccountRepository.save(customer);
+
+        //Delete the card from the repository
+        paymentDetailsRepository.delete(card);
+
+        return card; 
     }
 
     /**

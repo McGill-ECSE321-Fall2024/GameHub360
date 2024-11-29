@@ -10,7 +10,7 @@ public class PaymentDetailsResponseDto {
     // Attributes
     private int paymentDetailsId;
     private String cardName;
-    private int cardNumber;
+    private String cardNumber;
     private String postalCode;
     private int expMonth;
     private int expYear;
@@ -43,7 +43,7 @@ public class PaymentDetailsResponseDto {
         return cardName;
     }
 
-    public int getCardNumber(){
+    public String getCardNumber() {
         return cardNumber;
     }
 

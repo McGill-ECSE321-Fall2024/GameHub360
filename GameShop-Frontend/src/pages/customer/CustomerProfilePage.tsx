@@ -3,11 +3,15 @@
 import React, { useEffect, useState } from "react";
 import AccountInfo from "../../components/AccountInfo";
 import PaymentCards from "../../components/PaymentCards";
+
 import {
   getCustomerProfile,
   updateCustomerProfile,
   getCustomerPaymentCards,
+  updatePaymentCard,
+  createPaymentCard, // Import createPaymentCard
   PaymentCard,
+  PaymentDetailsRequest,
 } from "../../api/customerService";
 import { getAuthUser } from "../../state/authState";
 
@@ -92,6 +96,46 @@ const CustomerProfilePage: React.FC = () => {
     }
   };
 
+  // Handle card details update
+  const handleUpdateCard = async (cardId: number, updatedCard: PaymentCard) => {
+    if (!customerProfile) {
+      console.error("Customer profile is not loaded.");
+      return;
+    }
+
+    try {
+      const updated = await updatePaymentCard(customerProfile.customerId, cardId, {
+        cardName: updatedCard.cardName,
+        cardNumber: updatedCard.cardNumber,
+        postalCode: updatedCard.postalCode,
+        expMonth: updatedCard.expMonth,
+        expYear: updatedCard.expYear,
+      });
+      setPaymentCards((prevCards) =>
+        prevCards.map((card) =>
+          card.paymentDetailsId === cardId ? { ...card, ...updated } : card
+        )
+      );
+    } catch (error) {
+      console.error("Error updating payment card:", error);
+    }
+  };
+
+  // Handle adding a new card
+  const handleAddCard = async (newCard: PaymentDetailsRequest) => {
+    if (!customerProfile) {
+      console.error("Customer profile is not loaded.");
+      return;
+    }
+
+    try {
+      const addedCard = await createPaymentCard(customerProfile.customerId, newCard);
+      setPaymentCards((prevCards) => [...prevCards, addedCard]); // Add the new card to the list
+    } catch (error) {
+      console.error("Error adding new payment card:", error);
+    }
+  };
+
   if (profileLoading) {
     return <p>Loading customer profile...</p>;
   }
@@ -110,7 +154,11 @@ const CustomerProfilePage: React.FC = () => {
       {cardLoading ? (
         <p>Loading payment cards...</p>
       ) : (
-        <PaymentCards paymentCards={paymentCards} />
+        <PaymentCards
+          paymentCards={paymentCards}
+          onUpdate={handleUpdateCard}
+          onAdd={handleAddCard} // Pass the add card handler
+        />
       )}
     </div>
   );

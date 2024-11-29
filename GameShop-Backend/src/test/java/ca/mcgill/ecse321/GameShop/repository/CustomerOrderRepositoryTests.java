@@ -55,7 +55,7 @@ public class CustomerOrderRepositoryTests {
         CustomerAccount customer = new CustomerAccount("mohamed-amine@email.com", "MyPasswordTest");
         customer = customerAccountRepo.save(customer);
 
-        PaymentDetails paymentInfo = new PaymentDetails("MAB", "XXX XXX", 123456789, 10, 2024, customer);
+        PaymentDetails paymentInfo = new PaymentDetails("MAB", "XXX XXX", "123456789", 10, 2024, customer);
         paymentInfo = paymentDetailsRepo.save(paymentInfo);
 
         GameCategory category1 = new GameCategory(true, "War Games");
