@@ -7,6 +7,7 @@ import GameRequestsPage from '../pages/employee/GameRequestsPage';
 import { EmployeeRouteNames } from '../model/routeNames/EmployeeRouteNames';
 import BrowsePage from '../pages/BrowsePage';
 import NotFoundPage from '../pages/NotFoundPage';
+import GameDetailsPage from '../pages/GameDetailsPage';
 
 const EmployeeRouter = () => {
   return (
@@ -14,6 +15,7 @@ const EmployeeRouter = () => {
       <Navbar userType={UserType.EMPLOYEE} />
       <Routes>
         <Route path={GeneralRouteNames.BROWSE} element={<BrowsePage />} />
+        <Route path="/games/:id" element={<GameDetailsPage />} />
         <Route path={GeneralRouteNames.PROFILE} element={<ProfilePage />} />
 
         <Route

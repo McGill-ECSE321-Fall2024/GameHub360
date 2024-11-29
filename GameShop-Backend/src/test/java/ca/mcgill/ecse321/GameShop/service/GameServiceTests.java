@@ -348,7 +348,7 @@ public class GameServiceTests {
         when(gameRepository.findAll()).thenReturn(Arrays.asList(game1, game2, game3));
 
         // Act
-        List<Game> filteredGames = gameService.browseGames(category, minPrice, maxPrice);
+        List<Game> filteredGames = gameService.browseGames(category, null, minPrice, maxPrice);
 
         // Assert
         assertNotNull(filteredGames);
@@ -388,7 +388,7 @@ public class GameServiceTests {
         when(gameRepository.findAll()).thenReturn(Arrays.asList(game1, game2, game3));
 
         // Act
-        List<Game> filteredGames = gameService.browseGames(null, null, null);
+        List<Game> filteredGames = gameService.browseGames(null, null, null, null);
 
         // Assert
         assertNotNull(filteredGames);

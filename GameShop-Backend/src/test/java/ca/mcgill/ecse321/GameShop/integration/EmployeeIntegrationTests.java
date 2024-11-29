@@ -65,7 +65,7 @@ public class EmployeeIntegrationTests {
                 ISACTIVE_TRUE);
 
         // Act
-        ResponseEntity<EmployeeResponseDto> response = client.postForEntity("/employees/", request,
+        ResponseEntity<EmployeeResponseDto> response = client.postForEntity("/employees", request,
                 EmployeeResponseDto.class);
 
         // Assert
@@ -88,7 +88,7 @@ public class EmployeeIntegrationTests {
         testCreateEmployeeSuccessfully(); // Create an employee with the same email first to ensure conflict
 
         // Act
-        ResponseEntity<ErrorResponseDto> response = client.postForEntity("/employees/", request,
+        ResponseEntity<ErrorResponseDto> response = client.postForEntity("/employees", request,
                 ErrorResponseDto.class);
 
         // Assert
@@ -108,7 +108,7 @@ public class EmployeeIntegrationTests {
                 ISACTIVE_TRUE);
 
         // Act
-        ResponseEntity<ErrorResponseDto> response = client.postForEntity("/employees/", request,
+        ResponseEntity<ErrorResponseDto> response = client.postForEntity("/employees", request,
                 ErrorResponseDto.class);
 
         // Assert
@@ -181,7 +181,7 @@ public class EmployeeIntegrationTests {
         // Arrange
         EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
                 ISACTIVE_TRUE);
-        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees", request,
                 EmployeeResponseDto.class);
         EmployeeRequestDto updateRequest = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, "Mike Tyson",
                 "987-654-321", ISACTIVE_TRUE);
@@ -208,7 +208,7 @@ public class EmployeeIntegrationTests {
         // Arrange
         EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
                 ISACTIVE_TRUE);
-        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees", request,
                 EmployeeResponseDto.class);
         EmployeeRequestDto updateRequest = new EmployeeRequestDto(VALID_EMAIL, "New@Pass2", null, null, null);
 
@@ -234,7 +234,7 @@ public class EmployeeIntegrationTests {
         // Arrange
         EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
                 ISACTIVE_TRUE);
-        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees", request,
                 EmployeeResponseDto.class);
         EmployeeRequestDto updateRequest = new EmployeeRequestDto(VALID_EMAIL, "weak", null, null, null);
 
@@ -276,7 +276,7 @@ public class EmployeeIntegrationTests {
         // Arrange
         EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
                 ISACTIVE_TRUE);
-        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees", request,
                 EmployeeResponseDto.class);
 
         // Act
@@ -316,7 +316,7 @@ public class EmployeeIntegrationTests {
         // Arrange
         EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
                 ISACTIVE_TRUE);
-        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees", request,
                 EmployeeResponseDto.class);
         client.exchange("/employees/" + creationResponse.getBody().getStaffId() + "/deactivate", HttpMethod.PUT, null,
                 EmployeeResponseDto.class);
@@ -343,7 +343,7 @@ public class EmployeeIntegrationTests {
         // Arrange
         EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
                 ISACTIVE_TRUE);
-        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees", request,
                 EmployeeResponseDto.class);
         EmployeeRequestDto updateRequest = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, "Mike Tyson",
                 "987-654-321", ISACTIVE_TRUE);
@@ -371,7 +371,7 @@ public class EmployeeIntegrationTests {
         // Arrange
         EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
                 ISACTIVE_TRUE);
-        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees", request,
                 EmployeeResponseDto.class);
         EmployeeRequestDto updateRequest = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, "Mike Tyson",
                 "987-654-321", ISACTIVE_TRUE);
@@ -414,7 +414,7 @@ public class EmployeeIntegrationTests {
         // Arrange
         EmployeeRequestDto request = new EmployeeRequestDto(VALID_EMAIL, VALID_PASSWORD, VALID_NAME, VALID_PHONE,
                 ISACTIVE_TRUE);
-        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees/", request,
+        ResponseEntity<EmployeeResponseDto> creationResponse = client.postForEntity("/employees", request,
                 EmployeeResponseDto.class);
         client.exchange("/employees/" + creationResponse.getBody().getStaffId() + "/deactivate", HttpMethod.PUT, null,
                 EmployeeResponseDto.class);
