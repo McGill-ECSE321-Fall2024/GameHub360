@@ -199,7 +199,7 @@ const GameDetailsPage = () => {
               </div>
             </div>
 
-            {(authState === AuthState.CUSTOMER || authState === AuthState.EMPLOYEE || authState === AuthState.MANAGER) && (
+            {authState === AuthState.CUSTOMER && (
               <div className="flex gap-4">
                 <button
                   onClick={handleWishlistToggle}
