@@ -51,8 +51,14 @@ public class GameService {
         game.setPrice(gameRequestDto.getPrice());
         game.setQuantityInStock(gameRequestDto.getQuantityInStock());
         gameRequestDto.getCategoryIds().stream()
-                .map(categoryId -> gameCategoryRepository.findGameCategoryByCategoryId(categoryId))
-                .forEach(game::addCategory);
+            .map(categoryId -> {
+                GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
+                if (category == null) {
+                throw new GameShopException(HttpStatus.NOT_FOUND, "Category not found");
+                }
+                return category;
+            })
+            .forEach(game::addCategory);
 
         return gameRepository.save(game);
     }

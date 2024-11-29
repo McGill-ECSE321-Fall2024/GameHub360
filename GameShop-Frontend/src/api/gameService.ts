@@ -52,7 +52,13 @@ export async function createGame(game: {
     await apiService.post('/games', game);
   } catch (error) {
     if (isAxiosError(error)) {
-      throw new Error('Failed to create game.');
+      const statusCode = error.response?.status;
+      if (statusCode === 400) {
+        throw new Error('A game with this name already exists.');
+      }
+      if (statusCode === 404) {
+        throw new Error('One or more categories Ids do not exist.');
+      }
     }
     throw new Error('An unexpected error occurred while creating the game.');
   }

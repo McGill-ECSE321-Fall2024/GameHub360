@@ -40,38 +40,48 @@ const ManagerCreateCategoryPage = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center mb-4">
+    <div className="max-w-3xl mx-auto p-6 bg-gray-50 shadow-md rounded-md">
+      <div className="flex items-center mb-6">
         <button
           onClick={() => navigate('/manager/categories')}
-          className="bg-gray-200 text-gray-800 px-4 py-2 rounded mr-4"
+          className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md shadow hover:bg-gray-200 transition"
         >
           Back
         </button>
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Create New Category</h2>
+        <h2 className="ml-4 text-2xl font-bold tracking-tight text-gray-900">
+          Create New Category
+        </h2>
       </div>
 
-      {successMessage && <p className="text-green-600">{successMessage}</p>}
-      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
+      {successMessage && (
+        <p className="mb-4 text-green-600 bg-green-50 p-3 rounded-md border border-green-500">
+          {successMessage}
+        </p>
+      )}
+      {errorMessage && (
+        <p className="mb-4 text-red-600 bg-red-50 p-3 rounded-md border border-red-500">
+          {errorMessage}
+        </p>
+      )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-medium text-gray-700">Name:</label>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Name:</label>
           <input
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full border rounded-md p-2"
-            placeholder="Category name"
+            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Enter category name"
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-medium text-gray-700">Category Type:</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Category Type:</label>
           <select
             value={formData.categoryType}
             onChange={(e) => setFormData({ ...formData, categoryType: e.target.value })}
-            className="w-full border rounded-md p-2"
+            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
             required
           >
             <option value="" disabled>
@@ -81,24 +91,26 @@ const ManagerCreateCategoryPage = () => {
             <option value="CONSOLE">Console</option>
           </select>
         </div>
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-medium text-gray-700">Available:</label>
-          <div className="flex items-center gap-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Available:</label>
+          <div className="flex items-center">
             <input
               type="checkbox"
               checked={formData.available}
               onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
               className="h-5 w-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">Mark as available</span>
+            <span className="ml-2 text-gray-700 text-sm">Mark as available</span>
           </div>
         </div>
-        <button
-          type="submit"
-          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Create Category
-        </button>
+        <div className="flex justify-start">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-600 transition"
+          >
+            Create Category
+          </button>
+        </div>
       </form>
     </div>
   );

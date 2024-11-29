@@ -35,79 +35,120 @@ const ManagerCreateGamePage = () => {
         categoryIds,
       });
       navigate('/manager/games'); // Redirect to games page
-    } catch (error) {
-      console.error('Error creating game:', error);
-      setErrorMessage('Failed to create game. Please check your input.');
-    }
-  };
+    } catch (error: any) {
+        setErrorMessage(error.message || 'Failed to create game.');
+      }};
 
   return (
-    <div className="p-6">
-      <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900">Create New Game</h2>
-      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-3xl mx-auto p-6 bg-gray-50 shadow-md rounded-md">
+      <div className="flex items-center mb-6">
+        <button
+          onClick={() => navigate('/manager/games')}
+          className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md shadow hover:bg-gray-200 transition"
+        >
+          Back
+        </button>
+        <h2 className="ml-4 text-2xl font-bold tracking-tight text-gray-900">
+          Create New Game
+        </h2>
+      </div>
+
+      {errorMessage && (
+        <p className="mb-4 text-red-600 bg-red-50 p-3 rounded-md border border-red-500">
+          {errorMessage}
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label>Name:</label>
+          <label className="block mb-2 text-sm font-medium text-gray-700">Name:</label>
           <input
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full border rounded-md p-2"
+            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Enter game name"
             required
           />
         </div>
         <div>
-          <label>Description:</label>
+          <label className="block mb-2 text-sm font-medium text-gray-700">Description:</label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full border rounded-md p-2"
+            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Enter game description"
+            rows={3}
             required
-          />
+          ></textarea>
         </div>
         <div>
-          <label>Image URL:</label>
+          <label className="block mb-2 text-sm font-medium text-gray-700">Image URL:</label>
           <input
             type="text"
             value={formData.imageUrl}
             onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-            className="w-full border rounded-md p-2"
+            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Enter image URL"
             required
           />
         </div>
-        <div>
-          <label>Quantity in Stock:</label>
-          <input
-            type="number"
-            value={formData.quantityInStock}
-            onChange={(e) => setFormData({ ...formData, quantityInStock: e.target.value })}
-            className="w-full border rounded-md p-2"
-            required
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Quantity in Stock:
+            </label>
+            <input
+              type="number"
+              value={formData.quantityInStock}
+              onChange={(e) => setFormData({ ...formData, quantityInStock: e.target.value })}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              placeholder="Enter quantity"
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Price:</label>
+            <input
+              type="number"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              placeholder="Enter price"
+              required
+            />
+          </div>
         </div>
         <div>
-          <label>Price:</label>
-          <input
-            type="number"
-            value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-            className="w-full border rounded-md p-2"
-            required
-          />
-        </div>
-        <div>
-          <label>Category IDs (comma-separated):</label>
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Category IDs (comma-separated):
+          </label>
           <input
             type="text"
             value={formData.categoryIds}
             onChange={(e) => setFormData({ ...formData, categoryIds: e.target.value })}
-            className="w-full border rounded-md p-2"
+            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+            placeholder="Enter category IDs (e.g., 1,2,3)"
             required
           />
         </div>
-        <button type="submit" className="mt-4 bg-green-500 text-white px-4 py-2 rounded">
-          Create Game
-        </button>
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            checked={formData.isAvailable}
+            onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
+            className="h-5 w-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <label className="ml-2 text-sm text-gray-700">Available</label>
+        </div>
+        <div className="flex justify-start">
+          <button
+            type="submit"
+            className="bg-green-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-green-600 transition"
+          >
+            Create Game
+          </button>
+        </div>
       </form>
     </div>
   );
