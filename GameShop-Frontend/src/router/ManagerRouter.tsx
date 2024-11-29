@@ -16,6 +16,7 @@ import CreateGamePage from '../pages/manager/CreateGamePage';
 import GameDetailPage from '../pages/manager/ManagerGameDetailPage';
 import CreateGameCategoryPage from '../pages/manager/ManagerCreateCategoryPage';
 import GameCategoryDetailPage from '../pages/manager/ManagerCategoryDetailPage';
+import GameDetailsPage from '../pages/GameDetailsPage';
 
 
 const ManagerRouter = () => {
@@ -23,6 +24,7 @@ const ManagerRouter = () => {
     <>
       <Navbar userType={UserType.MANAGER} />
       <Routes>
+        <Route path="/games/:id" element={<GameDetailsPage />} />
         <Route path={GeneralRouteNames.BROWSE} element={<BrowsePage />} />
 
         <Route path={GeneralRouteNames.PROFILE} element={<ManagerProfilePage />} />
