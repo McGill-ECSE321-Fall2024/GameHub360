@@ -1,20 +1,6 @@
 import { isAxiosError } from 'axios';
 import apiService from '../config/axiosConfig';
-
-// Interfaces
-export interface Game {
-  gameId: number;
-  name: string;
-  description: string;
-  imageUrl: string;
-  quantityInStock: number;
-  available: boolean;
-  price: number;
-  categoryIds: number[];
-  wishListIds: number[];
-  orderIds: number[];
-  promotionIds: number[];
-}
+import { Game } from '../model/manager/Game';
 
 /**
  * Retrieves all games.

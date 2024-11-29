@@ -1,14 +1,6 @@
 import apiService from '../config/axiosConfig';
 import { isAxiosError } from 'axios';
-
-export interface Category {
-  categoryId: number;
-  name: string;
-  categoryType: string; // 'GENRE' or 'CONSOLE'
-  available: boolean;
-  gameIds: number[];
-  promotionIds: number[];
-}
+import { Category } from '../model/manager/Category';
 
 /**
  * Retrieves all categories.

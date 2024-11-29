@@ -1,11 +1,6 @@
 import { isAxiosError } from 'axios';
 import apiService from '../config/axiosConfig';
-
-export interface ManagerProfile {
-  email: string;
-  name?: string;
-  phoneNumber?: string;
-}
+import { ManagerProfile } from '../model/manager/ManagerProfile';
 
 /**
  * Retrieves the manager's profile details. Only one manager exists in the system.
