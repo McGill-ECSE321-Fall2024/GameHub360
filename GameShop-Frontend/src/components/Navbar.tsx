@@ -31,6 +31,7 @@ const Navbar = ({ userType }: NavbarProps) => {
           { name: 'Browse', to: GeneralRouteNames.BROWSE },
           { name: 'Orders', to: CustomerRouteNames.ORDERS },
           { name: 'Wishlist', to: CustomerRouteNames.WISHLIST },
+          { name: 'Cart', to: CustomerRouteNames.CART },
           // Add more links as needed (these are just examples)
         ];
       case UserType.EMPLOYEE:

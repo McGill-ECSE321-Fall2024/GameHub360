@@ -24,6 +24,7 @@ const ManagerRouter = () => {
       <Navbar userType={UserType.MANAGER} />
       <Routes>
         <Route path={GeneralRouteNames.BROWSE} element={<BrowsePage />} />
+
         <Route path={GeneralRouteNames.PROFILE} element={<ManagerProfilePage />} />
 
         <Route path={ManagerRouteNames.DASHBOARD} element={<DashboardPage />} />

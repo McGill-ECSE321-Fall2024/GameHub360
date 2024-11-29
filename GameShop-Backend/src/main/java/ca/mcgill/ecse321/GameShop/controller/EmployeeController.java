@@ -35,7 +35,7 @@ public class EmployeeController {
      *                           (optional) and isActive (optional).
      * @return A response containing the newly created employee's details.
      */
-    @PostMapping("/")
+    @PostMapping
     public EmployeeResponseDto createEmployee(
             @Validated({ ValidationGroups.Post.class }) @RequestBody EmployeeRequestDto employeeRequestDto) {
         EmployeeAccount employee = employeeService.createEmployee(employeeRequestDto);

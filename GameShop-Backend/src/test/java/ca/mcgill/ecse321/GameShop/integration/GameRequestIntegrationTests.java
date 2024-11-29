@@ -114,7 +114,7 @@ public class GameRequestIntegrationTests {
 
                 // Act
                 ResponseEntity<GameRequestResponseDto> response = client.postForEntity(
-                                "/games/request", request, GameRequestResponseDto.class);
+                                "/games/request/", request, GameRequestResponseDto.class);
 
                 // Assert
                 assertNotNull(response, "Response should not be null");
@@ -148,7 +148,7 @@ public class GameRequestIntegrationTests {
                 createRequest.setCategoryIds(Arrays.asList(VALID_CATEGORY_ID));
 
                 ResponseEntity<GameRequestResponseDto> createResponse = client.postForEntity(
-                                "/games/request", createRequest, GameRequestResponseDto.class);
+                                "/games/request/", createRequest, GameRequestResponseDto.class);
                 assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game request creation failed");
 
                 GameRequestResponseDto responseBody = createResponse.getBody();
@@ -205,7 +205,7 @@ public class GameRequestIntegrationTests {
                 createRequest.setCategoryIds(Arrays.asList(VALID_CATEGORY_ID));
 
                 ResponseEntity<GameRequestResponseDto> createResponse = client.postForEntity(
-                                "/games/request", createRequest, GameRequestResponseDto.class);
+                                "/games/request/", createRequest, GameRequestResponseDto.class);
                 assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game request creation failed");
 
                 GameRequestResponseDto responseBody = createResponse.getBody();
@@ -259,7 +259,7 @@ public class GameRequestIntegrationTests {
                 createRequest.setCategoryIds(Arrays.asList(VALID_CATEGORY_ID));
 
                 ResponseEntity<GameRequestResponseDto> createResponse = client.postForEntity(
-                                "/games/request", createRequest, GameRequestResponseDto.class);
+                                "/games/request/", createRequest, GameRequestResponseDto.class);
                 assertNotNull(createResponse, "Response should not be null");
                 GameRequestResponseDto responseBody = createResponse.getBody();
                 assertNotNull(responseBody, "Response body should not be null");
@@ -311,7 +311,7 @@ public class GameRequestIntegrationTests {
                 createRequest.setCategoryIds(Arrays.asList(VALID_CATEGORY_ID));
 
                 ResponseEntity<GameRequestResponseDto> createResponse = client.postForEntity(
-                                "/games/request", createRequest, GameRequestResponseDto.class);
+                                "/games/request/", createRequest, GameRequestResponseDto.class);
                 assertNotNull(createResponse, "Response should not be null");
                 GameRequestResponseDto responseBody = createResponse.getBody();
                 assertNotNull(responseBody, "Response body should not be null");
@@ -358,7 +358,7 @@ public class GameRequestIntegrationTests {
                 createRequest.setCategoryIds(Arrays.asList(VALID_CATEGORY_ID));
 
                 ResponseEntity<GameRequestResponseDto> createResponse = client.postForEntity(
-                                "/games/request", createRequest, GameRequestResponseDto.class);
+                                "/games/request/", createRequest, GameRequestResponseDto.class);
                 assertNotNull(createResponse, "Response should not be null");
                 GameRequestResponseDto responseBody = createResponse.getBody();
                 assertNotNull(responseBody, "Response body should not be null");
@@ -410,7 +410,7 @@ public class GameRequestIntegrationTests {
                 createRequest.setCategoryIds(Arrays.asList(VALID_CATEGORY_ID));
 
                 ResponseEntity<GameRequestResponseDto> createResponse = client.postForEntity(
-                                "/games/request", createRequest, GameRequestResponseDto.class);
+                                "/games/request/", createRequest, GameRequestResponseDto.class);
                 assertNotNull(createResponse, "Response should not be null");
                 GameRequestResponseDto responseBody = createResponse.getBody();
                 assertNotNull(responseBody, "Response body should not be null");
@@ -466,7 +466,7 @@ public class GameRequestIntegrationTests {
                 createRequest.setCategoryIds(Arrays.asList(VALID_CATEGORY_ID));
 
                 ResponseEntity<GameRequestResponseDto> createResponse = client.postForEntity(
-                                "/games/request", createRequest, GameRequestResponseDto.class);
+                                "/games/request/", createRequest, GameRequestResponseDto.class);
                 assertNotNull(createResponse, "Response should not be null");
                 GameRequestResponseDto responseBody = createResponse.getBody();
                 assertNotNull(responseBody, "Response body should not be null");

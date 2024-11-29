@@ -216,15 +216,21 @@ public class GameService {
      * price.
      * 
      * @param category the category to filter games by (optional)
+     * @param categoryType the category type to filter games by (optional)
      * @param minPrice the minimum price to filter games by (optional)
      * @param maxPrice the maximum price to filter games by (optional)
      * @return a list of Game objects that match the provided filters
      */
     @Transactional
-    public List<Game> browseGames(String category, Double minPrice, Double maxPrice) {
+    public List<Game> browseGames(String category, String categoryType, Double minPrice, Double maxPrice) {
         List<Game> games = (List<Game>) gameRepository.findAll();
         return games.stream()
                 .filter(Game::getIsAvailable)
+                .filter(game -> {
+                    if (categoryType == null) return true;
+                    return game.getCategories().stream()
+                            .anyMatch(cat -> categoryType.equals(cat.getCategoryType().name()));
+                })
                 .filter(game -> category == null ||
                         game.getCategories().stream()
                                 .anyMatch(cat -> cat.getName().equalsIgnoreCase(category)))
