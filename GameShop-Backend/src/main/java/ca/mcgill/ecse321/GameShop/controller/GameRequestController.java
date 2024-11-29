@@ -59,9 +59,8 @@ public class GameRequestController {
      * @return a response entity indicating the result of the operation
      */
     @DeleteMapping("/{requestId}")
-    public Void deleteGameRequest(@PathVariable("requestId") int requestId) {
+    public void deleteGameRequest(@PathVariable("requestId") int requestId) {
         gameRequestService.deleteGameRequest(requestId);
-        return null;
     }
 
     /**

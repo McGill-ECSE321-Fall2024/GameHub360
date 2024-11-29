@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getGameRequestById, addNoteToGameRequest, processGameRequest } from '../../api/gameRequestService';
 import { GameRequest, RequestNote } from '../../api/gameRequestService';
 
@@ -8,12 +8,13 @@ Modal.setAppElement('#root'); // Ensure accessibility
 
 const GameRequestDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [gameRequest, setGameRequest] = useState<GameRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [noteInput, setNoteInput] = useState('');
-  
-  // Modals states
+
+  // Modal states
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isRefuseModalOpen, setIsRefuseModalOpen] = useState(false);
 
@@ -92,47 +93,86 @@ const GameRequestDetailPage = () => {
     }
   };
 
-  if (loading) return <p>Loading game request details...</p>;
+  if (loading)
+    return <p className="text-center text-gray-600 font-medium">Loading game request details...</p>;
 
-  if (errorMessage) return <p className="text-red-500">{errorMessage}</p>;
+  if (errorMessage)
+    return (
+      <div className="text-red-500 text-center bg-red-100 border border-red-400 p-4 rounded">
+        {errorMessage}
+      </div>
+    );
 
   return (
-    <div className="p-6">
-      <h2 className="mb-4 text-xl font-bold">Game Request Details</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+      <div className="flex items-center mb-6">
+        <button
+          onClick={() => navigate('/manager/game-requests')}
+          className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md shadow hover:bg-gray-200 transition"
+        >
+          Back
+        </button>
+        <h2 className="ml-4 text-2xl font-bold tracking-tight text-gray-900">Game Request Details</h2>
+      </div>
 
       {gameRequest && (
         <div>
-          <p><strong>Name:</strong> {gameRequest.name}</p>
-          <p><strong>Description:</strong> {gameRequest.description}</p>
-          <p><strong>Status:</strong> {gameRequest.requestStatus}</p>
-          <p><strong>Request Date:</strong> {new Date(gameRequest.requestDate).toLocaleDateString()}</p>
+          <div className="bg-white p-6 rounded shadow-md">
+            <p className="mb-2">
+              <strong className="font-medium text-gray-600">Name:</strong> {gameRequest.name}
+            </p>
+            <p className="mb-2">
+              <strong className="font-medium text-gray-600">Description:</strong>{' '}
+              {gameRequest.description}
+            </p>
+            <p className="mb-2">
+              <strong className="font-medium text-gray-600">Status:</strong>{' '}
+              <span
+                className={`px-2 py-1 rounded text-white ${
+                  gameRequest.requestStatus === 'SUBMITTED'
+                    ? 'bg-blue-500'
+                    : gameRequest.requestStatus === 'APPROVED'
+                    ? 'bg-green-500'
+                    : 'bg-red-500'
+                }`}
+              >
+                {gameRequest.requestStatus}
+              </span>
+            </p>
+            <p className="mb-4">
+              <strong className="font-medium text-gray-600">Request Date:</strong>{' '}
+              {new Date(gameRequest.requestDate).toLocaleDateString()}
+            </p>
 
-          <h3 className="mt-4 text-lg font-semibold">Add Note</h3>
-          <textarea
-            value={noteInput}
-            onChange={(e) => setNoteInput(e.target.value)}
-            className="w-full mt-2 border rounded-md p-2"
-          />
-          <button onClick={handleAddNote} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
-            Add Note
-          </button>
+            <h3 className="text-lg font-medium text-gray-800">Add Note</h3>
+            <textarea
+              value={noteInput}
+              onChange={(e) => setNoteInput(e.target.value)}
+              className="w-full mt-2 border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <button
+              onClick={handleAddNote}
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+            >
+              Add Note
+            </button>
+          </div>
 
           {gameRequest.requestStatus === 'SUBMITTED' && (
-            <>
-              <h3 className="mt-6 text-lg font-semibold">Process Request</h3>
+            <div className="mt-6 flex gap-4">
               <button
                 onClick={() => setIsApproveModalOpen(true)}
-                className="mt-2 bg-green-500 text-white px-4 py-2 rounded"
+                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
               >
                 Approve
               </button>
               <button
                 onClick={() => setIsRefuseModalOpen(true)}
-                className="mt-2 bg-red-500 text-white px-4 py-2 rounded"
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
               >
                 Refuse
               </button>
-            </>
+            </div>
           )}
         </div>
       )}
@@ -141,52 +181,62 @@ const GameRequestDetailPage = () => {
       <Modal
         isOpen={isApproveModalOpen}
         onRequestClose={() => setIsApproveModalOpen(false)}
-        className="bg-white p-6 rounded shadow-lg"
+        className="bg-white p-6 rounded shadow-md max-w-lg mx-auto"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
       >
-        <h2 className="text-lg font-bold">Approve Request</h2>
-        <div>
-          <label>Price:</label>
-          <input
-            type="text"
-            value={approvalDetails.price}
-            onChange={(e) => setApprovalDetails({ ...approvalDetails, price: e.target.value })}
-            className="border rounded-md p-1"
-          />
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Approve Request</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600">Price:</label>
+            <input
+              type="number"
+              value={approvalDetails.price}
+              onChange={(e) => setApprovalDetails({ ...approvalDetails, price: e.target.value })}
+              className="w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">Quantity in Stock:</label>
+            <input
+              type="number"
+              value={approvalDetails.quantityInStock}
+              onChange={(e) =>
+                setApprovalDetails({ ...approvalDetails, quantityInStock: e.target.value })
+              }
+              className="w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <button
+            onClick={() => handleProcessRequest(true)}
+            className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+          >
+            Approve
+          </button>
         </div>
-        <div>
-          <label>Quantity in Stock:</label>
-          <input
-            type="text"
-            value={approvalDetails.quantityInStock}
-            onChange={(e) => setApprovalDetails({ ...approvalDetails, quantityInStock: e.target.value })}
-            className="border rounded-md p-1"
-          />
-        </div>
-        <button onClick={() => handleProcessRequest(true)} className="mt-4 bg-green-500 text-white px-4 py-2 rounded">
-          Approve
-        </button>
       </Modal>
 
       {/* Refuse Modal */}
       <Modal
         isOpen={isRefuseModalOpen}
         onRequestClose={() => setIsRefuseModalOpen(false)}
-        className="bg-white p-6 rounded shadow-lg"
+        className="bg-white p-6 rounded shadow-md max-w-lg mx-auto"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
       >
-        <h2 className="text-lg font-bold">Refuse Request</h2>
-        <div>
-          <label>Rejection Reason:</label>
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Refuse Request</h2>
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-gray-600">Rejection Reason:</label>
           <textarea
             value={rejectionReason}
             onChange={(e) => setRejectionReason(e.target.value)}
-            className="w-full mt-2 border rounded-md p-2"
+            className="w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
           />
+          <button
+            onClick={() => handleProcessRequest(false)}
+            className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+          >
+            Refuse
+          </button>
         </div>
-        <button onClick={() => handleProcessRequest(false)} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
-          Refuse
-        </button>
       </Modal>
     </div>
   );
