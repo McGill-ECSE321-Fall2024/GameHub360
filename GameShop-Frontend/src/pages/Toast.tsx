@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 
+// Props for the Toast component
 interface ToastProps {
   message: string;
   type: 'success' | 'error';
@@ -7,6 +8,7 @@ interface ToastProps {
 }
 
 const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
+  // Auto-dismiss toast after 3 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -15,6 +17,7 @@ const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
     return () => clearTimeout(timer);
   }, [onClose]);
 
+  // Set background color based on toast type
   const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
 
   return (

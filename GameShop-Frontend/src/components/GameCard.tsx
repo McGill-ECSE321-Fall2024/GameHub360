@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { getAuthState } from '../state/authState';
-import { useCart } from '../Context/CartContext';
-import { useWishlist } from '../Context/WishlistContext';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { AuthState } from '../model/AuthState';
-import { useToast } from '../Context/ToastContext';
+import { useToast } from '../context/ToastContext';
 
 interface Game {
   gameId: number;
