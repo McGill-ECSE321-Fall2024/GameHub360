@@ -236,16 +236,16 @@ const GameRequestDetailPage = () => {
       <Modal
         isOpen={isApproveModalOpen}
         onRequestClose={() => setIsApproveModalOpen(false)}
-        className="bg-white p-6 rounded shadow-md max-w-lg mx-auto"
+        className="relative bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
       >
-        <h2 className="text-xl font-bold text-gray-800 mb-4">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Approve Request
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Price:
+            <label className="block text-sm font-medium text-gray-700">
+              Price
             </label>
             <input
               type="number"
@@ -256,12 +256,12 @@ const GameRequestDetailPage = () => {
                   price: e.target.value,
                 })
               }
-              className="w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+              className="mt-2 w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600">
-              Quantity in Stock:
+            <label className="block text-sm font-medium text-gray-700">
+              Quantity in Stock
             </label>
             <input
               type="number"
@@ -272,15 +272,23 @@ const GameRequestDetailPage = () => {
                   quantityInStock: e.target.value,
                 })
               }
-              className="w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+              className="mt-2 w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <button
-            onClick={() => handleProcessRequest(true)}
-            className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-          >
-            Approve
-          </button>
+          <div className="flex items-center justify-end gap-4">
+            <button
+              onClick={() => setIsApproveModalOpen(false)}
+              className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => handleProcessRequest(true)}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+            >
+              Approve
+            </button>
+          </div>
         </div>
       </Modal>
 
@@ -288,25 +296,38 @@ const GameRequestDetailPage = () => {
       <Modal
         isOpen={isRefuseModalOpen}
         onRequestClose={() => setIsRefuseModalOpen(false)}
-        className="bg-white p-6 rounded shadow-md max-w-lg mx-auto"
+        className="relative bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
       >
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Refuse Request</h2>
-        <div className="space-y-4">
-          <label className="block text-sm font-medium text-gray-600">
-            Rejection Reason:
-          </label>
-          <textarea
-            value={rejectionReason}
-            onChange={(e) => setRejectionReason(e.target.value)}
-            className="w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-          <button
-            onClick={() => handleProcessRequest(false)}
-            className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-          >
-            Refuse
-          </button>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          Refuse Request
+        </h2>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Rejection Reason
+            </label>
+            <textarea
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              className="mt-2 w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              rows={4}
+            ></textarea>
+          </div>
+          <div className="flex items-center justify-end gap-4">
+            <button
+              onClick={() => setIsRefuseModalOpen(false)}
+              className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => handleProcessRequest(false)}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+            >
+              Refuse
+            </button>
+          </div>
         </div>
       </Modal>
     </div>
