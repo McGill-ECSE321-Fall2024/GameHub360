@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getGameRequestById, addNoteToGameRequest } from '../../api/gameRequestService';
 import { GameRequest, RequestNote } from '../../api/gameRequestService';
 import { getAuthUser } from '../../state/authState';
@@ -8,6 +8,7 @@ const GameRequestDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [gameRequest, setGameRequest] = useState<GameRequest | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [noteInput, setNoteInput] = useState('');
   const [staffId, setStaffId] = useState<number | null>(null);
@@ -76,30 +77,71 @@ const GameRequestDetailPage = () => {
     }
   };
   
-  if (loading) return <p>Loading game request details...</p>;
+  if (loading)
+    return <p className="text-center text-gray-600 font-medium">Loading game request details...</p>;
 
-  if (errorMessage) return <p className="text-red-500">{errorMessage}</p>;
+  if (errorMessage)
+    return (
+      <div className="text-red-500 text-center bg-red-100 border border-red-400 p-4 rounded">
+        {errorMessage}
+      </div>
+    );
 
   return (
-    <div className="p-6">
-      <h2 className="mb-4 text-xl font-bold">Game Request Details</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+      <div className="flex items-center mb-6">
+        <button
+          onClick={() => navigate('/employee/game-requests')}
+          className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md shadow hover:bg-gray-200 transition"
+        >
+          Back
+        </button>
+        <h2 className="ml-4 text-2xl font-bold tracking-tight text-gray-900">Game Request Details</h2>
+      </div>
 
       {gameRequest && (
         <div>
-          <p><strong>Name:</strong> {gameRequest.name}</p>
-          <p><strong>Description:</strong> {gameRequest.description}</p>
-          <p><strong>Status:</strong> {gameRequest.requestStatus}</p>
-          <p><strong>Request Date:</strong> {new Date(gameRequest.requestDate).toLocaleDateString()}</p>
+          <div className="bg-white p-6 rounded shadow-md">
+            <p className="mb-2">
+              <strong className="font-medium text-gray-600">Name:</strong> {gameRequest.name}
+            </p>
+            <p className="mb-2">
+              <strong className="font-medium text-gray-600">Description:</strong>{' '}
+              {gameRequest.description}
+            </p>
+            <p className="mb-2">
+              <strong className="font-medium text-gray-600">Status:</strong>{' '}
+              <span
+                className={`px-2 py-1 rounded text-white ${
+                  gameRequest.requestStatus === 'SUBMITTED'
+                    ? 'bg-blue-500'
+                    : gameRequest.requestStatus === 'APPROVED'
+                    ? 'bg-green-500'
+                    : 'bg-red-500'
+                }`}
+              >
+                {gameRequest.requestStatus}
+              </span>
+            </p>
+            <p className="mb-4">
+              <strong className="font-medium text-gray-600">Request Date:</strong>{' '}
+              {new Date(gameRequest.requestDate).toLocaleDateString()}
+            </p>
 
-          <h3 className="mt-4 text-lg font-semibold">Add Note</h3>
-          <textarea
-            value={noteInput}
-            onChange={(e) => setNoteInput(e.target.value)}
-            className="w-full mt-2 border rounded-md p-2"
-          />
-          <button onClick={handleAddNote} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
-            Add Note
-          </button>
+            <h3 className="text-lg font-medium text-gray-800">Add Note</h3>
+            <textarea
+              value={noteInput}
+              onChange={(e) => setNoteInput(e.target.value)}
+              className="w-full mt-2 border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <button
+              onClick={handleAddNote}
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+            >
+              Add Note
+            </button>
+          </div>
+
         </div>
       )}
     </div>
