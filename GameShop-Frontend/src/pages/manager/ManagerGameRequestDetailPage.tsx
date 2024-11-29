@@ -7,6 +7,7 @@ import {
   processGameRequest,
 } from '../../api/gameRequestService';
 import { GameRequest, RequestNote } from '../../api/gameRequestService';
+import { getAuthUser } from '../../state/authState';
 
 Modal.setAppElement('#root'); // Ensure accessibility
 
@@ -17,6 +18,7 @@ const GameRequestDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [noteInput, setNoteInput] = useState('');
+  const [staffId, setStaffId] = useState<number | null>(null);
 
   // Modal states
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
@@ -30,6 +32,21 @@ const GameRequestDetailPage = () => {
   const [rejectionReason, setRejectionReason] = useState('');
 
   useEffect(() => {
+    const fetchAuthUser = () => {
+      try {
+        const authUser = getAuthUser();
+        if (!authUser || !authUser.staffId) {
+          console.error('No authenticated user found or staff ID is missing.');
+          setErrorMessage('Failed to retrieve staff ID. Please log in again.');
+          return;
+        }
+        setStaffId(authUser.staffId);
+      } catch (error) {
+        console.error('Error retrieving authenticated user:', error);
+        setErrorMessage('Failed to retrieve staff ID. Please log in again.');
+      }
+    };
+
     const fetchRequest = async () => {
       try {
         if (id) {
@@ -44,6 +61,7 @@ const GameRequestDetailPage = () => {
       }
     };
 
+    fetchAuthUser();
     fetchRequest();
   }, [id]);
 
@@ -56,7 +74,7 @@ const GameRequestDetailPage = () => {
     try {
       const note: RequestNote = await addNoteToGameRequest(parseInt(id!), {
         content: noteInput,
-        staffWriterId: 5402, // Replace with user ID from context
+        staffWriterId: staffId!, // Use dynamic staff ID
         noteDate: new Date().toISOString(),
       });
       setGameRequest({
@@ -72,6 +90,11 @@ const GameRequestDetailPage = () => {
   };
 
   const handleProcessRequest = async (approval: boolean) => {
+    if (!staffId) {
+      setErrorMessage('Staff ID is missing. Please log in again.');
+      return;
+    }
+
     try {
       const approvalDto = approval
         ? {
@@ -80,7 +103,7 @@ const GameRequestDetailPage = () => {
             note: noteInput
               ? {
                   content: noteInput,
-                  staffWriterId: 5402,
+                  staffWriterId: staffId,
                   noteDate: new Date().toISOString(),
                 }
               : undefined,
@@ -90,7 +113,7 @@ const GameRequestDetailPage = () => {
             note: noteInput
               ? {
                   content: noteInput,
-                  staffWriterId: 5402,
+                  staffWriterId: staffId,
                   noteDate: new Date().toISOString(),
                 }
               : undefined,
@@ -98,7 +121,7 @@ const GameRequestDetailPage = () => {
 
       const updatedRequest = await processGameRequest(
         parseInt(id!),
-        5402,
+        staffId,
         approval,
         approvalDto
       );

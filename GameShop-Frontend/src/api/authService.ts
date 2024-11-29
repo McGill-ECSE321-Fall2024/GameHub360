@@ -35,18 +35,15 @@ export async function login(user: LoginUser) {
   try {
     // Make a POST request to the appropriate endpoint
     const response = await apiService.post(endpoint, { email, password });
-    
+
     let userData: StoredUserData = {
       email,
-      userType
+      userType,
+      staffId: response.data.staffId, // Store staffId for managers/employees
+      customerId: response.data.customerId, // Store customerId for customers
     };
 
-    if (userType === UserType.CUSTOMER) {
-      userData.customerId = response.data.customerId;
-    } else if (userType === UserType.EMPLOYEE || userType === UserType.MANAGER) {
-      userData.staffId = response.data.staffId;
-    }
-    
+    // Return user data for local storage
     return userData;
   } catch (error) {
     if (isAxiosError(error) && error.response?.status === 400) {

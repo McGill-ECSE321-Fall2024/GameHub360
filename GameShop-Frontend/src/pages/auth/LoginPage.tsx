@@ -10,6 +10,7 @@ import { GeneralRouteNames } from '../../model/routeNames/GeneralRouteNames';
 const LoginPage = () => {
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [formData, setFormData] = useState<LoginUser>({
+    id: null,
     email: '',
     password: '',
     userType: UserType.CUSTOMER,
@@ -44,14 +45,12 @@ const LoginPage = () => {
     }
 
     try {
-      // Call the API
       const responseData = await login(formData);
-      console.log('Login successful:', responseData);
 
-      // Set the auth user in the state
-      setAuthUser(formData);
+      // Store authenticated user data locally
+      setAuthUser(responseData);
 
-      // Refresh to update the router
+      // Redirect to base page
       window.location.href = GeneralRouteNames.BASE;
     } catch (error) {
       setErrorMsg((error as AxiosError).message);
