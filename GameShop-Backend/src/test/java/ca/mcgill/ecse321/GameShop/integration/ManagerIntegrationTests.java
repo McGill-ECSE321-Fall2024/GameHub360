@@ -176,7 +176,7 @@ public class ManagerIntegrationTests {
                 "987-654-3210");
 
         // Act
-        ResponseEntity<ManagerResponseDto> response = client.exchange("/manager/", HttpMethod.PUT,
+        ResponseEntity<ManagerResponseDto> response = client.exchange("/manager", HttpMethod.PUT,
                 new HttpEntity<>(updateRequest), ManagerResponseDto.class);
 
         // Assert
@@ -197,7 +197,7 @@ public class ManagerIntegrationTests {
         ManagerRequestDto updateRequest = new ManagerRequestDto(VALID_EMAIL, "New@Pass123");
 
         // Act
-        ResponseEntity<ManagerResponseDto> response = client.exchange("/manager/", HttpMethod.PUT,
+        ResponseEntity<ManagerResponseDto> response = client.exchange("/manager", HttpMethod.PUT,
                 new HttpEntity<>(updateRequest), ManagerResponseDto.class);
 
         // Assert
@@ -215,7 +215,7 @@ public class ManagerIntegrationTests {
         ManagerRequestDto updateRequest = new ManagerRequestDto(VALID_EMAIL, "weak");
 
         // Act
-        ResponseEntity<ErrorResponseDto> response = client.exchange("/manager/", HttpMethod.PUT,
+        ResponseEntity<ErrorResponseDto> response = client.exchange("/manager", HttpMethod.PUT,
                 new HttpEntity<>(updateRequest), ErrorResponseDto.class);
 
         // Assert
@@ -234,7 +234,7 @@ public class ManagerIntegrationTests {
                 "987-654-3210");
 
         // Act
-        ResponseEntity<ErrorResponseDto> response = client.exchange("/manager/", HttpMethod.PUT,
+        ResponseEntity<ErrorResponseDto> response = client.exchange("/manager", HttpMethod.PUT,
                 new HttpEntity<>(updateRequest), ErrorResponseDto.class);
 
         // Assert

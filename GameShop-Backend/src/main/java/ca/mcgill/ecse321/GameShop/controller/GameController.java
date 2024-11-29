@@ -56,7 +56,7 @@ public class GameController {
      * @return the archived game as a GameResponseDto
      */
     @PutMapping("/archive/{gameId}")
-    public GameResponseDto archiveGame(@PathVariable Integer gameId) {
+    public GameResponseDto archiveGame(@PathVariable("gameId") Integer gameId) {
         Game archivedGame = gameService.archiveGame(gameId);
         return new GameResponseDto(archivedGame);
     }
