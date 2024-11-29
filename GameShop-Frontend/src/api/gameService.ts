@@ -1,6 +1,7 @@
 import { isAxiosError } from 'axios';
 import apiService from '../config/axiosConfig';
 
+// Interfaces
 export interface Game {
   gameId: number;
   name: string;
@@ -15,6 +16,11 @@ export interface Game {
   promotionIds: number[];
 }
 
+/**
+ * Retrieves all games.
+ * @returns A promise that resolves to an array of all games.
+ * @throws An error if the request fails.
+ */
 export async function getAllGames(): Promise<Game[]> {
   try {
     const response = await apiService.get('/games/all');
@@ -27,6 +33,11 @@ export async function getAllGames(): Promise<Game[]> {
   }
 }
 
+/**
+ * Retrieves all archived games.
+ * @returns A promise that resolves to an array of all archived games.
+ * @throws An error if the request fails.
+ */
 export async function getArchivedGames(): Promise<Game[]> {
   try {
     const response = await apiService.get('/games/archive');
@@ -35,10 +46,17 @@ export async function getArchivedGames(): Promise<Game[]> {
     if (isAxiosError(error)) {
       throw new Error('Failed to fetch archived games.');
     }
-    throw new Error('An unexpected error occurred while fetching archived games.');
+    throw new Error(
+      'An unexpected error occurred while fetching archived games.'
+    );
   }
 }
 
+/**
+ * Creates a new game.
+ * @param game The game data to create.
+ * @throws An error if the request fails.
+ */
 export async function createGame(game: {
   name: string;
   description: string;
@@ -64,6 +82,12 @@ export async function createGame(game: {
   }
 }
 
+/**
+ * Retrieves a game by ID.
+ * @param gameId The ID of the game to retrieve.
+ * @returns A promise that resolves to the game.
+ * @throws An error if the request fails.
+ */
 export async function getGameById(gameId: number): Promise<Game> {
   try {
     const response = await apiService.get(`/games/${gameId}`);
@@ -79,6 +103,12 @@ export async function getGameById(gameId: number): Promise<Game> {
   }
 }
 
+/**
+ * Updates a game.
+ * @param gameId The ID of the game to update.
+ * @param gameData The updated game data.
+ * @throws An error if the request fails.
+ */
 export async function updateGame(gameId: number, gameData: any): Promise<void> {
   try {
     await apiService.put(`/games/${gameId}`, gameData);
@@ -96,6 +126,11 @@ export async function updateGame(gameId: number, gameData: any): Promise<void> {
   }
 }
 
+/**
+ * Deletes a game.
+ * @param gameId The ID of the game to delete.
+ * @throws An error if the request fails.
+ */
 export async function archiveGame(gameId: number): Promise<void> {
   try {
     await apiService.put(`/games/archive/${gameId}`);
@@ -123,11 +158,16 @@ export async function reactivateGame(gameId: number): Promise<void> {
       }
       throw new Error('Failed to reactivate game.');
     }
-    throw new Error('An unexpected error occurred while reactivating the game.');
+    throw new Error(
+      'An unexpected error occurred while reactivating the game.'
+    );
   }
 }
 
-export async function assignGameToCategory(gameId: number, categoryId: number): Promise<void> {
+export async function assignGameToCategory(
+  gameId: number,
+  categoryId: number
+): Promise<void> {
   try {
     await apiService.put(`/games/${gameId}/categories/${categoryId}`);
   } catch (error) {
@@ -140,11 +180,16 @@ export async function assignGameToCategory(gameId: number, categoryId: number): 
       }
       throw new Error('Failed to assign game to category.');
     }
-    throw new Error('An unexpected error occurred while assigning the game to a category.');
+    throw new Error(
+      'An unexpected error occurred while assigning the game to a category.'
+    );
   }
 }
 
-export async function assignPromotionToGame(gameId: number, promotionId: number): Promise<void> {
+export async function assignPromotionToGame(
+  gameId: number,
+  promotionId: number
+): Promise<void> {
   try {
     await apiService.put(`/games/${gameId}/promotions/${promotionId}`);
   } catch (error) {
@@ -157,6 +202,8 @@ export async function assignPromotionToGame(gameId: number, promotionId: number)
       }
       throw new Error('Failed to assign promotion to game.');
     }
-    throw new Error('An unexpected error occurred while assigning the promotion to the game.');
+    throw new Error(
+      'An unexpected error occurred while assigning the promotion to the game.'
+    );
   }
 }

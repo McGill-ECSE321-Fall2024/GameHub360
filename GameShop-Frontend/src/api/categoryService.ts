@@ -10,6 +10,12 @@ export interface Category {
   promotionIds: number[];
 }
 
+/**
+ * Retrieves all categories.
+ *
+ * @returns A promise that resolves to an array of all categories.
+ * @throws An error if the request fails.
+ */
 export async function getAllCategories(): Promise<Category[]> {
   try {
     const response = await apiService.get('/categories');
@@ -19,6 +25,12 @@ export async function getAllCategories(): Promise<Category[]> {
   }
 }
 
+/**
+ * Creates a new category.
+ *
+ * @param category The category data to create.
+ * @throws An error if the request fails.
+ */
 export async function createCategory(category: {
   name: string;
   categoryType: string; // 'GENRE' or 'CONSOLE'
@@ -31,6 +43,13 @@ export async function createCategory(category: {
   }
 }
 
+/**
+ * Retrieves a category by ID.
+ *
+ * @param categoryId The ID of the category to retrieve.
+ * @returns A promise that resolves to the category.
+ * @throws An error if the request fails.
+ */
 export async function getCategoryById(categoryId: number): Promise<Category> {
   try {
     const response = await apiService.get(`/categories/${categoryId}`);
@@ -46,10 +65,19 @@ export async function getCategoryById(categoryId: number): Promise<Category> {
       }
       throw new Error('Failed to fetch category.');
     }
-    throw new Error('An unexpected error occurred while fetching the category.');
+    throw new Error(
+      'An unexpected error occurred while fetching the category.'
+    );
   }
 }
 
+/**
+ * Updates a category by ID.
+ *
+ * @param categoryId The ID of the category to update.
+ * @param category The updated category data.
+ * @throws An error if the request fails.
+ */
 export async function updateCategory(
   categoryId: number,
   categoryData: { name: string; categoryType: string; available: boolean }
@@ -66,10 +94,18 @@ export async function updateCategory(
       }
       throw new Error('Failed to update category.');
     }
-    throw new Error('An unexpected error occurred while updating the category.');
+    throw new Error(
+      'An unexpected error occurred while updating the category.'
+    );
   }
 }
 
+/**
+ * Deletes a category by ID.
+ *
+ * @param categoryId The ID of the category to delete.
+ * @throws An error if the request fails.
+ */
 export async function deleteCategory(categoryId: number): Promise<void> {
   try {
     await apiService.delete(`/categories/${categoryId}`);
@@ -80,12 +116,22 @@ export async function deleteCategory(categoryId: number): Promise<void> {
       }
       throw new Error('Failed to delete category.');
     }
-    throw new Error('An unexpected error occurred while deleting the category.');
+    throw new Error(
+      'An unexpected error occurred while deleting the category.'
+    );
   }
 }
 
-// Assign a game to a category
-export async function assignCategoryToGame(categoryId: number, gameId: number): Promise<void> {
+/**
+ * Assigns a game to a category.
+ * @param categoryId
+ * @param gameId
+ * @throws An error if the request fails.
+ */
+export async function assignCategoryToGame(
+  categoryId: number,
+  gameId: number
+): Promise<void> {
   try {
     await apiService.put(`/categories/${categoryId}/game/${gameId}`);
   } catch (error) {
@@ -98,12 +144,22 @@ export async function assignCategoryToGame(categoryId: number, gameId: number): 
       }
       throw new Error('Failed to assign game to category.');
     }
-    throw new Error('An unexpected error occurred while assigning the game to the category.');
+    throw new Error(
+      'An unexpected error occurred while assigning the game to the category.'
+    );
   }
 }
 
-// Unassign a game from a category
-export async function unassignCategoryFromGame(categoryId: number, gameId: number): Promise<void> {
+/**
+ * Unassigns a game from a category.
+ * @param categoryId
+ * @param gameId
+ * @throws An error if the request fails.
+ */
+export async function unassignCategoryFromGame(
+  categoryId: number,
+  gameId: number
+): Promise<void> {
   try {
     await apiService.delete(`/categories/${categoryId}/game/${gameId}`);
   } catch (error) {
@@ -113,12 +169,22 @@ export async function unassignCategoryFromGame(categoryId: number, gameId: numbe
       }
       throw new Error('Failed to unassign game from category.');
     }
-    throw new Error('An unexpected error occurred while unassigning the game from the category.');
+    throw new Error(
+      'An unexpected error occurred while unassigning the game from the category.'
+    );
   }
 }
 
-// Assign a promotion to a category
-export async function assignCategoryToPromotion(categoryId: number, promotionId: number): Promise<void> {
+/**
+ * Assigns a promotion to a category.
+ * @param categoryId
+ * @param promotionId
+ * @throws An error if the request fails.
+ */
+export async function assignCategoryToPromotion(
+  categoryId: number,
+  promotionId: number
+): Promise<void> {
   try {
     await apiService.put(`/categories/${categoryId}/promotion/${promotionId}`);
   } catch (error) {
@@ -131,14 +197,26 @@ export async function assignCategoryToPromotion(categoryId: number, promotionId:
       }
       throw new Error('Failed to assign promotion to category.');
     }
-    throw new Error('An unexpected error occurred while assigning the promotion to the category.');
+    throw new Error(
+      'An unexpected error occurred while assigning the promotion to the category.'
+    );
   }
 }
 
-// Unassign a promotion from a category
-export async function unassignCategoryFromPromotion(categoryId: number, promotionId: number): Promise<void> {
+/**
+ * Unassigns a promotion from a category.
+ * @param categoryId
+ * @param promotionId
+ * @throws An error if the request fails.
+ */
+export async function unassignCategoryFromPromotion(
+  categoryId: number,
+  promotionId: number
+): Promise<void> {
   try {
-    await apiService.delete(`/categories/${categoryId}/promotion/${promotionId}`);
+    await apiService.delete(
+      `/categories/${categoryId}/promotion/${promotionId}`
+    );
   } catch (error) {
     if (isAxiosError(error)) {
       if (error.response?.status === 404) {
@@ -146,6 +224,8 @@ export async function unassignCategoryFromPromotion(categoryId: number, promotio
       }
       throw new Error('Failed to unassign promotion from category.');
     }
-    throw new Error('An unexpected error occurred while unassigning the promotion from the category.');
+    throw new Error(
+      'An unexpected error occurred while unassigning the promotion from the category.'
+    );
   }
 }

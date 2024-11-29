@@ -7,7 +7,9 @@ const GameRequestsPage = () => {
   const [gameRequests, setGameRequests] = useState<GameRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [filter, setFilter] = useState<'ALL' | 'SUBMITTED' | 'APPROVED' | 'REFUSED'>('ALL');
+  const [filter, setFilter] = useState<
+    'ALL' | 'SUBMITTED' | 'APPROVED' | 'REFUSED'
+  >('ALL');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +35,9 @@ const GameRequestsPage = () => {
 
   return (
     <div className="p-6">
-      <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900">Game Requests</h2>
+      <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900">
+        Game Requests
+      </h2>
 
       {errorMessage && <p className="text-red-600">{errorMessage}</p>}
 
@@ -43,9 +47,13 @@ const GameRequestsPage = () => {
           <button
             key={status}
             className={`px-4 py-2 rounded-md ${
-              filter === status ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+              filter === status
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700'
             }`}
-            onClick={() => setFilter(status as 'ALL' | 'SUBMITTED' | 'APPROVED' | 'REFUSED')}
+            onClick={() =>
+              setFilter(status as 'ALL' | 'SUBMITTED' | 'APPROVED' | 'REFUSED')
+            }
           >
             {status}
           </button>
@@ -86,15 +94,28 @@ const GameRequestsPage = () => {
                   className="hover:bg-gray-100 cursor-pointer"
                   onClick={() =>
                     navigate(
-                      ManagerRouteNames.GAME_REQUEST_DETAIL.replace(':id', request.id.toString())
+                      ManagerRouteNames.GAME_REQUEST_DETAIL.replace(
+                        ':id',
+                        request.id.toString()
+                      )
                     )
                   }
                 >
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.id}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.description}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.requestStatus}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.staffId}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {request.id}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {request.name}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {request.description}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {request.requestStatus}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {request.staffId}
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {new Date(request.requestDate).toLocaleDateString()}
                   </td>

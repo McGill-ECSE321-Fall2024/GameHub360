@@ -35,14 +35,18 @@ const ManagerCategoriesPage = () => {
     if (filter === 'ALL') {
       setFilteredCategories(categories);
     } else {
-      setFilteredCategories(categories.filter((cat) => cat.categoryType === filter));
+      setFilteredCategories(
+        categories.filter((cat) => cat.categoryType === filter)
+      );
     }
   }, [filter, categories]);
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Categories</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+          Categories
+        </h2>
         <Link
           to={ManagerRouteNames.CREATE_CATEGORY}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -56,7 +60,9 @@ const ManagerCategoriesPage = () => {
       <div className="mb-4">
         <button
           className={`px-4 py-2 rounded-md ${
-            filter === 'ALL' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+            filter === 'ALL'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700'
           }`}
           onClick={() => setFilter('ALL')}
         >
@@ -64,7 +70,9 @@ const ManagerCategoriesPage = () => {
         </button>
         <button
           className={`px-4 py-2 rounded-md ml-2 ${
-            filter === 'GENRE' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+            filter === 'GENRE'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700'
           }`}
           onClick={() => setFilter('GENRE')}
         >
@@ -72,7 +80,9 @@ const ManagerCategoriesPage = () => {
         </button>
         <button
           className={`px-4 py-2 rounded-md ml-2 ${
-            filter === 'CONSOLE' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+            filter === 'CONSOLE'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700'
           }`}
           onClick={() => setFilter('CONSOLE')}
         >
@@ -106,11 +116,19 @@ const ManagerCategoriesPage = () => {
                 <tr
                   key={category.categoryId}
                   className="hover:bg-gray-100 cursor-pointer"
-                  onClick={() => navigate(`/manager/categories/${category.categoryId}`)}
+                  onClick={() =>
+                    navigate(`/manager/categories/${category.categoryId}`)
+                  }
                 >
-                  <td className="px-6 py-4 text-sm text-gray-900">{category.categoryId}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{category.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{category.categoryType}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {category.categoryId}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {category.name}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {category.categoryType}
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {category.available ? 'Available' : 'Unavailable'}
                   </td>

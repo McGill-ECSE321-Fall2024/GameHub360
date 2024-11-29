@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getGameRequestById, addNoteToGameRequest, processGameRequest } from '../../api/gameRequestService';
+import {
+  getGameRequestById,
+  addNoteToGameRequest,
+  processGameRequest,
+} from '../../api/gameRequestService';
 import { GameRequest, RequestNote } from '../../api/gameRequestService';
 
 Modal.setAppElement('#root'); // Ensure accessibility
@@ -73,14 +77,31 @@ const GameRequestDetailPage = () => {
         ? {
             price: parseFloat(approvalDetails.price),
             quantityInStock: parseInt(approvalDetails.quantityInStock),
-            note: noteInput ? { content: noteInput, staffWriterId: 5402, noteDate: new Date().toISOString() } : undefined,
+            note: noteInput
+              ? {
+                  content: noteInput,
+                  staffWriterId: 5402,
+                  noteDate: new Date().toISOString(),
+                }
+              : undefined,
           }
         : {
             rejectionReason,
-            note: noteInput ? { content: noteInput, staffWriterId: 5402, noteDate: new Date().toISOString() } : undefined,
+            note: noteInput
+              ? {
+                  content: noteInput,
+                  staffWriterId: 5402,
+                  noteDate: new Date().toISOString(),
+                }
+              : undefined,
           };
 
-      const updatedRequest = await processGameRequest(parseInt(id!), 5402, approval, approvalDto);
+      const updatedRequest = await processGameRequest(
+        parseInt(id!),
+        5402,
+        approval,
+        approvalDto
+      );
       setGameRequest(updatedRequest); // Update the state with the processed request
       setErrorMessage(null);
     } catch (error) {
@@ -94,7 +115,11 @@ const GameRequestDetailPage = () => {
   };
 
   if (loading)
-    return <p className="text-center text-gray-600 font-medium">Loading game request details...</p>;
+    return (
+      <p className="text-center text-gray-600 font-medium">
+        Loading game request details...
+      </p>
+    );
 
   if (errorMessage)
     return (
@@ -112,17 +137,22 @@ const GameRequestDetailPage = () => {
         >
           Back
         </button>
-        <h2 className="ml-4 text-2xl font-bold tracking-tight text-gray-900">Game Request Details</h2>
+        <h2 className="ml-4 text-2xl font-bold tracking-tight text-gray-900">
+          Game Request Details
+        </h2>
       </div>
 
       {gameRequest && (
         <div>
           <div className="bg-white p-6 rounded shadow-md">
             <p className="mb-2">
-              <strong className="font-medium text-gray-600">Name:</strong> {gameRequest.name}
+              <strong className="font-medium text-gray-600">Name:</strong>{' '}
+              {gameRequest.name}
             </p>
             <p className="mb-2">
-              <strong className="font-medium text-gray-600">Description:</strong>{' '}
+              <strong className="font-medium text-gray-600">
+                Description:
+              </strong>{' '}
               {gameRequest.description}
             </p>
             <p className="mb-2">
@@ -140,7 +170,9 @@ const GameRequestDetailPage = () => {
               </span>
             </p>
             <p className="mb-4">
-              <strong className="font-medium text-gray-600">Request Date:</strong>{' '}
+              <strong className="font-medium text-gray-600">
+                Request Date:
+              </strong>{' '}
               {new Date(gameRequest.requestDate).toLocaleDateString()}
             </p>
 
@@ -184,24 +216,38 @@ const GameRequestDetailPage = () => {
         className="bg-white p-6 rounded shadow-md max-w-lg mx-auto"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
       >
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Approve Request</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-4">
+          Approve Request
+        </h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600">Price:</label>
+            <label className="block text-sm font-medium text-gray-600">
+              Price:
+            </label>
             <input
               type="number"
               value={approvalDetails.price}
-              onChange={(e) => setApprovalDetails({ ...approvalDetails, price: e.target.value })}
+              onChange={(e) =>
+                setApprovalDetails({
+                  ...approvalDetails,
+                  price: e.target.value,
+                })
+              }
               className="w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600">Quantity in Stock:</label>
+            <label className="block text-sm font-medium text-gray-600">
+              Quantity in Stock:
+            </label>
             <input
               type="number"
               value={approvalDetails.quantityInStock}
               onChange={(e) =>
-                setApprovalDetails({ ...approvalDetails, quantityInStock: e.target.value })
+                setApprovalDetails({
+                  ...approvalDetails,
+                  quantityInStock: e.target.value,
+                })
               }
               className="w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
             />
@@ -224,7 +270,9 @@ const GameRequestDetailPage = () => {
       >
         <h2 className="text-xl font-bold text-gray-800 mb-4">Refuse Request</h2>
         <div className="space-y-4">
-          <label className="block text-sm font-medium text-gray-600">Rejection Reason:</label>
+          <label className="block text-sm font-medium text-gray-600">
+            Rejection Reason:
+          </label>
           <textarea
             value={rejectionReason}
             onChange={(e) => setRejectionReason(e.target.value)}

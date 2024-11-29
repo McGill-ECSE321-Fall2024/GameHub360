@@ -24,7 +24,9 @@ const ManagerGamesPage = () => {
           setGames(archivedGames);
         } else if (filter === 'ACTIVE') {
           const allGames = await getAllGames();
-          const activeGames = allGames.filter((game) => game.available === true);
+          const activeGames = allGames.filter(
+            (game) => game.available === true
+          );
           setGames(activeGames);
         }
       } catch (error) {
@@ -40,7 +42,9 @@ const ManagerGamesPage = () => {
 
   return (
     <div className="p-6">
-      <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900">Games</h2>
+      <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900">
+        Games
+      </h2>
 
       {errorMessage && <p className="text-red-600">{errorMessage}</p>}
 
@@ -49,7 +53,9 @@ const ManagerGamesPage = () => {
         <div className="flex gap-4">
           <button
             className={`px-4 py-2 rounded-md ${
-              filter === 'ALL' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+              filter === 'ALL'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700'
             }`}
             onClick={() => setFilter('ALL')}
           >
@@ -57,7 +63,9 @@ const ManagerGamesPage = () => {
           </button>
           <button
             className={`px-4 py-2 rounded-md ${
-              filter === 'ARCHIVED' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+              filter === 'ARCHIVED'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700'
             }`}
             onClick={() => setFilter('ARCHIVED')}
           >
@@ -65,7 +73,9 @@ const ManagerGamesPage = () => {
           </button>
           <button
             className={`px-4 py-2 rounded-md ${
-              filter === 'ACTIVE' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+              filter === 'ACTIVE'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700'
             }`}
             onClick={() => setFilter('ACTIVE')}
           >
@@ -112,13 +122,30 @@ const ManagerGamesPage = () => {
                 <tr
                   key={game.gameId}
                   className="hover:bg-gray-100 cursor-pointer"
-                  onClick={() => navigate(ManagerRouteNames.GAME_DETAIL.replace(':id', game.gameId.toString()))}
+                  onClick={() =>
+                    navigate(
+                      ManagerRouteNames.GAME_DETAIL.replace(
+                        ':id',
+                        game.gameId.toString()
+                      )
+                    )
+                  }
                 >
-                  <td className="px-6 py-4 text-sm text-gray-900">{game.gameId}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{game.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{game.description}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">${game.price.toFixed(2)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{game.quantityInStock}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {game.gameId}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {game.name}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {game.description}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    ${game.price.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {game.quantityInStock}
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {game.available ? 'Active' : 'Archived'}
                   </td>

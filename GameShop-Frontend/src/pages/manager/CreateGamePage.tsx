@@ -15,16 +15,23 @@ const ManagerCreateGamePage = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (parseFloat(formData.price) < 0 || parseInt(formData.quantityInStock) < 0) {
+    if (
+      parseFloat(formData.price) < 0 ||
+      parseInt(formData.quantityInStock) < 0
+    ) {
       setErrorMessage('Price and Quantity cannot be negative.');
       return;
     }
 
+    // Split category IDs by comma and convert to array of integers
     try {
-      const categoryIds = formData.categoryIds.split(',').map((id) => parseInt(id.trim()));
+      const categoryIds = formData.categoryIds
+        .split(',')
+        .map((id) => parseInt(id.trim()));
       await createGame({
         name: formData.name,
         description: formData.description,
@@ -36,8 +43,9 @@ const ManagerCreateGamePage = () => {
       });
       navigate('/manager/games'); // Redirect to games page
     } catch (error: any) {
-        setErrorMessage(error.message || 'Failed to create game.');
-      }};
+      setErrorMessage(error.message || 'Failed to create game.');
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-gray-50 shadow-md rounded-md">
@@ -61,7 +69,9 @@ const ManagerCreateGamePage = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block mb-2 text-sm font-medium text-gray-700">Name:</label>
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Name:
+          </label>
           <input
             type="text"
             value={formData.name}
@@ -72,10 +82,14 @@ const ManagerCreateGamePage = () => {
           />
         </div>
         <div>
-          <label className="block mb-2 text-sm font-medium text-gray-700">Description:</label>
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Description:
+          </label>
           <textarea
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
             className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
             placeholder="Enter game description"
             rows={3}
@@ -83,11 +97,15 @@ const ManagerCreateGamePage = () => {
           ></textarea>
         </div>
         <div>
-          <label className="block mb-2 text-sm font-medium text-gray-700">Image URL:</label>
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Image URL:
+          </label>
           <input
             type="text"
             value={formData.imageUrl}
-            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, imageUrl: e.target.value })
+            }
             className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
             placeholder="Enter image URL"
             required
@@ -101,18 +119,24 @@ const ManagerCreateGamePage = () => {
             <input
               type="number"
               value={formData.quantityInStock}
-              onChange={(e) => setFormData({ ...formData, quantityInStock: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, quantityInStock: e.target.value })
+              }
               className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               placeholder="Enter quantity"
               required
             />
           </div>
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">Price:</label>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Price:
+            </label>
             <input
               type="number"
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, price: e.target.value })
+              }
               className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               placeholder="Enter price"
               required
@@ -126,7 +150,9 @@ const ManagerCreateGamePage = () => {
           <input
             type="text"
             value={formData.categoryIds}
-            onChange={(e) => setFormData({ ...formData, categoryIds: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, categoryIds: e.target.value })
+            }
             className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
             placeholder="Enter category IDs (e.g., 1,2,3)"
             required
@@ -136,7 +162,9 @@ const ManagerCreateGamePage = () => {
           <input
             type="checkbox"
             checked={formData.isAvailable}
-            onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
+            onChange={(e) =>
+              setFormData({ ...formData, isAvailable: e.target.checked })
+            }
             className="h-5 w-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
           />
           <label className="ml-2 text-sm text-gray-700">Available</label>

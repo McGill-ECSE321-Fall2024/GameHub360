@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
-    getManagerProfile,
-    updateManagerProfile,
+  getManagerProfile,
+  updateManagerProfile,
 } from '../../api/managerService';
 
 const ManagerProfilePage = () => {

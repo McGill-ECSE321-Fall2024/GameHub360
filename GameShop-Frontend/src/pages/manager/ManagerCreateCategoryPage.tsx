@@ -66,7 +66,9 @@ const ManagerCreateCategoryPage = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Name:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Name:
+          </label>
           <input
             type="text"
             value={formData.name}
@@ -77,10 +79,14 @@ const ManagerCreateCategoryPage = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Category Type:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Category Type:
+          </label>
           <select
             value={formData.categoryType}
-            onChange={(e) => setFormData({ ...formData, categoryType: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, categoryType: e.target.value })
+            }
             className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
             required
           >
@@ -92,15 +98,21 @@ const ManagerCreateCategoryPage = () => {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Available:</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Available:
+          </label>
           <div className="flex items-center">
             <input
               type="checkbox"
               checked={formData.available}
-              onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
+              onChange={(e) =>
+                setFormData({ ...formData, available: e.target.checked })
+              }
               className="h-5 w-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
             />
-            <span className="ml-2 text-gray-700 text-sm">Mark as available</span>
+            <span className="ml-2 text-gray-700 text-sm">
+              Mark as available
+            </span>
           </div>
         </div>
         <div className="flex justify-start">

@@ -10,7 +10,11 @@ export interface Promotion {
   promotedCategoryIds: number[];
 }
 
-// Fetch all promotions
+/**
+ * Retrieves all promotions.
+ * @returns A promise that resolves to an array of all promotions.
+ * @throws An error if the request fails.
+ */
 export async function getAllPromotions(): Promise<Promotion[]> {
   try {
     const response = await apiService.get('/promotions');
