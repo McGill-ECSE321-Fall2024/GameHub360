@@ -14,6 +14,8 @@ import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
 import ca.mcgill.ecse321.GameShop.utils.PasswordUtils;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
+
 @Service
 public class EmployeeService {
 
@@ -38,6 +40,10 @@ public class EmployeeService {
         // Check if employee exists and password matches
         if (employee == null || !EncryptionUtils.matches(employeeRequestDto.getPassword(), employee.getPassword())) {
             throw new GameShopException(HttpStatus.BAD_REQUEST, "Invalid email or password.");
+        }
+
+        if (!employee.getIsActive()) {
+            throw new IllegalStateException("Employee account is deactivated. Please contact the manager.");
         }
         return employee;
     }
@@ -172,5 +178,36 @@ public class EmployeeService {
             throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
         }
         return employee;
+    }
+
+    /**
+     * Retrieves all employee accounts.
+     *
+     * @param None
+     * @return A list of EmployeeAccount objects.
+     */
+    @Transactional
+    public List<EmployeeAccount> getAllEmployees() {
+            return employeeAccountRepository.findAll();
+        }
+
+    /**
+     * Retrieves employees by their active/inactive status.
+     *
+     * @param isActive The status to filter employees by (true for active, false for inactive).
+     * @return List of employees matching the given status.
+     */
+    @Transactional
+    public List<EmployeeAccount> getEmployeesByStatus(Boolean isActive) {
+        return employeeAccountRepository.findEmployeesByIsActive(isActive);
+    }
+
+    @Transactional
+    public boolean isEmployeeActive(Integer employeeId) {
+        EmployeeAccount employee = employeeAccountRepository.findEmployeeAccountByStaffId(employeeId);
+        if (employee == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Employee not found.");
+        }
+        return employee.getIsActive();
     }
 }

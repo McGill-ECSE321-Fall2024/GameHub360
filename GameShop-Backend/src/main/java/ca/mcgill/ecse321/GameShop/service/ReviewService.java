@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import ca.mcgill.ecse321.GameShop.dto.ReplyRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.ReviewRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.ReviewResponseDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.model.Game;
@@ -17,6 +18,7 @@ import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
 import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.model.Reply;
 import ca.mcgill.ecse321.GameShop.model.Review;
+import ca.mcgill.ecse321.GameShop.model.Review.GameReviewRating;
 import ca.mcgill.ecse321.GameShop.repository.CustomerAccountRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
 import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
@@ -128,6 +130,33 @@ public class ReviewService {
         }
 
         return reviews;
+    }
+
+    /**
+     * Get all reviews organized by game.
+     *
+     * @return List of reviews grouped by games.
+     */
+    public List<ReviewResponseDto> getAllReviewsOrganizedByGame() {
+        // Fetch all reviews organized by games using the custom query
+        List<Object[]> results = reviewRepository.findAllReviewsOrganizedByGame();
+
+        // Convert query results into ReviewResponseDto objects
+        List<ReviewResponseDto> responseDtos = new ArrayList<>();
+        for (Object[] result : results) {
+            Integer reviewId = (Integer) result[0];
+            GameReviewRating rating = GameReviewRating.valueOf((String) result[1]); // Assuming the rating is stored as a string
+            String comment = (String) result[2];
+            Date reviewDate = (Date) result[3];
+            Integer gameId = (Integer) result[4];
+            String gameName = (String) result[5];
+            List<Integer> reviewReplies = reviewRepository.findRepliesByReviewId(reviewId); // Fetch replies
+
+            // Build and add the response DTO
+            responseDtos.add(new ReviewResponseDto(reviewId, rating, comment, reviewDate, reviewReplies, gameId));
+        }
+
+        return responseDtos;
     }
 
     /**

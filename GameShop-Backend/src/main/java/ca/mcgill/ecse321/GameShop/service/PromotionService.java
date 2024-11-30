@@ -115,6 +115,23 @@ public class PromotionService {
     }
 
     /**
+     * Retrieves all promotions filtered by the specified type.
+     *
+     * @param type the type of promotion to filter by.
+     * @return a list of promotions matching the given type.
+     */
+    @Transactional
+    public List<Promotion> getPromotionsByType(String type) {
+        Promotion.PromotionType promotionType;
+        try {
+            promotionType = Promotion.PromotionType.valueOf(type.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Invalid promotion type: " + type);
+        }
+        return promotionRepository.findByPromotionType(promotionType); // New repository method
+    }
+
+    /**
      * Retrieves all promotions associated with the specified game ID.
      * 
      * @param gameId the ID of the game for which promotions are to be retrieved.

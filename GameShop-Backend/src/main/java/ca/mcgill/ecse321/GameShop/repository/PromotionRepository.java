@@ -17,4 +17,7 @@ public interface PromotionRepository extends CrudRepository<Promotion, Integer> 
 
     // Find promotions by containing a specific category
     public List<Promotion> findByPromotedCategoriesContaining(GameCategory category);
+
+    // Find promotions by type
+    public List<Promotion> findByPromotionType(Promotion.PromotionType promotionType);
 }
