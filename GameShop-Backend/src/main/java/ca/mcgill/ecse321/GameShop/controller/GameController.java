@@ -56,7 +56,7 @@ public class GameController {
      * @return the archived game as a GameResponseDto
      */
     @PutMapping("/archive/{gameId}")
-    public GameResponseDto archiveGame(@PathVariable Integer gameId) {
+    public GameResponseDto archiveGame(@PathVariable("gameId") Integer gameId) {
         Game archivedGame = gameService.archiveGame(gameId);
         return new GameResponseDto(archivedGame);
     }
@@ -70,6 +70,43 @@ public class GameController {
     public GameListDto viewArchivedGames() {
         List<Game> archivedGames = gameService.viewArchivedGames();
         List<GameResponseDto> responseDtos = archivedGames.stream()
+                .map(GameResponseDto::new)
+                .toList();
+        return new GameListDto(responseDtos);
+    }
+
+    /**
+     * Retrieves a game by ID.
+     * @param gameId the ID of the game to retrieve
+     * @return the game as a GameResponseDto
+     */
+    @GetMapping("/{gameId}")
+    public GameResponseDto viewGame(@PathVariable("gameId") Integer gameId) {
+        Game game = gameService.getGame(gameId);
+        return new GameResponseDto(game);
+    }
+
+    /**
+     * Add promotion to game
+     * @param gameId
+     * @param promotionId
+     * @return the updated game as a GameResponseDto
+     */
+    @PutMapping("/{gameId}/promotions/{promotionId}")
+    public GameResponseDto addPromotionToGame(@PathVariable Integer gameId, @PathVariable Integer promotionId) {
+        Game updatedGame = gameService.addPromotionToGame(gameId, promotionId);
+        return new GameResponseDto(updatedGame);
+    }
+
+    /**
+     * Retrieves all games
+     *
+     * @return a list of all games as GameListDto objects
+     */
+    @GetMapping("/all")
+    public GameListDto viewAllGames() {
+        List<Game> games = gameService.viewAllGames();
+        List<GameResponseDto> responseDtos = games.stream()
                 .map(GameResponseDto::new)
                 .toList();
         return new GameListDto(responseDtos);

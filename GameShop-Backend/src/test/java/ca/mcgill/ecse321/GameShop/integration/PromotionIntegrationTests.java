@@ -94,7 +94,7 @@ public class PromotionIntegrationTests {
                 requestDto.setPromotedCategoryIds(Arrays.asList());
 
                 // Act
-                ResponseEntity<PromotionResponseDto> response = client.postForEntity("/promotions/", requestDto,
+                ResponseEntity<PromotionResponseDto> response = client.postForEntity("/promotions", requestDto,
                                 PromotionResponseDto.class);
 
                 // Assert
@@ -127,7 +127,7 @@ public class PromotionIntegrationTests {
                 requestDto.setPromotedCategoryIds(Arrays.asList());
 
                 // Act
-                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions/", requestDto,
+                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions", requestDto,
                                 ErrorResponseDto.class);
 
                 // Assert
@@ -157,7 +157,7 @@ public class PromotionIntegrationTests {
                 requestDto.setPromotedCategoryIds(Arrays.asList(category.getCategoryId()));
 
                 // Act
-                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions/", requestDto,
+                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions", requestDto,
                                 ErrorResponseDto.class);
 
                 // Assert
@@ -190,7 +190,7 @@ public class PromotionIntegrationTests {
                 createRequestDto.setPromotedGameIds(Arrays.asList(game1.getGameEntityId()));
                 createRequestDto.setPromotedCategoryIds(Arrays.asList());
 
-                ResponseEntity<PromotionResponseDto> createResponse = client.postForEntity("/promotions/",
+                ResponseEntity<PromotionResponseDto> createResponse = client.postForEntity("/promotions",
                                 createRequestDto,
                                 PromotionResponseDto.class);
                 PromotionResponseDto createdPromotion = createResponse.getBody();
@@ -256,7 +256,7 @@ public class PromotionIntegrationTests {
                 createRequestDto.setPromotedGameIds(Arrays.asList(game.getGameEntityId()));
                 createRequestDto.setPromotedCategoryIds(Arrays.asList());
 
-                ResponseEntity<PromotionResponseDto> createResponse = client.postForEntity("/promotions/",
+                ResponseEntity<PromotionResponseDto> createResponse = client.postForEntity("/promotions",
                                 createRequestDto,
                                 PromotionResponseDto.class);
                 PromotionResponseDto createdPromotion = createResponse.getBody();
@@ -270,7 +270,7 @@ public class PromotionIntegrationTests {
                 assertNotNull(deleteResponse);
                 assertEquals(HttpStatus.OK, deleteResponse.getStatusCode());
 
-                ResponseEntity<PromotionListDto> getResponse = client.getForEntity("/promotions/",
+                ResponseEntity<PromotionListDto> getResponse = client.getForEntity("/promotions",
                                 PromotionListDto.class);
                 List<PromotionResponseDto> promotions = getResponse.getBody().getPromotions();
                 boolean promotionExists = promotions.stream()
@@ -314,7 +314,7 @@ public class PromotionIntegrationTests {
                 createRequestDto.setPromotedGameIds(Arrays.asList(game.getGameEntityId()));
                 createRequestDto.setPromotedCategoryIds(Arrays.asList());
 
-                client.postForEntity("/promotions/", createRequestDto, PromotionResponseDto.class);
+                client.postForEntity("/promotions", createRequestDto, PromotionResponseDto.class);
 
                 // Act
                 ResponseEntity<PromotionListDto> response = client.getForEntity(
@@ -368,7 +368,7 @@ public class PromotionIntegrationTests {
                 requestDto.setPromotedCategoryIds(Arrays.asList());
 
                 // Act
-                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions/", requestDto,
+                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions", requestDto,
                                 ErrorResponseDto.class);
 
                 // Assert
@@ -402,7 +402,7 @@ public class PromotionIntegrationTests {
                 requestDto.setPromotedCategoryIds(Arrays.asList(category.getCategoryId()));
 
                 // Act
-                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions/", requestDto,
+                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions", requestDto,
                                 ErrorResponseDto.class);
 
                 // Assert
@@ -428,7 +428,7 @@ public class PromotionIntegrationTests {
                 requestDto.setPromotedCategoryIds(Arrays.asList());
 
                 // Act
-                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions/", requestDto,
+                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions", requestDto,
                                 ErrorResponseDto.class);
 
                 // Assert
@@ -454,7 +454,7 @@ public class PromotionIntegrationTests {
                 requestDto.setPromotedCategoryIds(Arrays.asList());
 
                 // Act
-                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions/", requestDto,
+                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions", requestDto,
                                 ErrorResponseDto.class);
 
                 // Assert
@@ -485,7 +485,7 @@ public class PromotionIntegrationTests {
                 requestDto.setPromotedCategoryIds(Arrays.asList());
 
                 // Act
-                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions/", requestDto,
+                ResponseEntity<ErrorResponseDto> response = client.postForEntity("/promotions", requestDto,
                                 ErrorResponseDto.class);
 
                 // Assert

@@ -3,13 +3,7 @@ import { LoginUser } from '../model/user/LoginUser';
 import { UserType } from '../model/user/UserType';
 import apiService from '../config/axiosConfig';
 import { SignupUser } from '../model/user/SignupUser';
-
-export interface StoredUserData {
-  email: string;
-  customerId?: number;
-  staffId?: number;
-  userType: UserType;
-}
+import { StoredUserData } from '../model/UserData';
 
 // Function to log in a user
 export async function login(user: LoginUser) {
@@ -35,18 +29,27 @@ export async function login(user: LoginUser) {
   try {
     // Make a POST request to the appropriate endpoint
     const response = await apiService.post(endpoint, { email, password });
-    
+
+    let staffId: number | undefined;
+    let customerId: number | undefined;
+
     let userData: StoredUserData = {
       email,
-      userType
+      userType,
+      staffId,
+      customerId,
     };
 
     if (userType === UserType.CUSTOMER) {
       userData.customerId = response.data.customerId;
-    } else if (userType === UserType.EMPLOYEE || userType === UserType.MANAGER) {
+    } else if (
+      userType === UserType.EMPLOYEE ||
+      userType === UserType.MANAGER
+    ) {
       userData.staffId = response.data.staffId;
     }
-    
+
+    // Return user data for local storage
     return userData;
   } catch (error) {
     if (isAxiosError(error) && error.response?.status === 400) {

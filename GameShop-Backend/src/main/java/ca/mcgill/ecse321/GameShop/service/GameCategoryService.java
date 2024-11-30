@@ -237,4 +237,118 @@ public class GameCategoryService {
             }
         }
     }
+
+    /**
+     * Retrieves the category with the specified ID.
+     * 
+     * @param categoryId the ID of the category to retrieve.
+     * @return the category with the specified ID.
+     * @throws GameShopException if the category with the given ID is not found.
+     */
+    @Transactional
+    public GameCategory getGameCategoryById(Integer categoryId) {
+        GameCategory gameCategory = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
+        if (gameCategory == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game category with ID " + categoryId + " not found.");
+        }
+        return gameCategory;
+    }
+
+    /**
+     * Assign category to game
+     * 
+     * @param categoryId the ID of the category to assign.
+     * @param gameId     the ID of the game to assign the category to.
+     * @throws GameShopException if the category or game with the given ID is not
+     */
+    @Transactional
+    public GameCategory assignCategoryToGame(Integer categoryId, Integer gameId) {
+        GameCategory gameCategory = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
+        if (gameCategory == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game category with ID " + categoryId + " not found.");
+        }
+
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game with ID " + gameId + " not found.");
+        }
+
+        if (gameCategory.getGames().contains(game)) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Game already assigned to this category.");
+        }
+
+        gameCategory.addGame(game);
+
+        return gameCategoryRepository.save(gameCategory);
+    }
+
+    /**
+     * unassign category from game
+     * 
+     * @param categoryId the ID of the category to unassign.
+     * @param gameId     the ID of the game to unassign the category from.
+     * @throws GameShopException if the category or game with the given ID is not
+     */
+    @Transactional
+    public GameCategory unassignCategoryFromGame(Integer categoryId, Integer gameId) {
+        GameCategory gameCategory = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
+        if (gameCategory == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game category with ID " + categoryId + " not found.");
+        }
+
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game with ID " + gameId + " not found.");
+        }
+
+        gameCategory.removeGame(game);
+        return gameCategoryRepository.save(gameCategory);
+    }
+
+    /**
+     * Assign category to promotion
+     * 
+     * @param categoryId    the ID of the category to assign.
+     * @param promotionId   the ID of the promotion to assign the category to.
+     * @throws GameShopException if the category or promotion with the given ID is
+     */
+    @Transactional
+    public GameCategory assignCategoryToPromotion(Integer categoryId, Integer promotionId) {
+        GameCategory gameCategory = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
+        if (gameCategory == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game category with ID " + categoryId + " not found.");
+        }
+
+        Promotion promotion = promotionRepository.findPromotionByPromotionId(promotionId);
+        if (promotion == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Promotion with ID " + promotionId + " not found.");
+        }
+
+        gameCategory.addPromotion(promotion);
+       return gameCategoryRepository.save(gameCategory);
+    }
+
+    /**
+     * unassign category from promotion
+     * 
+     * @param categoryId    the ID of the category to unassign.
+     * @param promotionId   the ID of the promotion to unassign the category from.
+     * @throws GameShopException if the category or promotion with the given ID is
+     */
+    @Transactional
+    public GameCategory unassignCategoryFromPromotion(Integer categoryId, Integer promotionId) {
+        GameCategory gameCategory = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
+        if (gameCategory == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game category with ID " + categoryId + " not found.");
+        }
+
+        Promotion promotion = promotionRepository.findPromotionByPromotionId(promotionId);
+        if (promotion == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Promotion with ID " + promotionId + " not found.");
+        }
+
+        gameCategory.removePromotion(promotion);
+        return gameCategoryRepository.save(gameCategory);
+    }
+
 }

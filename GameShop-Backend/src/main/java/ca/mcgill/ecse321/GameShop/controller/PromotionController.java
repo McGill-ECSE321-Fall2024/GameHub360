@@ -26,7 +26,7 @@ public class PromotionController {
      *
      * @return A list of all current promotions.
      */
-    @GetMapping("/")
+    @GetMapping
     public PromotionListDto getAllPromotions() {
         List<PromotionResponseDto> promotionDtos = new ArrayList<PromotionResponseDto>();
         for (Promotion promotion : promotionService.getAllPromotions()) {
@@ -41,7 +41,7 @@ public class PromotionController {
      * @param promotionRequestDto The details of the new promotion.
      * @return The created promotion details.
      */
-    @PostMapping("/")
+    @PostMapping
     public PromotionResponseDto createPromotion(
             @Valid @RequestBody PromotionRequestDto promotionRequestDto) {
         Promotion promotion = promotionService.createPromotion(promotionRequestDto);
@@ -56,7 +56,7 @@ public class PromotionController {
      * @return The updated promotion information.
      */
     @PutMapping("/{promotionId}")
-    public PromotionResponseDto updatePromotion(@PathVariable Integer promotionId,
+    public PromotionResponseDto updatePromotion(@PathVariable("promotionId") Integer promotionId,
             @RequestBody PromotionRequestDto promotionRequestDto) {
         Promotion promotion = promotionService.updatePromotion(promotionId, promotionRequestDto);
         return new PromotionResponseDto(promotion);
@@ -68,7 +68,7 @@ public class PromotionController {
      * @param promotionId The ID of the promotion to delete.
      */
     @DeleteMapping("/{promotionId}")
-    public void deletePromotion(@PathVariable Integer promotionId) {
+    public void deletePromotion(@PathVariable("promotionId") Integer promotionId) {
         promotionService.deletePromotion(promotionId);
     }
 
@@ -79,7 +79,7 @@ public class PromotionController {
      * @return A list of promotions associated with the given game.
      */
     @GetMapping("/game/{gameId}")
-    public PromotionListDto getPromotionsByGame(@PathVariable Integer gameId) {
+    public PromotionListDto getPromotionsByGame(@PathVariable("gameId") Integer gameId) {
         List<PromotionResponseDto> promotionDtos = new ArrayList<PromotionResponseDto>();
         for (Promotion promotion : promotionService.getPromotionsByGameId(gameId)) {
             promotionDtos.add(new PromotionResponseDto(promotion));
@@ -94,7 +94,7 @@ public class PromotionController {
      * @return A list of promotions associated with the given category.
      */
     @GetMapping("/category/{categoryId}")
-    public PromotionListDto getPromotionsByCategory(@PathVariable Integer categoryId) {
+    public PromotionListDto getPromotionsByCategory(@PathVariable("categoryId") Integer categoryId) {
         List<PromotionResponseDto> promotionDtos = new ArrayList<PromotionResponseDto>();
         for (Promotion promotion : promotionService.getPromotionsByCategoryId(categoryId)) {
             promotionDtos.add(new PromotionResponseDto(promotion));

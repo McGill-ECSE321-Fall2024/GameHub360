@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestResponseDto;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestsListDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteResponseDto;
 import ca.mcgill.ecse321.GameShop.model.GameRequest;
@@ -58,9 +59,8 @@ public class GameRequestController {
      * @return a response entity indicating the result of the operation
      */
     @DeleteMapping("/{requestId}")
-    public Void deleteGameRequest(@PathVariable("requestId") int requestId) {
+    public void deleteGameRequest(@PathVariable("requestId") int requestId) {
         gameRequestService.deleteGameRequest(requestId);
-        return null;
     }
 
     /**
@@ -118,9 +118,12 @@ public class GameRequestController {
      * @return a list of all game requests as a response entity
      */
     @GetMapping
-    public List<GameRequestResponseDto> getAllRequests() {
+    public GameRequestsListDto getAllRequests() {
         List<GameRequest> requests = gameRequestService.getAllRequests();
-        return requests.stream().map(GameRequestResponseDto::new).collect(Collectors.toList());
+        List<GameRequestResponseDto> responseDtos = requests.stream()
+                .map(GameRequestResponseDto::new)
+                .collect(Collectors.toList());
+        return new GameRequestsListDto(responseDtos);
     }
 
     /**
