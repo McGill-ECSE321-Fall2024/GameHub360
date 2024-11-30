@@ -126,4 +126,46 @@ public class EmployeeController {
         }
         return new ActivityLogListDto(activityLogsDto);
     }
+
+    /**
+     * Endpoint to retrieve all employees.
+     *
+     * @param isActive (Optional) Filter by active/inactive employees.
+     * @return A list of employee response DTOs.
+     */
+    @GetMapping
+    public List<EmployeeResponseDto> getAllEmployees(@RequestParam(value = "isActive", required = false) Boolean isActive) {
+        List<EmployeeAccount> employees;
+        if (isActive != null) {
+            employees = employeeService.getEmployeesByStatus(isActive);
+        } else {
+            employees = employeeService.getAllEmployees();
+        }
+        return employees.stream()
+                .map(EmployeeResponseDto::new)
+                .toList();
+    }
+
+    /**
+     * Endpoint to fetch details of a specific employee.
+     *
+     * @param employeeId The ID of the employee.
+     * @return The employee response DTO with logs.
+     */
+    @GetMapping("/{employeeId}")
+    public EmployeeResponseDto getEmployeeDetails(@PathVariable("employeeId") Integer employeeId) {
+        EmployeeAccount employee = employeeService.getEmployeeById(employeeId);
+        return new EmployeeResponseDto(employee);
+    }
+
+    /**
+     * Endpoint to check if an employee is active.
+     *
+     * @param employeeId The ID of the employee.
+     * @return True if the employee is active, otherwise false.
+     */
+    @GetMapping("/{employeeId}/status")
+    public boolean isEmployeeActive(@PathVariable("employeeId") Integer employeeId) {
+        return employeeService.isEmployeeActive(employeeId);
+    }
 }

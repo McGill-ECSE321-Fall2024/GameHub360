@@ -90,4 +90,32 @@ public class ReviewController {
     public void deleteReply(@PathVariable("replyId") int replyId) {
         reviewService.deleteReply(replyId);
     }
+
+    /**
+     * Get all reviews organized by game (for manager use).
+     *
+     * @return List of reviews grouped by games
+     */
+    @GetMapping("/manager/reviews")
+    public List<ReviewResponseDto> getAllReviewsOrganizedByGame() {
+        return reviewService.getAllReviewsOrganizedByGame();
+    }
+
+    /**
+     * Delete or reply to a specific review by ID.
+     *
+     * @param reviewId The ID of the review.
+     * @param replyRequestDto Optional reply to the review.
+     */
+    @PutMapping("/reviews/{reviewId}")
+    public void manageReview(
+            @PathVariable("reviewId") int reviewId,
+            @RequestBody(required = false) ReplyRequestDto replyRequestDto) {
+
+        if (replyRequestDto != null) {
+            reviewService.replyToReview(reviewId, replyRequestDto);
+        } else {
+            reviewService.deleteReview(reviewId);
+        }
+    }
 }

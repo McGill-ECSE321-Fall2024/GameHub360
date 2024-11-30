@@ -7,6 +7,7 @@ import ca.mcgill.ecse321.GameShop.model.Promotion;
 import ca.mcgill.ecse321.GameShop.service.PromotionService;
 import jakarta.validation.Valid;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,9 +28,17 @@ public class PromotionController {
      * @return A list of all current promotions.
      */
     @GetMapping("/")
-    public PromotionListDto getAllPromotions() {
-        List<PromotionResponseDto> promotionDtos = new ArrayList<PromotionResponseDto>();
-        for (Promotion promotion : promotionService.getAllPromotions()) {
+    public PromotionListDto getAllPromotions(@RequestParam(value = "type", required = false) String type) {
+        List<PromotionResponseDto> promotionDtos = new ArrayList<>();
+        List<Promotion> promotions;
+
+        if (type != null) {
+            promotions = promotionService.getPromotionsByType(type);
+        } else {
+            promotions = promotionService.getAllPromotions();
+        }
+
+        for (Promotion promotion : promotions) {
             promotionDtos.add(new PromotionResponseDto(promotion));
         }
         return new PromotionListDto(promotionDtos);
@@ -42,10 +51,10 @@ public class PromotionController {
      * @return The created promotion details.
      */
     @PostMapping("/")
-    public PromotionResponseDto createPromotion(
+    public ResponseEntity<PromotionResponseDto> createPromotion(
             @Valid @RequestBody PromotionRequestDto promotionRequestDto) {
         Promotion promotion = promotionService.createPromotion(promotionRequestDto);
-        return new PromotionResponseDto(promotion);
+        return ResponseEntity.status(201).body(new PromotionResponseDto(promotion));
     }
 
     /**
@@ -68,8 +77,9 @@ public class PromotionController {
      * @param promotionId The ID of the promotion to delete.
      */
     @DeleteMapping("/{promotionId}")
-    public void deletePromotion(@PathVariable Integer promotionId) {
+    public ResponseEntity<Void> deletePromotion(@PathVariable Integer promotionId) {
         promotionService.deletePromotion(promotionId);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -97,6 +107,21 @@ public class PromotionController {
     public PromotionListDto getPromotionsByCategory(@PathVariable Integer categoryId) {
         List<PromotionResponseDto> promotionDtos = new ArrayList<PromotionResponseDto>();
         for (Promotion promotion : promotionService.getPromotionsByCategoryId(categoryId)) {
+            promotionDtos.add(new PromotionResponseDto(promotion));
+        }
+        return new PromotionListDto(promotionDtos);
+    }
+
+    /**
+     * Endpoint to get promotions by type.
+     *
+     * @param type The type of the promotion (e.g., GAME, CATEGORY).
+     * @return A list of promotions matching the given type.
+     */
+    @GetMapping("/type/{type}")
+    public PromotionListDto getPromotionsByType(@PathVariable String type) {
+        List<PromotionResponseDto> promotionDtos = new ArrayList<>();
+        for (Promotion promotion : promotionService.getPromotionsByType(type)) {
             promotionDtos.add(new PromotionResponseDto(promotion));
         }
         return new PromotionListDto(promotionDtos);
