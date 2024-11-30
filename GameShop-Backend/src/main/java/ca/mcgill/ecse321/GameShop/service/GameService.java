@@ -1,7 +1,9 @@
 package ca.mcgill.ecse321.GameShop.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,8 +14,10 @@ import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
+import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
 
 @Service
 public class GameService {
@@ -23,6 +27,9 @@ public class GameService {
 
     @Autowired
     private GameCategoryRepository gameCategoryRepository;
+
+    @Autowired
+    private OrderGameRepository orderGameRepository;
 
     /**
      * Create a new game directly.
@@ -277,5 +284,32 @@ public class GameService {
 
         game.setPrice(price);
         return gameRepository.save(game);
+    }
+
+    /**
+     * Retrieves a list of games by their IDs.
+     *
+     * @param gameIds A list of game IDs to fetch.
+     * @return A list of Game entities matching the provided IDs.
+     * @throws GameShopException If no games are found for the given IDs.
+     */
+    @Transactional
+    public List<Game> getGamesByOrderGamesIds(List<Integer> orderGameIds) {
+        // Convert Iterable to List
+        List<OrderGame> orderGames = StreamSupport
+                .stream(orderGameRepository.findAllById(orderGameIds).spliterator(), false)
+                .collect(Collectors.toList());
+
+        if (orderGames.isEmpty()) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "No games found for the given IDs.");
+        }
+
+        List<Game> games = new ArrayList<>();
+
+        for (OrderGame orderGame: orderGames){
+            games.add(orderGame.getGame());
+        }
+
+        return games;
     }
 }

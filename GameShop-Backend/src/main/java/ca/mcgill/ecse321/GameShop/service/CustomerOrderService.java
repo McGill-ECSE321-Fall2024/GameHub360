@@ -60,6 +60,9 @@ public class CustomerOrderService {
         CustomerOrder customerOrder = new CustomerOrder(java.sql.Date.valueOf(LocalDate.now()), customer,
                 paymentDetails);
 
+        // Set status to delivered
+        customerOrder.setOrderStatus(OrderStatus.DELIVERED);
+
         // Create and add OrderGame objects to the CustomerOrder
         for (Game game : games) {
             OrderGame orderGame = new OrderGame(customerOrder, game);

@@ -29,6 +29,18 @@ public class GameRequestDto {
     @NotNull(message = "Category IDs are required.")
     private List<Integer> categoryIds;
 
+
+    // Constructor
+    public GameRequestDto(String name, String description, String imageURL, int quantityInStock, Boolean isAvailable, double price, List<Integer> categoryIds) {
+        this.name = name;
+        this.description = description;
+        this.imageURL = imageURL;
+        this.quantityInStock = quantityInStock;
+        this.isAvailable = isAvailable;
+        this.price = price;
+        this.categoryIds = categoryIds;
+    }
+
     // Getters and Setters
     public String getName() {
         return name;

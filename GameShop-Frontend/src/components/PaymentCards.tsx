@@ -118,6 +118,13 @@ const PaymentCards: React.FC<PaymentCardsProps> = ({
               variant="default"
               className="hover:bg-blue-600 hover:text-white"
               onClick={handleAdd}
+              disabled={
+                !newCard.cardName ||
+                !newCard.cardNumber ||
+                !newCard.postalCode ||
+                !newCard.expMonth ||
+                !newCard.expYear
+              } // Disable if any field is empty
             >
               Save
             </Button>

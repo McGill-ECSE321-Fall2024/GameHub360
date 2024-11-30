@@ -32,6 +32,26 @@ export interface PaymentDetailsRequest {
     expYear: number;
   }
 
+export interface CustomerOrderRequest {
+  orderedGameIds: number[];
+  paymentInformationId: number;
+  customerId: number;
+}
+
+export interface CustomerOrderResponse {
+  orderId: number;
+  orderDate: string;
+  customerId: number;
+  paymentId: number;
+  orderGameIds: number[];
+  totalPrice: number;
+  orderStatus: string;
+}
+
+export interface OrderHistoryResponse {
+  orders: CustomerOrderResponse[];
+}
+
 /**
  * Retrieves the customer's profile details.
  * @param customerId The ID of the customer to retrieve.
@@ -108,7 +128,6 @@ export async function getCustomerPaymentCards(
   ): Promise<PaymentCardListResponse> {
     try {
       const response = await apiService.get(`/customers/${customerId}/cards`);
-      console.log("here is the fetched card list: ", response);
       return response.data as PaymentCardListResponse;
     } catch (error) {
       if (isAxiosError(error)) {
@@ -207,4 +226,47 @@ export async function updatePaymentCard(
     );
   }
 }
-  
+
+/**
+ * Create a new customer order.
+ * @param orderRequest - The details for the order creation.
+ * @returns A promise resolving to the created order details.
+ */
+export const createCustomerOrder = async (
+  orderRequest: CustomerOrderRequest
+): Promise<CustomerOrderResponse> => {
+  try {
+    const response = await apiService.post<CustomerOrderResponse>("/orders", orderRequest);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating customer order:", error);
+    throw new Error("Unable to place the order. Please try again.");
+  }
+};
+
+/**
+ * Retrieves the order history of a specific customer.
+ * @param customerId The ID of the customer.
+ * @returns A promise that resolves to the customer's order history.
+ */
+export const getCustomerOrderHistory = async (
+  customerId: number
+): Promise<OrderHistoryResponse> => {
+  try {
+    const response = await apiService.get<OrderHistoryResponse>(
+      `/customers/${customerId}/orders`
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error("No orders found for this customer.");
+      }
+      if (error.response?.status === 500) {
+        throw new Error("Internal server error: Unable to fetch orders.");
+      }
+    }
+    throw new Error("An unexpected error occurred while fetching orders.");
+  }
+};
+

@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -10,7 +11,9 @@ import ca.mcgill.ecse321.GameShop.dto.GameListDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.ValidationGroups;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.service.GameService;
 
 @CrossOrigin(origins = "*")
@@ -174,5 +177,21 @@ public class GameController {
             @RequestParam Double price) {
         Game updatedGame = gameService.updateGamePrice(gameId, price);
         return new GameResponseDto(updatedGame);
+    }
+
+    /**
+     * Retrieves a list of order games by their IDs.
+     *
+     * @param gameIds A list of game IDs to retrieve.
+     * @return A GameListDto containing the details of the requested games.
+     * @throws GameShopException If no games are found for the given IDs.
+     */
+    @PostMapping("/details")
+    public GameListDto getGamesByOrderGameIds(@RequestBody List<Integer> orderGameIds) {
+        List<Game> games = gameService.getGamesByOrderGamesIds(orderGameIds);
+        List<GameResponseDto> responseDtos = games.stream()
+                .map(GameResponseDto::new)
+                .toList();
+        return new GameListDto(responseDtos);
     }
 }
