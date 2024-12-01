@@ -6,8 +6,8 @@ import {
   addNoteToGameRequest,
   processGameRequest,
 } from '../../api/gameRequestService';
-import { GameRequest, RequestNote } from '../../api/gameRequestService';
 import { getAuthUser } from '../../state/authState';
+import { GameRequest, RequestNote } from '../../model/manager/GameRequest';
 
 Modal.setAppElement('#root'); // Ensure accessibility
 

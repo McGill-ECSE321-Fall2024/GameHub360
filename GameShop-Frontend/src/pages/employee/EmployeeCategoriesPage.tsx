@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getAllCategories, Category } from '../../api/categoryService';
-import { EmployeeRouteNames } from '../../model/routeNames/EmployeeRouteNames';
+import { useNavigate } from 'react-router-dom';
+import { getAllCategories } from '../../api/categoryService';
+import { Category } from '../../model/manager/Category';
+
 
 const EmployeeCategoriesPage = () => {
   const [categories, setCategories] = useState<Category[]>([]);

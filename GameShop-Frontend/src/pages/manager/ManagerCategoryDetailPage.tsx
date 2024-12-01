@@ -8,10 +8,11 @@ import {
   unassignCategoryFromGame,
   assignCategoryToPromotion,
   unassignCategoryFromPromotion,
-  Category,
 } from '../../api/categoryService';
-import { getAllGames, Game } from '../../api/gameService';
+import { getAllGames } from '../../api/gameService';
 import { getAllPromotions, Promotion } from '../../api/promotionsService';
+import { Category } from '../../model/manager/Category';
+import { Game } from '../../model/manager/Game';
 
 const CategoryDetailPage = () => {
   const { id } = useParams<{ id: string }>();

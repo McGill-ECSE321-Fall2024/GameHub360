@@ -31,7 +31,7 @@ public class GameRequestController {
      * @param request the game request data transfer object
      * @return the created game request as a response entity
      */
-    @PostMapping("/")
+    @PostMapping
     public GameRequestResponseDto submitGameRequest(@RequestBody @Valid GameRequestRequestDto request) {
         GameRequest createdRequest = gameRequestService.createGameRequest(request);
         return new GameRequestResponseDto(createdRequest);

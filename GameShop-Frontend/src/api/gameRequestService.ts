@@ -126,3 +126,29 @@ export async function processGameRequest(
     );
   }
 }
+
+export async function createGameRequest(
+  request: {
+    name: string;
+    description: string;
+    imageUrl: string;
+    requestDate: string; // ISO string
+    staffId: number;
+    categoryIds: number[];
+  }
+): Promise<GameRequest> {
+  try {
+    const response = await apiService.post('/games/request', request);
+    return response.data as GameRequest;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error('Staff member not found.');
+      }
+      if (error.response?.status === 400) {
+        throw new Error('Invalid game request details.');
+      }
+    }
+    throw new Error('An unexpected error occurred while creating the game request.');
+  }
+}

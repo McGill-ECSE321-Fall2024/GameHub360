@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getGameRequestById, addNoteToGameRequest } from '../../api/gameRequestService';
-import { GameRequest, RequestNote } from '../../api/gameRequestService';
 import { getAuthUser } from '../../state/authState';
+import { GameRequest, RequestNote } from '../../model/manager/GameRequest';
 
 const GameRequestDetailPage = () => {
   const { id } = useParams<{ id: string }>();

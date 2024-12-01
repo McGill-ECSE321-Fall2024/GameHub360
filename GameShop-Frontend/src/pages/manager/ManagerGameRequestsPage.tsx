@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllGameRequests, GameRequest } from '../../api/gameRequestService';
+import { getAllGameRequests } from '../../api/gameRequestService';
 import { ManagerRouteNames } from '../../model/routeNames/ManagerRouteNames';
+import { GameRequest } from '../../model/manager/GameRequest';
 
 const GameRequestsPage = () => {
   const [gameRequests, setGameRequests] = useState<GameRequest[]>([]);
