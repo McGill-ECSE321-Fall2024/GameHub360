@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { getAllCategories } from '../../api/categoryService';
 import { Category } from '../../model/manager/Category';
 
-
 const EmployeeCategoriesPage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
@@ -41,71 +40,74 @@ const EmployeeCategoriesPage = () => {
   }, [filter, categories]);
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Categories</h2> 
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-semibold text-gray-800">Categories</h2>
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2 rounded-lg shadow-md transition duration-200"
+          onClick={() => navigate('/employee/categories/create')}
+        >
+          Create New Category
+        </button>
       </div>
-      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
 
-      <div className="mb-4">
-        <button
-          className={`px-4 py-2 rounded-md ${
-            filter === 'ALL' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-          }`}
-          onClick={() => setFilter('ALL')}
-        >
-          All
-        </button>
-        <button
-          className={`px-4 py-2 rounded-md ml-2 ${
-            filter === 'GENRE' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-          }`}
-          onClick={() => setFilter('GENRE')}
-        >
-          Genre
-        </button>
-        <button
-          className={`px-4 py-2 rounded-md ml-2 ${
-            filter === 'CONSOLE' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-          }`}
-          onClick={() => setFilter('CONSOLE')}
-        >
-          Console
-        </button>
+      {errorMessage && (
+        <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-lg">
+          {errorMessage}
+        </div>
+      )}
+
+      {/* Filter Buttons */}
+      <div className="mb-6 flex space-x-4">
+        {['ALL', 'GENRE', 'CONSOLE'].map((type) => (
+          <button
+            key={type}
+            className={`px-5 py-2 rounded-lg shadow-sm font-medium transition duration-200 ${
+              filter === type
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+            onClick={() => setFilter(type as 'ALL' | 'GENRE' | 'CONSOLE')}
+          >
+            {type}
+          </button>
+        ))}
       </div>
 
       {loading ? (
-        <p className="text-gray-700">Loading categories...</p>
+        <p className="text-gray-700 text-lg">Loading categories...</p>
+      ) : filteredCategories.length === 0 ? (
+        <p className="text-gray-700 text-lg">No categories found for the selected filter.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
+        <div className="overflow-x-auto bg-white rounded-lg shadow-md">
+          <table className="min-w-full border-collapse">
+            <thead className="bg-gray-100 border-b">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Status
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody>
               {filteredCategories.map((category) => (
                 <tr
                   key={category.categoryId}
-                  className="hover:bg-gray-100 cursor-pointer"
+                  className="border-b hover:bg-gray-50 cursor-pointer transition"
                   onClick={() => navigate(`/employee/categories/${category.categoryId}`)}
                 >
-                  <td className="px-6 py-4 text-sm text-gray-900">{category.categoryId}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{category.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{category.categoryType}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm text-gray-800">{category.categoryId}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{category.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{category.categoryType}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">
                     {category.available ? 'Available' : 'Unavailable'}
                   </td>
                 </tr>
