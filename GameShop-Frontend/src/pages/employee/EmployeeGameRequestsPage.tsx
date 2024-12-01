@@ -33,26 +33,32 @@ const EmployeeGameRequestsPage = () => {
   });
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Game Requests</h2>
+        <h2 className="text-3xl font-semibold text-gray-800">Game Requests</h2>
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-md"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2 rounded-lg shadow-md transition duration-200"
           onClick={() => navigate(EmployeeRouteNames.GAME_REQUEST_CREATE)}
         >
-          Create New Game Request
+          Create New Request
         </button>
       </div>
 
-      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
+      {errorMessage && (
+        <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-lg">
+          {errorMessage}
+        </div>
+      )}
 
       {/* Filter Buttons */}
-      <div className="mb-4 flex gap-4">
+      <div className="mb-6 flex space-x-4">
         {['ALL', 'SUBMITTED', 'APPROVED', 'REFUSED'].map((status) => (
           <button
             key={status}
-            className={`px-4 py-2 rounded-md ${
-              filter === status ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+            className={`px-5 py-2 rounded-lg shadow-sm font-medium transition duration-200 ${
+              filter === status
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
             onClick={() => setFilter(status as 'ALL' | 'SUBMITTED' | 'APPROVED' | 'REFUSED')}
           >
@@ -62,49 +68,51 @@ const EmployeeGameRequestsPage = () => {
       </div>
 
       {loading ? (
-        <p className="text-gray-700">Loading game requests...</p>
+        <p className="text-gray-700 text-lg">Loading game requests...</p>
+      ) : filteredRequests.length === 0 ? (
+        <p className="text-gray-700 text-lg">No game requests found for the selected filter.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
+        <div className="overflow-x-auto bg-white rounded-lg shadow-md">
+          <table className="min-w-full border-collapse">
+            <thead className="bg-gray-100 border-b">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Requested By
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">
                   Request Date
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody>
               {filteredRequests.map((request) => (
                 <tr
                   key={request.id}
-                  className="hover:bg-gray-100 cursor-pointer"
+                  className="border-b hover:bg-gray-50 cursor-pointer transition"
                   onClick={() =>
                     navigate(
                       EmployeeRouteNames.GAME_REQUEST_DETAIL.replace(':id', request.id.toString())
                     )
                   }
                 >
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.id}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.description}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.requestStatus}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{request.staffId}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm text-gray-800">{request.id}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{request.name}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{request.description}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{request.requestStatus}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">{request.staffId}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">
                     {new Date(request.requestDate).toLocaleDateString()}
                   </td>
                 </tr>

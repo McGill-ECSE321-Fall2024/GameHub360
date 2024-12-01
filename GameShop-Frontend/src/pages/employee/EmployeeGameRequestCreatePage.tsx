@@ -48,7 +48,7 @@ const EmployeeGameRequestCreatePage = () => {
         description: formData.description,
         imageUrl: formData.imageUrl,
         requestDate: new Date().toISOString(),
-        staffId, // Use the retrieved employee ID
+        staffId,
         categoryIds,
       });
       navigate('/employee/game-requests'); // Redirect to game requests page
@@ -59,53 +59,69 @@ const EmployeeGameRequestCreatePage = () => {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900">Create New Game Request</h2>
-      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h2 className="mb-6 text-3xl font-semibold text-gray-800">Create New Game Request</h2>
+      {errorMessage && (
+        <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-lg">{errorMessage}</div>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 shadow-md rounded-lg">
+        <div className="space-y-1">
+          <label className="block text-gray-700 font-medium">Name:</label>
           <input
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full border rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter the name"
             required
           />
         </div>
-        <div>
-          <label>Description:</label>
+        <div className="space-y-1">
+          <label className="block text-gray-700 font-medium">Description:</label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full border rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter the description"
+            rows={4}
             required
           />
         </div>
-        <div>
-          <label>Image URL:</label>
+        <div className="space-y-1">
+          <label className="block text-gray-700 font-medium">Image URL:</label>
           <input
             type="text"
             value={formData.imageUrl}
             onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-            className="w-full border rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter the image URL"
             required
           />
         </div>
-        <div>
-          <label>Category IDs (comma-separated):</label>
+        <div className="space-y-1">
+          <label className="block text-gray-700 font-medium">Category IDs (comma-separated):</label>
           <input
             type="text"
             value={formData.categoryIds}
             onChange={(e) => setFormData({ ...formData, categoryIds: e.target.value })}
-            className="w-full border rounded-md p-2"
+            className="w-full border border-gray-300 rounded-md p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter category IDs (e.g., 1, 2, 3)"
             required
           />
         </div>
-        <button type="submit" className="mt-4 bg-green-500 text-white px-4 py-2 rounded">
+        <button
+          type="submit"
+          className="w-full py-3 px-5 bg-blue-500 text-white font-medium text-lg rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
+        >
           Create Game Request
         </button>
       </form>
+      <button
+        onClick={() => navigate('/employee/game-requests')}
+        className="mt-4 w-full py-3 px-5 bg-gray-500 text-white font-medium text-lg rounded-lg shadow-md hover:bg-gray-600 transition duration-200"
+      >
+        Back
+      </button>
     </div>
   );
 };

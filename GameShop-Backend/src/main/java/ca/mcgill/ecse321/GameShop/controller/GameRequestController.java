@@ -137,4 +137,18 @@ public class GameRequestController {
         GameRequest request = gameRequestService.getRequest(requestId);
         return new GameRequestResponseDto(request);
     }
+
+    /**
+     * Retrieves all notes associated with a game request.
+     *
+     * @param requestId the ID of the game request
+     * @return a list of all notes associated with the game request
+     */
+    @GetMapping("/{requestId}/notes")
+    public List<RequestNoteResponseDto> getNotes(@PathVariable("requestId") int requestId) {
+        List<RequestNote> notes = gameRequestService.getNotes(requestId);
+        return notes.stream()
+                .map(RequestNoteResponseDto::new)
+                .collect(Collectors.toList());
+    }
 }

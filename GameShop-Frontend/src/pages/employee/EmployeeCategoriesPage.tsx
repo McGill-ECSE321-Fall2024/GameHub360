@@ -42,7 +42,9 @@ const EmployeeCategoriesPage = () => {
 
   return (
     <div className="p-6">
-
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Categories</h2> 
+      </div>
       {errorMessage && <p className="text-red-600">{errorMessage}</p>}
 
       <div className="mb-4">

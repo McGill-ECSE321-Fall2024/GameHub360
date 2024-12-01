@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getGameRequestById, addNoteToGameRequest } from '../../api/gameRequestService';
+import { getGameRequestById, addNoteToGameRequest, getGameRequestNotes } from '../../api/gameRequestService';
 import { getAuthUser } from '../../state/authState';
 import { GameRequest, RequestNote } from '../../model/manager/GameRequest';
+import Modal from 'react-modal';
 
 const GameRequestDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +13,8 @@ const GameRequestDetailPage = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [noteInput, setNoteInput] = useState('');
   const [staffId, setStaffId] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notes, setNotes] = useState<RequestNote[]>([]);
 
   useEffect(() => {
     const fetchRequest = async () => {
@@ -19,6 +22,8 @@ const GameRequestDetailPage = () => {
         if (id) {
           const request = await getGameRequestById(parseInt(id));
           setGameRequest(request);
+          const fetchedNotes = await getGameRequestNotes(parseInt(id));
+          setNotes(fetchedNotes);
         }
       } catch (error) {
         console.error('Error fetching game request:', error);
@@ -43,7 +48,6 @@ const GameRequestDetailPage = () => {
       }
     };
 
-
     fetchRequest();
     fetchAuthUser();
   }, [id]);
@@ -65,10 +69,7 @@ const GameRequestDetailPage = () => {
         staffWriterId: staffId,
         noteDate: new Date().toISOString(),
       });
-      setGameRequest({
-        ...gameRequest!,
-        noteIds: [...gameRequest!.noteIds, note.noteId],
-      });
+      setNotes([...notes, note]);
       setNoteInput('');
       setErrorMessage(null);
     } catch (error) {
@@ -76,7 +77,15 @@ const GameRequestDetailPage = () => {
       setErrorMessage('Failed to add note.');
     }
   };
-  
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   if (loading)
     return <p className="text-center text-gray-600 font-medium">Loading game request details...</p>;
 
@@ -140,10 +149,46 @@ const GameRequestDetailPage = () => {
             >
               Add Note
             </button>
+            <button
+              onClick={openModal}
+              className="mt-4 ml-4 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
+            >
+              View Notes
+            </button>
           </div>
-
         </div>
       )}
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="View Notes"
+        className="fixed inset-0 flex items-center justify-center p-4 bg-gray-800 bg-opacity-75"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+      >
+        <div className="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full">
+          <h2 className="text-2xl font-bold mb-4">Notes</h2>
+          <button
+            onClick={closeModal}
+            className="absolute top-4 right-4 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
+          >
+            Close
+          </button>
+          <ul className="space-y-4">
+            {notes.map((note) => (
+              <li key={note.noteId} className="bg-gray-100 p-4 rounded-md shadow">
+                <p className="text-gray-800">{note.content}</p>
+                <p className="text-gray-600 text-sm">
+                  {new Date(note.noteDate).toLocaleDateString()}
+                </p>
+                <p className="text-gray-500 text-xs">
+                  Sent by: {note.staffWriterId === staffId ? 'Employee' : 'Manager'} (ID: {note.staffWriterId})
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Modal>
     </div>
   );
 };

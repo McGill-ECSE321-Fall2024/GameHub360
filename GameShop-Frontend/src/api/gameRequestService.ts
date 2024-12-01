@@ -127,6 +127,12 @@ export async function processGameRequest(
   }
 }
 
+/**
+ * Creates a new game request.
+ * @param request The game request data to create.
+ * @returns A promise that resolves to the created game request.
+ * @throws An error if the request fails.
+ */
 export async function createGameRequest(
   request: {
     name: string;
@@ -150,5 +156,25 @@ export async function createGameRequest(
       }
     }
     throw new Error('An unexpected error occurred while creating the game request.');
+  }
+}
+
+/**
+ * Retrieves all notes for a game request.
+ * @param requestId The ID of the game request to retrieve notes for.
+ * @returns A promise that resolves to an array of notes for the game request.
+ * @throws An error if the request fails.
+ */
+export async function getGameRequestNotes(requestId: number): Promise<RequestNote[]> {
+  try {
+    const response = await apiService.get(`/games/request/${requestId}/notes`);
+    return response.data as RequestNote[];
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error('Game request not found.');
+      }
+    }
+    throw new Error('An unexpected error occurred while fetching the game request notes.');
   }
 }

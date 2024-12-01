@@ -23,10 +23,6 @@ const CategoryDetailPage = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
-  const [selectedPromotionId, setSelectedPromotionId] = useState<number | null>(
-    null
-  );
-  const [nameError, setNameError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,7 +117,7 @@ const CategoryDetailPage = () => {
     <div className="container mx-auto p-6 bg-gray-100 rounded shadow-md">
       <div className="flex items-center mb-4">
         <button
-          onClick={() => navigate('/manager/categories')}
+          onClick={() => navigate('/employee/categories')}
           className="bg-gray-200 text-gray-800 px-4 py-2 rounded mr-4"
         >
           Back

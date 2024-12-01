@@ -287,4 +287,20 @@ public class GameRequestService {
         }
         return request;
     }
+
+    /**
+     * Get all notes for a specific game request.
+     * 
+     * @param requestId the ID of the game request to retrieve notes for
+     * @return a list of all notes for the game request as RequestNote objects
+     * @throws GameShopException if game request not found
+     */
+    @Transactional
+    public List<RequestNote> getNotes(Integer requestId) {
+        GameRequest request = gameRequestRepository.findGameRequestByGameEntityId(requestId);
+        if (request == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game request not found");
+        }
+        return request.getAssociatedNotes();
+    }
 }
