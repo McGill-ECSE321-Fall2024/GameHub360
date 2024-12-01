@@ -127,6 +127,17 @@ npm run build
 ```bash
 npm run test
 ```
+### Default Manager Credentials
+
+Upon the startup of the backend, a default manager account is automatically created. This account can be used to log in and access the manager-specific features of the Game Shop.
+
+**Manager Credentials:**
+
+- **Email**: `manager@gameshop.com`  
+- **Password**: `Manager@123`
+
+> ⚠️ **Important**: It is strongly recommended to change the default credentials after the first login to ensure security.
+
 
 ## Deliverable 2
 
