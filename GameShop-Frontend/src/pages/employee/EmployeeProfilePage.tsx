@@ -15,12 +15,12 @@ const EmployeeProfilePage: React.FC = () => {
       try {
         // Retrieve `authUser` from localStorage
         const authUser = getAuthUser();
-        if (!authUser || !authUser.id) {
+        if (!authUser || !authUser.staffId) {
           console.error('No authenticated user found or user ID is missing.');
           return;
         }
         // Fetch the employee profile using the ID
-        const profile = await getEmployeeProfile(authUser.id);
+        const profile = await getEmployeeProfile(authUser.staffId);
         console.log(profile);
         setEmployeeProfile({
           staffId: profile.staffId,

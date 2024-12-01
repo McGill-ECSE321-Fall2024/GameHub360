@@ -18,12 +18,12 @@ const EmployeeGameRequestCreatePage = () => {
     const fetchAuthUser = async () => {
       try {
         const authUser = getAuthUser();
-        if (!authUser || !authUser.id) {
+        if (!authUser || !authUser.staffId) {
           console.error('No authenticated user found or user ID is missing.');
           setErrorMessage('Failed to retrieve employee ID. Please log in again.');
           return;
         }
-        setStaffId(authUser.id);
+        setStaffId(authUser.staffId);
       } catch (error) {
         console.error('Error retrieving authenticated user:', error);
         setErrorMessage('Failed to retrieve employee ID. Please log in again.');
