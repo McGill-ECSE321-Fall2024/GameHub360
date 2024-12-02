@@ -85,12 +85,12 @@ const ManagerProfilePage = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="px-4 sm:px-0">
-        <h3 className="text-base font-semibold text-gray-900">
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="mb-6">
+        <h2 className="text-3xl font-semibold text-gray-800">
           Manager Profile
-        </h3>
-        <p className="mt-1 max-w-2xl text-sm text-gray-500">
+        </h2>
+        <p className="mt-1 text-gray-600">
           View and update your profile information.
         </p>
       </div>
@@ -98,99 +98,87 @@ const ManagerProfilePage = () => {
       {loading ? (
         <p className="text-gray-700">Loading profile...</p>
       ) : editing ? (
-        <div className="mt-6 border-t border-gray-100">
-          <dl className="divide-y divide-gray-100">
-            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium text-gray-900">Name</dt>
-              <input
-                type="text"
-                className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0 rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-600 focus:outline-none"
-                value={profileInput.name}
-                onChange={(e) =>
-                  setProfileInput({ ...profileInput, name: e.target.value })
-                }
-              />
-            </div>
-            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium text-gray-900">
-                Phone Number
-              </dt>
-              <input
-                type="text"
-                className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0 rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-600 focus:outline-none"
-                value={profileInput.phoneNumber}
-                onChange={(e) =>
-                  setProfileInput({
-                    ...profileInput,
-                    phoneNumber: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium text-gray-900">
-                Password (optional)
-              </dt>
-              <input
-                type="password"
-                className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0 rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-600 focus:outline-none"
-                value={profileInput.password}
-                onChange={(e) =>
-                  setProfileInput({ ...profileInput, password: e.target.value })
-                }
-              />
-            </div>
-            <div className="mt-6 flex items-center gap-4 px-4">
-              <button
-                className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
-                onClick={handleSave}
-              >
-                Save
-              </button>
-              <button
-                className="rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-              {errorMessage && (
-                <p className="text-sm text-red-600">{errorMessage}</p>
-              )}
-            </div>
-          </dl>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Name
+            </label>
+            <input
+              type="text"
+              className="w-full mt-1 rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+              value={profileInput.name}
+              onChange={(e) =>
+                setProfileInput({ ...profileInput, name: e.target.value })
+              }
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Phone Number
+            </label>
+            <input
+              type="text"
+              className="w-full mt-1 rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+              value={profileInput.phoneNumber}
+              onChange={(e) =>
+                setProfileInput({
+                  ...profileInput,
+                  phoneNumber: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Password (optional)
+            </label>
+            <input
+              type="password"
+              className="w-full mt-1 rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+              value={profileInput.password}
+              onChange={(e) =>
+                setProfileInput({ ...profileInput, password: e.target.value })
+              }
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600"
+              onClick={handleSave}
+            >
+              Save
+            </button>
+            <button
+              className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+            {errorMessage && (
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            )}
+          </div>
         </div>
       ) : managerProfile ? (
-        <div className="mt-6 border-t border-gray-100">
-          <dl className="divide-y divide-gray-100">
-            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium text-gray-900">Email</dt>
-              <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
-                {managerProfile.email}
-              </dd>
-            </div>
-            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium text-gray-900">Name</dt>
-              <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
-                {managerProfile.name}
-              </dd>
-            </div>
-            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium text-gray-900">
-                Phone Number
-              </dt>
-              <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
-                {managerProfile.phoneNumber}
-              </dd>
-            </div>
-          </dl>
-          <div className="mt-6">
-            <button
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-              onClick={() => setEditing(true)}
-            >
-              Edit Profile
-            </button>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="mb-4">
+            <p className="text-sm font-medium text-gray-700">Email</p>
+            <p className="text-gray-800">{managerProfile.email}</p>
           </div>
+          <div className="mb-4">
+            <p className="text-sm font-medium text-gray-700">Name</p>
+            <p className="text-gray-800">{managerProfile.name}</p>
+          </div>
+          <div className="mb-4">
+            <p className="text-sm font-medium text-gray-700">Phone Number</p>
+            <p className="text-gray-800">{managerProfile.phoneNumber}</p>
+          </div>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600"
+            onClick={() => setEditing(true)}
+          >
+            Edit Profile
+          </button>
         </div>
       ) : (
         <p className="text-gray-700">No profile information found.</p>
