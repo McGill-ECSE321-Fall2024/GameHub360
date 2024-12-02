@@ -41,16 +41,6 @@ const EmployeeCategoriesPage = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-semibold text-gray-800">Categories</h2>
-        <button
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2 rounded-lg shadow-md transition duration-200"
-          onClick={() => navigate('/employee/categories/create')}
-        >
-          Create New Category
-        </button>
-      </div>
-
       {errorMessage && (
         <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-lg">
           {errorMessage}
