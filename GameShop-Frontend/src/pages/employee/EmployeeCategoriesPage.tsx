@@ -43,6 +43,7 @@ const EmployeeCategoriesPage = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
+      <h2 className="text-3xl font-semibold text-gray-800 mb-6">Categories</h2>
       {errorMessage && (
         <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-lg">
           {errorMessage}
