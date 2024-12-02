@@ -31,7 +31,7 @@ public class GameRequestController {
      * @param request the game request data transfer object
      * @return the created game request as a response entity
      */
-    @PostMapping("/")
+    @PostMapping
     public GameRequestResponseDto submitGameRequest(@RequestBody @Valid GameRequestRequestDto request) {
         GameRequest createdRequest = gameRequestService.createGameRequest(request);
         return new GameRequestResponseDto(createdRequest);
@@ -136,5 +136,19 @@ public class GameRequestController {
     public GameRequestResponseDto getRequest(@PathVariable("requestId") int requestId) {
         GameRequest request = gameRequestService.getRequest(requestId);
         return new GameRequestResponseDto(request);
+    }
+
+    /**
+     * Retrieves all notes associated with a game request.
+     *
+     * @param requestId the ID of the game request
+     * @return a list of all notes associated with the game request
+     */
+    @GetMapping("/{requestId}/notes")
+    public List<RequestNoteResponseDto> getNotes(@PathVariable("requestId") int requestId) {
+        List<RequestNote> notes = gameRequestService.getNotes(requestId);
+        return notes.stream()
+                .map(RequestNoteResponseDto::new)
+                .collect(Collectors.toList());
     }
 }

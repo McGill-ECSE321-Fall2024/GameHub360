@@ -38,6 +38,7 @@ const Navbar = ({ userType }: NavbarProps) => {
         return [
           { name: 'Browse', to: GeneralRouteNames.BROWSE },
           { name: 'Game Requests', to: EmployeeRouteNames.GAME_REQUESTS },
+          { name: 'Categories', to: EmployeeRouteNames.CATEGORIES },
           // Add more links as needed (these are just examples)
         ];
       case UserType.MANAGER:

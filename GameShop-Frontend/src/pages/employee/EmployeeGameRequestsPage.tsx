@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllGameRequests } from '../../api/gameRequestService';
-import { ManagerRouteNames } from '../../model/routeNames/ManagerRouteNames';
+import { EmployeeRouteNames } from '../../model/routeNames/EmployeeRouteNames';
 import { GameRequest } from '../../model/manager/GameRequest';
 
-const ManagerGameRequestsPage = () => {
+const EmployeeGameRequestsPage = () => {
   const [gameRequests, setGameRequests] = useState<GameRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -38,6 +38,12 @@ const ManagerGameRequestsPage = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-semibold text-gray-800">Game Requests</h2>
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2 rounded-lg shadow-md transition duration-200"
+          onClick={() => navigate(EmployeeRouteNames.GAME_REQUEST_CREATE)}
+        >
+          Create New Request
+        </button>
       </div>
 
       {errorMessage && (
@@ -103,7 +109,7 @@ const ManagerGameRequestsPage = () => {
                   className="border-b hover:bg-gray-50 cursor-pointer transition"
                   onClick={() =>
                     navigate(
-                      ManagerRouteNames.GAME_REQUEST_DETAIL.replace(
+                      EmployeeRouteNames.GAME_REQUEST_DETAIL.replace(
                         ':id',
                         request.id.toString()
                       )
@@ -138,4 +144,4 @@ const ManagerGameRequestsPage = () => {
   );
 };
 
-export default ManagerGameRequestsPage;
+export default EmployeeGameRequestsPage;

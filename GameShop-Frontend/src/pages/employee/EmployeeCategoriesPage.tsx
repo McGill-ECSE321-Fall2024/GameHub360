@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getAllCategories } from '../../api/categoryService';
-import { ManagerRouteNames } from '../../model/routeNames/ManagerRouteNames';
 import { Category } from '../../model/manager/Category';
 
-const ManagerCategoriesPage = () => {
+const EmployeeCategoriesPage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
-  const [filter, setFilter] = useState<'ALL' | 'GENRE' | 'CONSOLE'>('ALL');
+  const [filter, setFilter] = useState<'ALL' | 'GENRE' | 'CONSOLE'>('ALL'); // Filter by category type or show all
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -31,6 +30,7 @@ const ManagerCategoriesPage = () => {
     fetchCategories();
   }, []);
 
+  // Update filtered categories whenever the filter changes
   useEffect(() => {
     if (filter === 'ALL') {
       setFilteredCategories(categories);
@@ -43,16 +43,7 @@ const ManagerCategoriesPage = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-semibold text-gray-800">Categories</h2>
-        <Link
-          to={ManagerRouteNames.CREATE_CATEGORY}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-5 py-2 rounded-lg shadow-md transition duration-200"
-        >
-          Create Category
-        </Link>
-      </div>
-
+      <h2 className="text-3xl font-semibold text-gray-800 mb-6">Categories</h2>
       {errorMessage && (
         <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-lg">
           {errorMessage}
@@ -61,17 +52,17 @@ const ManagerCategoriesPage = () => {
 
       {/* Filter Buttons */}
       <div className="mb-6 flex space-x-4">
-        {['ALL', 'GENRE', 'CONSOLE'].map((status) => (
+        {['ALL', 'GENRE', 'CONSOLE'].map((type) => (
           <button
-            key={status}
+            key={type}
             className={`px-5 py-2 rounded-lg shadow-sm font-medium transition duration-200 ${
-              filter === status
+              filter === type
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
-            onClick={() => setFilter(status as 'ALL' | 'GENRE' | 'CONSOLE')}
+            onClick={() => setFilter(type as 'ALL' | 'GENRE' | 'CONSOLE')}
           >
-            {status}
+            {type}
           </button>
         ))}
       </div>
@@ -101,13 +92,13 @@ const ManagerCategoriesPage = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody>
               {filteredCategories.map((category) => (
                 <tr
                   key={category.categoryId}
-                  className="hover:bg-gray-50 cursor-pointer transition"
+                  className="border-b hover:bg-gray-50 cursor-pointer transition"
                   onClick={() =>
-                    navigate(`/manager/categories/${category.categoryId}`)
+                    navigate(`/employee/categories/${category.categoryId}`)
                   }
                 >
                   <td className="px-6 py-4 text-sm text-gray-800">
@@ -132,4 +123,4 @@ const ManagerCategoriesPage = () => {
   );
 };
 
-export default ManagerCategoriesPage;
+export default EmployeeCategoriesPage;

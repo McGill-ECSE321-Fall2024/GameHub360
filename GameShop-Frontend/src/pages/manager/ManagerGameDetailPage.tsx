@@ -8,7 +8,7 @@ import {
   assignGameToCategory,
   assignPromotionToGame,
 } from '../../api/gameService';
-import { Game } from '../../api/gameService';
+import { Game } from '../../model/manager/Game';
 
 const ManagerGameDetailPage = () => {
   const { id } = useParams<{ id: string }>();

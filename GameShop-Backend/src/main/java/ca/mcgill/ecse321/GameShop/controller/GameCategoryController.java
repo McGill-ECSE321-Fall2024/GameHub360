@@ -131,6 +131,7 @@ public class GameCategoryController {
 
     /**
      * remove category from game
+     * 
      * @param categoryId The ID of the category to remove the game from.
      * @param gameId     The ID of the game to remove from the category.
      * @return The updated category information.
@@ -145,7 +146,7 @@ public class GameCategoryController {
     /**
      * add category to promotion
      * 
-     * @param categoryId    The ID of the category to add the promotion to.
+     * @param categoryId  The ID of the category to add the promotion to.
      * @param promotionId The ID of the promotion to add to the category.
      * @return The updated category information.
      */

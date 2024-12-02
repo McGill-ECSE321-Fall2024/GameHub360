@@ -2,17 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   getCategoryById,
-  updateCategory,
-  deleteCategory,
   assignCategoryToGame,
   unassignCategoryFromGame,
-  assignCategoryToPromotion,
-  unassignCategoryFromPromotion,
 } from '../../api/categoryService';
 import { getAllGames } from '../../api/gameService';
+import { Game } from '../../model/manager/Game';
 import { getAllPromotions, Promotion } from '../../api/promotionsService';
 import { Category } from '../../model/manager/Category';
-import { Game } from '../../model/manager/Game';
 
 const CategoryDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,10 +23,6 @@ const CategoryDetailPage = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
-  const [selectedPromotionId, setSelectedPromotionId] = useState<number | null>(
-    null
-  );
-  const [nameError, setNameError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,44 +49,6 @@ const CategoryDetailPage = () => {
 
     fetchData();
   }, [id]);
-
-  const handleUpdate = async () => {
-    if (!category) return;
-
-    if (!category.name.trim()) {
-      setNameError('Category name cannot be empty.');
-      return;
-    }
-
-    try {
-      await updateCategory(category.categoryId, {
-        name: category.name,
-        categoryType: category.categoryType,
-        available: category.available,
-      });
-      setSuccessMessage('Category updated successfully.');
-      setErrorMessage(null);
-      setNameError(null);
-    } catch (error: any) {
-      setErrorMessage(error.message || 'Failed to update category.');
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!category) return;
-
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this category?'
-    );
-    if (!confirmDelete) return;
-
-    try {
-      await deleteCategory(category.categoryId);
-      navigate('/manager/categories'); // Redirect to categories list after deletion
-    } catch (error: any) {
-      setErrorMessage(error.message || 'Failed to delete category.');
-    }
-  };
 
   const handleAssignGame = async () => {
     if (!selectedGameId || !category) return;
@@ -140,50 +94,6 @@ const CategoryDetailPage = () => {
     }
   };
 
-  const handleAssignPromotion = async () => {
-    if (!selectedPromotionId || !category) return;
-    if (category.promotionIds.includes(selectedPromotionId)) {
-      setErrorMessage('Promotion is already assigned to this category.');
-      return;
-    }
-    setActionLoading(true);
-    try {
-      await assignCategoryToPromotion(category.categoryId, selectedPromotionId);
-      setSuccessMessage('Promotion assigned successfully.');
-      setCategory({
-        ...category,
-        promotionIds: [...category.promotionIds, selectedPromotionId],
-      });
-      setSelectedPromotionId(null); // Reset selection
-    } catch (error: any) {
-      setErrorMessage(error.message || 'Failed to assign promotion.');
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleUnassignPromotion = async (promotionId: number) => {
-    const confirmUnassign = window.confirm(
-      'Are you sure you want to unassign this promotion?'
-    );
-    if (!confirmUnassign) return;
-
-    if (!category) return;
-    setActionLoading(true);
-    try {
-      await unassignCategoryFromPromotion(category.categoryId, promotionId);
-      setSuccessMessage('Promotion unassigned successfully.');
-      setCategory({
-        ...category,
-        promotionIds: category.promotionIds.filter((id) => id !== promotionId),
-      });
-    } catch (error: any) {
-      setErrorMessage(error.message || 'Failed to unassign promotion.');
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (successMessage || errorMessage) {
       const timer = setTimeout(() => {
@@ -207,7 +117,7 @@ const CategoryDetailPage = () => {
     <div className="container mx-auto p-6 bg-gray-100 rounded shadow-md">
       <div className="flex items-center mb-4">
         <button
-          onClick={() => navigate('/manager/categories')}
+          onClick={() => navigate('/employee/categories')}
           className="bg-gray-200 text-gray-800 px-4 py-2 rounded mr-4"
         >
           Back
@@ -230,78 +140,6 @@ const CategoryDetailPage = () => {
 
       {category && (
         <div>
-          {/* Update Form */}
-          <div className="bg-white p-4 rounded shadow-sm mb-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">
-              Update Category
-            </h3>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Name:
-              </label>
-              <input
-                type="text"
-                value={category.name}
-                onChange={(e) => {
-                  setCategory({ ...category, name: e.target.value });
-                  if (e.target.value.trim()) {
-                    setNameError(null);
-                  }
-                }}
-                className={`w-full border rounded-md p-2 ${
-                  nameError ? 'border-red-500' : ''
-                }`}
-              />
-              {nameError && (
-                <p className="text-red-600 text-sm mt-1">{nameError}</p>
-              )}
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Category Type:
-              </label>
-              <select
-                value={category.categoryType}
-                onChange={(e) =>
-                  setCategory({ ...category, categoryType: e.target.value })
-                }
-                className="w-full border rounded-md p-2"
-              >
-                <option value="GENRE">Genre</option>
-                <option value="CONSOLE">Console</option>
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Available:
-              </label>
-              <input
-                type="checkbox"
-                checked={category.available}
-                onChange={(e) =>
-                  setCategory({ ...category, available: e.target.checked })
-                }
-                className="mr-2"
-              />
-              <span>Mark as available</span>
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                onClick={handleUpdate}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-              >
-                Update
-              </button>
-              <button
-                onClick={handleDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-
           {/* Assigned Games */}
           <div className="bg-white p-4 rounded shadow-sm mb-6">
             <h3 className="text-lg font-medium text-gray-800 mb-4">
@@ -395,49 +233,13 @@ const CategoryDetailPage = () => {
                             ? `${promotion.promotionType}: ${promotion.discountPercentageValue}%`
                             : `Promotion ID: ${promotionId}`}
                         </td>
-                        <td className="px-4 py-2 text-right">
-                          <button
-                            onClick={() => handleUnassignPromotion(promotionId)}
-                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-                            disabled={actionLoading}
-                          >
-                            Unassign
-                          </button>
-                        </td>
+                        <td className="px-4 py-2 text-right"></td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
             </div>
-            <h4 className="text-sm font-medium mt-6 mb-2">
-              Assign New Promotion
-            </h4>
-            <select
-              value={selectedPromotionId || ''}
-              onChange={(e) => setSelectedPromotionId(parseInt(e.target.value))}
-              className="w-full border rounded-md p-2 mb-3"
-            >
-              <option value="" disabled>
-                Select a promotion
-              </option>
-              {promotions.map((promotion) => (
-                <option
-                  key={promotion.promotionId}
-                  value={promotion.promotionId}
-                >
-                  {promotion.promotionType}: {promotion.discountPercentageValue}
-                  %
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={handleAssignPromotion}
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-              disabled={!selectedPromotionId || actionLoading}
-            >
-              Assign Promotion
-            </button>
           </div>
         </div>
       )}
