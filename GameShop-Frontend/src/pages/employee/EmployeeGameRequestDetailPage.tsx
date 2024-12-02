@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getGameRequestById, addNoteToGameRequest, getGameRequestNotes } from '../../api/gameRequestService';
+import {
+  getGameRequestById,
+  addNoteToGameRequest,
+  getGameRequestNotes,
+} from '../../api/gameRequestService';
 import { getAuthUser } from '../../state/authState';
 import { GameRequest, RequestNote } from '../../model/manager/GameRequest';
 import Modal from 'react-modal';
@@ -38,7 +42,9 @@ const GameRequestDetailPage = () => {
         const authUser = getAuthUser();
         if (!authUser || !authUser.staffId) {
           console.error('No authenticated user found or user ID is missing.');
-          setErrorMessage('Failed to retrieve employee ID. Please log in again.');
+          setErrorMessage(
+            'Failed to retrieve employee ID. Please log in again.'
+          );
           return;
         }
         setStaffId(authUser.staffId);
@@ -87,7 +93,11 @@ const GameRequestDetailPage = () => {
   };
 
   if (loading)
-    return <p className="text-center text-gray-600 font-medium">Loading game request details...</p>;
+    return (
+      <p className="text-center text-gray-600 font-medium">
+        Loading game request details...
+      </p>
+    );
 
   if (errorMessage)
     return (
@@ -105,17 +115,22 @@ const GameRequestDetailPage = () => {
         >
           Back
         </button>
-        <h2 className="ml-4 text-2xl font-bold tracking-tight text-gray-900">Game Request Details</h2>
+        <h2 className="ml-4 text-2xl font-bold tracking-tight text-gray-900">
+          Game Request Details
+        </h2>
       </div>
 
       {gameRequest && (
         <div>
           <div className="bg-white p-6 rounded shadow-md">
             <p className="mb-2">
-              <strong className="font-medium text-gray-600">Name:</strong> {gameRequest.name}
+              <strong className="font-medium text-gray-600">Name:</strong>{' '}
+              {gameRequest.name}
             </p>
             <p className="mb-2">
-              <strong className="font-medium text-gray-600">Description:</strong>{' '}
+              <strong className="font-medium text-gray-600">
+                Description:
+              </strong>{' '}
               {gameRequest.description}
             </p>
             <p className="mb-2">
@@ -133,7 +148,9 @@ const GameRequestDetailPage = () => {
               </span>
             </p>
             <p className="mb-4">
-              <strong className="font-medium text-gray-600">Request Date:</strong>{' '}
+              <strong className="font-medium text-gray-600">
+                Request Date:
+              </strong>{' '}
               {new Date(gameRequest.requestDate).toLocaleDateString()}
             </p>
 
@@ -176,13 +193,18 @@ const GameRequestDetailPage = () => {
           </button>
           <ul className="space-y-4">
             {notes.map((note) => (
-              <li key={note.noteId} className="bg-gray-100 p-4 rounded-md shadow">
+              <li
+                key={note.noteId}
+                className="bg-gray-100 p-4 rounded-md shadow"
+              >
                 <p className="text-gray-800">{note.content}</p>
                 <p className="text-gray-600 text-sm">
                   {new Date(note.noteDate).toLocaleDateString()}
                 </p>
                 <p className="text-gray-500 text-xs">
-                  Sent by: {note.staffWriterId === staffId ? 'Employee' : 'Manager'} (ID: {note.staffWriterId})
+                  Sent by:{' '}
+                  {note.staffWriterId === staffId ? 'Employee' : 'Manager'} (ID:{' '}
+                  {note.staffWriterId})
                 </p>
               </li>
             ))}

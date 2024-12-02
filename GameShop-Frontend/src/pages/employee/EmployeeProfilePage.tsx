@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import AccountInfo from '../../components/AccountInfo';
-import { getEmployeeProfile, updateEmployeeProfile } from '../../api/employeeService';
+import {
+  getEmployeeProfile,
+  updateEmployeeProfile,
+} from '../../api/employeeService';
 import { getAuthUser } from '../../state/authState';
 const EmployeeProfilePage: React.FC = () => {
   const [employeeProfile, setEmployeeProfile] = useState<{
-    staffId: number; 
+    staffId: number;
     email: string;
     name: string;
     phoneNumber: string;
@@ -35,20 +38,27 @@ const EmployeeProfilePage: React.FC = () => {
       }
     };
     fetchProfile();
-    console.log("employee Profile Data after fetch: ", employeeProfile);
+    console.log('employee Profile Data after fetch: ', employeeProfile);
   }, []);
-  const handleSave = async (data: { name: string; phoneNumber: string; password?: string }) => {
+  const handleSave = async (data: {
+    name: string;
+    phoneNumber: string;
+    password?: string;
+  }) => {
     if (!employeeProfile) {
       console.error('employee profile is not loaded');
       return;
     }
     try {
-      const updatedProfile = await updateEmployeeProfile(employeeProfile.staffId, {
-        email: employeeProfile.email, // Email is required by the backend
-        name: data.name,
-        phoneNumber: data.phoneNumber,
-        password: data.password,
-      });
+      const updatedProfile = await updateEmployeeProfile(
+        employeeProfile.staffId,
+        {
+          email: employeeProfile.email, // Email is required by the backend
+          name: data.name,
+          phoneNumber: data.phoneNumber,
+          password: data.password,
+        }
+      );
       setEmployeeProfile({
         staffId: updatedProfile.staffId, // Retain the same ID
         email: updatedProfile.email,

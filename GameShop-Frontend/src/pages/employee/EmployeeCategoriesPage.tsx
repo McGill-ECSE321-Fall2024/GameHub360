@@ -35,7 +35,9 @@ const EmployeeCategoriesPage = () => {
     if (filter === 'ALL') {
       setFilteredCategories(categories);
     } else {
-      setFilteredCategories(categories.filter((cat) => cat.categoryType === filter));
+      setFilteredCategories(
+        categories.filter((cat) => cat.categoryType === filter)
+      );
     }
   }, [filter, categories]);
 
@@ -67,7 +69,9 @@ const EmployeeCategoriesPage = () => {
       {loading ? (
         <p className="text-gray-700 text-lg">Loading categories...</p>
       ) : filteredCategories.length === 0 ? (
-        <p className="text-gray-700 text-lg">No categories found for the selected filter.</p>
+        <p className="text-gray-700 text-lg">
+          No categories found for the selected filter.
+        </p>
       ) : (
         <div className="overflow-x-auto bg-white rounded-lg shadow-md">
           <table className="min-w-full border-collapse">
@@ -92,11 +96,19 @@ const EmployeeCategoriesPage = () => {
                 <tr
                   key={category.categoryId}
                   className="border-b hover:bg-gray-50 cursor-pointer transition"
-                  onClick={() => navigate(`/employee/categories/${category.categoryId}`)}
+                  onClick={() =>
+                    navigate(`/employee/categories/${category.categoryId}`)
+                  }
                 >
-                  <td className="px-6 py-4 text-sm text-gray-800">{category.categoryId}</td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{category.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{category.categoryType}</td>
+                  <td className="px-6 py-4 text-sm text-gray-800">
+                    {category.categoryId}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-800">
+                    {category.name}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-800">
+                    {category.categoryType}
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-800">
                     {category.available ? 'Available' : 'Unavailable'}
                   </td>

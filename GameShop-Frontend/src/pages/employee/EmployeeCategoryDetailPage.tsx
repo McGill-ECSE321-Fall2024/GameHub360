@@ -140,7 +140,6 @@ const CategoryDetailPage = () => {
 
       {category && (
         <div>
-
           {/* Assigned Games */}
           <div className="bg-white p-4 rounded shadow-sm mb-6">
             <h3 className="text-lg font-medium text-gray-800 mb-4">
@@ -234,8 +233,7 @@ const CategoryDetailPage = () => {
                             ? `${promotion.promotionType}: ${promotion.discountPercentageValue}%`
                             : `Promotion ID: ${promotionId}`}
                         </td>
-                        <td className="px-4 py-2 text-right">
-                        </td>
+                        <td className="px-4 py-2 text-right"></td>
                       </tr>
                     );
                   })}

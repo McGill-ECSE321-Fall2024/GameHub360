@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   getGameRequestById,
   addNoteToGameRequest,
+  getGameRequestNotes,
   processGameRequest,
 } from '../../api/gameRequestService';
 import { getAuthUser } from '../../state/authState';
@@ -19,8 +20,9 @@ const GameRequestDetailPage = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [noteInput, setNoteInput] = useState('');
   const [staffId, setStaffId] = useState<number | null>(null);
+  const [notes, setNotes] = useState<RequestNote[]>([]);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
-  // Modal states
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [isRefuseModalOpen, setIsRefuseModalOpen] = useState(false);
 
@@ -32,17 +34,15 @@ const GameRequestDetailPage = () => {
   const [rejectionReason, setRejectionReason] = useState('');
 
   useEffect(() => {
-    const fetchAuthUser = () => {
+    const fetchAuthUser = async () => {
       try {
         const authUser = getAuthUser();
         if (!authUser || !authUser.staffId) {
-          console.error('No authenticated user found or staff ID is missing.');
           setErrorMessage('Failed to retrieve staff ID. Please log in again.');
           return;
         }
         setStaffId(authUser.staffId);
       } catch (error) {
-        console.error('Error retrieving authenticated user:', error);
         setErrorMessage('Failed to retrieve staff ID. Please log in again.');
       }
     };
@@ -51,10 +51,11 @@ const GameRequestDetailPage = () => {
       try {
         if (id) {
           const request = await getGameRequestById(parseInt(id));
+          const requestNotes = await getGameRequestNotes(parseInt(id));
           setGameRequest(request);
+          setNotes(requestNotes);
         }
       } catch (error) {
-        console.error('Error fetching game request:', error);
         setErrorMessage('Failed to fetch game request details.');
       } finally {
         setLoading(false);
@@ -71,20 +72,21 @@ const GameRequestDetailPage = () => {
       return;
     }
 
+    if (staffId === null) {
+      setErrorMessage('Failed to retrieve staff ID. Please log in again.');
+      return;
+    }
+
     try {
       const note: RequestNote = await addNoteToGameRequest(parseInt(id!), {
         content: noteInput,
-        staffWriterId: staffId!, // Use dynamic staff ID
+        staffWriterId: staffId,
         noteDate: new Date().toISOString(),
       });
-      setGameRequest({
-        ...gameRequest!,
-        noteIds: [...gameRequest!.noteIds, note.noteId],
-      });
+      setNotes([...notes, note]);
       setNoteInput('');
       setErrorMessage(null);
     } catch (error) {
-      console.error('Error adding note:', error);
       setErrorMessage('Failed to add note.');
     }
   };
@@ -100,23 +102,9 @@ const GameRequestDetailPage = () => {
         ? {
             price: parseFloat(approvalDetails.price),
             quantityInStock: parseInt(approvalDetails.quantityInStock),
-            note: noteInput
-              ? {
-                  content: noteInput,
-                  staffWriterId: staffId,
-                  noteDate: new Date().toISOString(),
-                }
-              : undefined,
           }
         : {
             rejectionReason,
-            note: noteInput
-              ? {
-                  content: noteInput,
-                  staffWriterId: staffId,
-                  noteDate: new Date().toISOString(),
-                }
-              : undefined,
           };
 
       const updatedRequest = await processGameRequest(
@@ -125,17 +113,18 @@ const GameRequestDetailPage = () => {
         approval,
         approvalDto
       );
-      setGameRequest(updatedRequest); // Update the state with the processed request
+      setGameRequest(updatedRequest);
       setErrorMessage(null);
     } catch (error) {
-      console.error('Error processing request:', error);
       setErrorMessage('Failed to process game request.');
     } finally {
-      // Close modals after processing
       setIsApproveModalOpen(false);
       setIsRefuseModalOpen(false);
     }
   };
+
+  const openNoteModal = () => setIsNoteModalOpen(true);
+  const closeNoteModal = () => setIsNoteModalOpen(false);
 
   if (loading)
     return (
@@ -211,6 +200,12 @@ const GameRequestDetailPage = () => {
             >
               Add Note
             </button>
+            <button
+              onClick={openNoteModal}
+              className="mt-4 ml-4 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
+            >
+              View Notes
+            </button>
           </div>
 
           {gameRequest.requestStatus === 'SUBMITTED' && (
@@ -232,6 +227,37 @@ const GameRequestDetailPage = () => {
         </div>
       )}
 
+      {/* Notes Modal */}
+      <Modal
+        isOpen={isNoteModalOpen}
+        onRequestClose={closeNoteModal}
+        className="relative bg-white rounded-lg shadow-lg p-6 max-w-3xl mx-auto"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+      >
+        <h2 className="text-2xl font-bold mb-4">Notes</h2>
+        <ul className="space-y-4">
+          {notes.map((note) => (
+            <li key={note.noteId} className="bg-gray-100 p-4 rounded-md shadow">
+              <p className="text-gray-800">{note.content}</p>
+              <p className="text-gray-600 text-sm">
+                {new Date(note.noteDate).toLocaleDateString()}
+              </p>
+              <p className="text-gray-500 text-xs">
+                Sent by:{' '}
+                {note.staffWriterId === staffId ? 'Manager' : 'Employee'} (ID:{' '}
+                {note.staffWriterId})
+              </p>
+            </li>
+          ))}
+        </ul>
+        <button
+          onClick={closeNoteModal}
+          className="mt-6 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
+        >
+          Close
+        </button>
+      </Modal>
+
       {/* Approval Modal */}
       <Modal
         isOpen={isApproveModalOpen}
@@ -239,10 +265,10 @@ const GameRequestDetailPage = () => {
         className="relative bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
       >
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
           Approve Request
         </h2>
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Price
@@ -256,7 +282,7 @@ const GameRequestDetailPage = () => {
                   price: e.target.value,
                 })
               }
-              className="mt-2 w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div>
@@ -272,19 +298,19 @@ const GameRequestDetailPage = () => {
                   quantityInStock: e.target.value,
                 })
               }
-              className="mt-2 w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 w-full border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <div className="flex items-center justify-end gap-4">
+          <div className="flex justify-end space-x-4">
             <button
               onClick={() => setIsApproveModalOpen(false)}
-              className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition"
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
             >
               Cancel
             </button>
             <button
               onClick={() => handleProcessRequest(true)}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
             >
               Approve
             </button>
@@ -299,10 +325,10 @@ const GameRequestDetailPage = () => {
         className="relative bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
       >
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
           Refuse Request
         </h2>
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Rejection Reason
@@ -310,20 +336,20 @@ const GameRequestDetailPage = () => {
             <textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              className="mt-2 w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="mt-1 w-full border rounded-md p-2 focus:ring-red-500 focus:border-red-500"
               rows={4}
             ></textarea>
           </div>
-          <div className="flex items-center justify-end gap-4">
+          <div className="flex justify-end space-x-4">
             <button
               onClick={() => setIsRefuseModalOpen(false)}
-              className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition"
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
             >
               Cancel
             </button>
             <button
               onClick={() => handleProcessRequest(false)}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
             >
               Refuse
             </button>
