@@ -3,6 +3,7 @@ import {
   getManagerProfile,
   updateManagerProfile,
 } from '../../api/managerService';
+import AccountInfo from '../../components/AccountInfo';
 
 const ManagerProfilePage = () => {
   const [managerProfile, setManagerProfile] = useState<{
@@ -11,13 +12,7 @@ const ManagerProfilePage = () => {
     phoneNumber: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [profileInput, setProfileInput] = useState({
-    name: '',
-    phoneNumber: '',
-    password: '',
-  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -27,11 +22,6 @@ const ManagerProfilePage = () => {
           email: profile.email,
           name: profile.name || '',
           phoneNumber: profile.phoneNumber || '',
-        });
-        setProfileInput({
-          name: profile.name || '',
-          phoneNumber: profile.phoneNumber || '',
-          password: '',
         });
       } catch (error) {
         console.error('Error fetching manager profile:', error);
@@ -44,18 +34,22 @@ const ManagerProfilePage = () => {
     fetchProfile();
   }, []);
 
-  const handleSave = async () => {
-    if (!profileInput.name.trim() || !profileInput.phoneNumber.trim()) {
-      setErrorMessage('Name and phone number cannot be empty.');
+  const handleSave = async (data: {
+    name: string;
+    phoneNumber: string;
+    password?: string;
+  }) => {
+    if (!managerProfile) {
+      console.error('Manager profile is not loaded');
       return;
     }
 
     try {
       const updatedProfile = await updateManagerProfile({
-        email: managerProfile?.email || '',
-        name: profileInput.name,
-        phoneNumber: profileInput.phoneNumber,
-        password: profileInput.password || undefined,
+        email: managerProfile.email, // Email is required by the backend
+        name: data.name,
+        phoneNumber: data.phoneNumber,
+        password: data.password, // Password is optional
       });
 
       setManagerProfile({
@@ -64,124 +58,40 @@ const ManagerProfilePage = () => {
         phoneNumber: updatedProfile.phoneNumber || '',
       });
 
-      setEditing(false);
-      setErrorMessage(null);
+      setErrorMessage(null); // Clear error message upon successful save
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error updating manager profile:', error);
       setErrorMessage('Failed to update profile. Please check your input.');
     }
   };
 
-  const handleCancel = () => {
-    setEditing(false);
-    if (managerProfile) {
-      setProfileInput({
-        name: managerProfile.name,
-        phoneNumber: managerProfile.phoneNumber,
-        password: '',
-      });
-    }
-    setErrorMessage(null);
-  };
+  if (loading) {
+    return (
+      <p className="text-center text-gray-700">Loading manager profile...</p>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <div className="p-6 bg-red-100 text-red-700 rounded-lg shadow-md max-w-md mx-auto">
+        <p>{errorMessage}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="mb-6">
-        <h2 className="text-3xl font-semibold text-gray-800">
-          Manager Profile
-        </h2>
-        <p className="mt-1 text-gray-600">
-          View and update your profile information.
-        </p>
-      </div>
-
-      {loading ? (
-        <p className="text-gray-700">Loading profile...</p>
-      ) : editing ? (
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Name
-            </label>
-            <input
-              type="text"
-              className="w-full mt-1 rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-              value={profileInput.name}
-              onChange={(e) =>
-                setProfileInput({ ...profileInput, name: e.target.value })
-              }
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Phone Number
-            </label>
-            <input
-              type="text"
-              className="w-full mt-1 rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-              value={profileInput.phoneNumber}
-              onChange={(e) =>
-                setProfileInput({
-                  ...profileInput,
-                  phoneNumber: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Password (optional)
-            </label>
-            <input
-              type="password"
-              className="w-full mt-1 rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-              value={profileInput.password}
-              onChange={(e) =>
-                setProfileInput({ ...profileInput, password: e.target.value })
-              }
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600"
-              onClick={handleSave}
-            >
-              Save
-            </button>
-            <button
-              className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-            {errorMessage && (
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            )}
-          </div>
-        </div>
-      ) : managerProfile ? (
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700">Email</p>
-            <p className="text-gray-800">{managerProfile.email}</p>
-          </div>
-          <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700">Name</p>
-            <p className="text-gray-800">{managerProfile.name}</p>
-          </div>
-          <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700">Phone Number</p>
-            <p className="text-gray-800">{managerProfile.phoneNumber}</p>
-          </div>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600"
-            onClick={() => setEditing(true)}
-          >
-            Edit Profile
-          </button>
-        </div>
+      {managerProfile ? (
+        <AccountInfo
+          email={managerProfile.email}
+          name={managerProfile.name}
+          phoneNumber={managerProfile.phoneNumber}
+          onSave={handleSave}
+        />
       ) : (
-        <p className="text-gray-700">No profile information found.</p>
+        <p className="text-center text-gray-700">
+          No profile information found.
+        </p>
       )}
     </div>
   );
