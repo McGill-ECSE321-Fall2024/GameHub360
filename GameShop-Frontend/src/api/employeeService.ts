@@ -1,11 +1,7 @@
 import { isAxiosError } from 'axios';
 import apiService from '../config/axiosConfig';
-export interface EmployeeProfile {
-    staffId: number;
-    email: string;
-    name?: string;
-    phoneNumber?: string;
-  }
+import { EmployeeProfile } from '../model/employee/EmployeeProfile';
+
 /**
  * Retrieves the Employee's profile details.
  * @param staffId The ID of the Employee to retrieve.
@@ -31,6 +27,7 @@ export async function getEmployeeProfile(staffId: number): Promise<EmployeeProfi
       );
     }
   }  
+
 /**
  * Updates the Employee's profile. Email cannot be changed.
  * @param staffId The ID of the Employee to update.
