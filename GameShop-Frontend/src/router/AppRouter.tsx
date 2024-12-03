@@ -53,9 +53,7 @@ const AppRouter = () => {
     <BrowserRouter>
       <ToastProvider>
         <CartProvider>
-          <WishlistProvider>
-            {RouterComponent}
-          </WishlistProvider>
+          <WishlistProvider>{RouterComponent}</WishlistProvider>
         </CartProvider>
       </ToastProvider>
     </BrowserRouter>
