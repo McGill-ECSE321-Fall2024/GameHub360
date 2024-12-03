@@ -31,6 +31,9 @@ public class GameRequestDto {
 
 
     // Constructor
+    public GameRequestDto(){
+    }
+
     public GameRequestDto(String name, String description, String imageURL, int quantityInStock, Boolean isAvailable, double price, List<Integer> categoryIds) {
         this.name = name;
         this.description = description;

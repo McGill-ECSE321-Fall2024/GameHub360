@@ -52,7 +52,7 @@ const LoginPage = () => {
       // Update formData with the ID from response
       const updatedUser: LoginUser = {
         ...formData,
-        id: responseData.customerId, // Set the ID from the server response
+        id: responseData.customerId ?? null, // Set the ID from the server response
       };
 
       // Set the auth user in the state

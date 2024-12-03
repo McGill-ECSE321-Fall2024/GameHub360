@@ -1,56 +1,8 @@
 import { isAxiosError } from 'axios';
 import apiService from '../config/axiosConfig';
-
-export interface CustomerProfile {
-    customerId: number;
-    email: string;
-    name?: string;
-    phoneNumber?: string;
-  }
-
-export interface PaymentCard {
-    paymentDetailsId: number; 
-    cardName: string;         
-    cardNumber: string;       
-    postalCode: string;       
-    expMonth: number;         
-    expYear: number;          
-    customerId: number;       
-    paidOrdersIds: number[];  
-  }
-  
-export interface PaymentCardListResponse {
-    paymentCards: PaymentCard[];
-    totalCards: number;
-  }
-
-export interface PaymentDetailsRequest {
-    cardName: string;
-    cardNumber: string;
-    postalCode: string;
-    expMonth: number;
-    expYear: number;
-  }
-
-export interface CustomerOrderRequest {
-  orderedGameIds: number[];
-  paymentInformationId: number;
-  customerId: number;
-}
-
-export interface CustomerOrderResponse {
-  orderId: number;
-  orderDate: string;
-  customerId: number;
-  paymentId: number;
-  orderGameIds: number[];
-  totalPrice: number;
-  orderStatus: string;
-}
-
-export interface OrderHistoryResponse {
-  orders: CustomerOrderResponse[];
-}
+import { CustomerProfile } from '../model/customer/customerInterfaces';
+import { PaymentCard, PaymentCardListResponse, PaymentDetailsRequest} from '../model/customer/paymentCardInterfaces';
+import { CustomerOrderRequest, CustomerOrderResponse, OrderHistoryResponse } from '../model/customer/customerOrderInterfaces'; 
 
 /**
  * Retrieves the customer's profile details.
@@ -103,9 +55,11 @@ export async function updateCustomerProfile(
         }
         if (error.response?.status === 400) {
           throw new Error(
-            'Invalid profile data. Ensure all fields meet the required criteria.'
+            `Invalid profile data. Ensure all fields meet the required criteria. Error response: ${JSON.stringify(
+              error.response
+            )}`
           );
-        }
+        }        
         if (error.response?.status === 500) {
           throw new Error(
             'Internal server error: Unable to update customer profile.'
@@ -269,4 +223,34 @@ export const getCustomerOrderHistory = async (
     throw new Error("An unexpected error occurred while fetching orders.");
   }
 };
+
+/**
+ * Returns a customer order based on its ID.
+ * 
+ * @param orderId The ID of the order to return.
+ * @returns A promise resolving to the returned order details.
+ */
+export const returnOrder = async (orderId: number): Promise<CustomerOrderResponse> => {
+  try {
+    const response = await apiService.post<CustomerOrderResponse>(`/orders/${orderId}/return`);
+    console.log("Response when order is returned: ", response);
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error(`Order with ID ${orderId} not found.`);
+      }
+      if (error.response?.status === 400) {
+        throw new Error(error.response?.data?.message || "Order cannot be returned.");
+      }
+      if (error.response?.status === 500) {
+        throw new Error("Internal server error: Unable to return the order.");
+      }
+    }
+    throw new Error("An unexpected error occurred while returning the order.");
+  }
+};
+
+
+
 

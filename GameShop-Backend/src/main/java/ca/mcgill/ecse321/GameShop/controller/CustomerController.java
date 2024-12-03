@@ -101,13 +101,13 @@ public class CustomerController {
      * Endpoint to retrieve order history for a specific customer.
      *
      * @param customerId The ID of the customer.
-     * @return An OrderHistoryDto containing a list of OrderResponseDto representing
+     * @return An OrderHistoryDto containing a list of CustomerOrderResponseDto representing
      *         the order history of the customer.
      */
     @GetMapping("/{customerId}/orders")
     public OrderHistoryDto viewOrderHistory(@PathVariable Integer customerId) {
-        List<OrderResponseDto> orders = customerService.getOrderHistoryByCustomerId(customerId).stream()
-                .map(OrderResponseDto::new)
+        List<CustomerOrderResponseDto> orders = customerService.getOrderHistoryByCustomerId(customerId).stream()
+                .map(CustomerOrderResponseDto::new)
                 .collect(Collectors.toList());
         return new OrderHistoryDto(orders);
     }

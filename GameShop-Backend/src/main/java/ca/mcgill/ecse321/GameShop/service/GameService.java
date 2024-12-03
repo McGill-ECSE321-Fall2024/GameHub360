@@ -287,29 +287,16 @@ public class GameService {
     }
 
     /**
-     * Retrieves a list of games by their IDs.
+     * Retrieves a game by its associated OrderGame ID.
      *
-     * @param gameIds A list of game IDs to fetch.
-     * @return A list of Game entities matching the provided IDs.
-     * @throws GameShopException If no games are found for the given IDs.
+     * @param orderGameId The ID of the OrderGame.
+     * @return The Game entity associated with the given OrderGame ID.
+     * @throws GameShopException If no OrderGame or Game is found for the given ID.
      */
-    @Transactional
-    public List<Game> getGamesByOrderGamesIds(List<Integer> orderGameIds) {
-        // Convert Iterable to List
-        List<OrderGame> orderGames = StreamSupport
-                .stream(orderGameRepository.findAllById(orderGameIds).spliterator(), false)
-                .collect(Collectors.toList());
+    public Game getGameByOrderGameId(Integer orderGameId) {
+        OrderGame orderGame = orderGameRepository.findById(orderGameId)
+                .orElseThrow(() -> new GameShopException(HttpStatus.NOT_FOUND, "OrderGame not found for the given ID"));
 
-        if (orderGames.isEmpty()) {
-            throw new GameShopException(HttpStatus.NOT_FOUND, "No games found for the given IDs.");
-        }
-
-        List<Game> games = new ArrayList<>();
-
-        for (OrderGame orderGame: orderGames){
-            games.add(orderGame.getGame());
-        }
-
-        return games;
+        return orderGame.getGame();
     }
 }

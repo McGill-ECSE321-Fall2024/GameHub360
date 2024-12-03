@@ -4,19 +4,19 @@ import java.util.List;
 
 public class OrderHistoryDto {
     // Attributes
-    private List<OrderResponseDto> orders;
+    private List<CustomerOrderResponseDto> orders;
     private int totalOrders;
 
     // Constructors
     public OrderHistoryDto() {}
 
-    public OrderHistoryDto(List<OrderResponseDto> orders) {
+    public OrderHistoryDto(List<CustomerOrderResponseDto> orders) {
         this.orders = orders;
         this.totalOrders = orders.size();
     }
 
     // Getters and Setters
-    public List<OrderResponseDto> getOrders() {
+    public List<CustomerOrderResponseDto> getOrders() {
         return orders;
     }
 
@@ -24,7 +24,7 @@ public class OrderHistoryDto {
         return totalOrders;
     }
 
-    public void setOrders(List<OrderResponseDto> orders) {
+    public void setOrders(List<CustomerOrderResponseDto> orders) {
         this.orders = orders;
     }
 }

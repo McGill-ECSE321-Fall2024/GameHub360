@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -180,18 +181,15 @@ public class GameController {
     }
 
     /**
-     * Retrieves a list of order games by their IDs.
+     * Retrieves a game by its associated OrderGame ID.
      *
-     * @param gameIds A list of game IDs to retrieve.
-     * @return A GameListDto containing the details of the requested games.
-     * @throws GameShopException If no games are found for the given IDs.
+     * @param orderGameId The ID of the OrderGame.
+     * @return A GameResponseDto containing the details of the requested game.
+     * @throws GameShopException If no game is found for the given OrderGame ID.
      */
-    @PostMapping("/details")
-    public GameListDto getGamesByOrderGameIds(@RequestBody List<Integer> orderGameIds) {
-        List<Game> games = gameService.getGamesByOrderGamesIds(orderGameIds);
-        List<GameResponseDto> responseDtos = games.stream()
-                .map(GameResponseDto::new)
-                .toList();
-        return new GameListDto(responseDtos);
+    @GetMapping("/game/{orderGameId}")
+    public GameResponseDto getGameByOrderGameId(@PathVariable Integer orderGameId) {
+        Game game = gameService.getGameByOrderGameId(orderGameId);
+        return new GameResponseDto(game);
     }
 }

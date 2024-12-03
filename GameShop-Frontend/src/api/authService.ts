@@ -13,7 +13,7 @@ export interface StoredUserData {
 
 // Function to log in a user
 export async function login(user: LoginUser) {
-  const { id, email, password, userType } = user;
+  const { email, password, userType } = user;
 
   let endpoint = '';
 

@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-interface AccountInfoProps {
-  email: string;
-  name: string;
-  phoneNumber: string;
-  onSave: (data: { name: string; phoneNumber: string; password?: string }) => Promise<void>; // Include `id` in onSave
-}
+import { AccountInfoProps } from '../model/customer/customerInterfaces';
 
 const AccountInfo: React.FC<AccountInfoProps> = ({ email, name, phoneNumber, onSave }) => {
   const [editing, setEditing] = useState(false); // Tracks whether the component is in edit mode
