@@ -8,6 +8,8 @@ export interface GameDetails {
   imageUrl: string;
   price: number;
   orderIds: number[];
+  quantity: number;
+  orderGameId: number
 }
 
 export async function getGameByOrderGameId(orderGameId: number): Promise<GameDetails> {

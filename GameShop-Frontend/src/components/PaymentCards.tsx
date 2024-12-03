@@ -257,12 +257,12 @@ const PaymentCards: React.FC<PaymentCardsProps> = ({
                       >
                         Update
                       </Button>
-                      <Button
+                      {/* <Button
                         variant="destructive"
                         className="hover:bg-red-600 hover:text-white"
                       >
                         Remove
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 )}

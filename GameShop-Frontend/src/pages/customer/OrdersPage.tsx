@@ -4,12 +4,12 @@ import Modal from "../../components/ui/Modal"; // Import your Modal component
 import { getCustomerOrderHistory, getCustomerPaymentCards, returnOrder } from "../../api/customerService";
 import { CustomerOrderResponse, OrderHistoryResponse } from "../../model/customer/customerOrderInterfaces";
 import { PaymentCardListResponse } from "../../model/customer/paymentCardInterfaces";
-import { getGamesByOrderGameIds, GameDetails } from "../../api/gameService";
+import { getGameByOrderGameId, getGamesByOrderGameIds, GameDetails } from "../../api/gameService";
 import { submitReview, getGameReviews, deleteReview } from "../../api/reviewService";
 
 const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<OrderHistoryResponse | null>(null);
-  const [games, setGames] = useState<{ [key: number]: GameDetails }>({});
+  const [games, setGames] = useState<{ [key: number]: GameDetails[]}>({});
   const [reviews, setReviews] = useState<{ [key: number]: { showComment: boolean; review: { rating: string; comment?: string } | null } }>({});
   const [cards, setCards] = useState<{ [key: number]: string }>({});
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +17,7 @@ const OrdersPage: React.FC = () => {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [modalMessage, setModalMessage] = useState<string>("");
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
+  const [selectedOrderGameId, setSelectedOrderGameId] = useState<number | null>(null); // Replace selectedGameId
   const [rating, setRating] = useState<"ONE_STAR" | "TWO_STARS" | "THREE_STARS" | "FOUR_STARS" | "FIVE_STARS" | "">( "");
   const [comment, setComment] = useState<string>("");
 
@@ -35,20 +35,37 @@ const OrdersPage: React.FC = () => {
         // Fetch the customer's order history
         const orderHistory = await getCustomerOrderHistory(customerId);
 
-        console.log("this is order history: ", orderHistory);
-  
         // Extract all unique game IDs from the orders
         const orderGameIds = Array.from(
           new Set(orderHistory.orders.flatMap((order) => order.orderedGamesIds))
         );
 
-        console.log("this is ordered game ids: ", orderGameIds);
+        // Build a mapping between OrderGameId and GameDetails
+        const customerOrderToGamesMap = {} as {
+          [customerOrderId: number]: GameDetails[];
+        };
 
-        // Fetch game details for all game IDs
-        const gameDetails = await getGamesByOrderGameIds(orderGameIds);
-
-        console.log("game details we got from ordered game ids: ", gameDetails);
+        for (const order of orderHistory.orders) {
+          customerOrderToGamesMap[order.orderId] = [];
   
+          for (const orderGameId of order.orderedGamesIds) {
+            try {
+              const gameDetails = await getGameByOrderGameId(orderGameId);
+
+              console.log(gameDetails);
+  
+              // Add game and its associated orderGameId to the map
+              customerOrderToGamesMap[order.orderId].push({
+                ...gameDetails,
+                orderGameId,
+                quantity: gameDetails.quantity || 1, // Ensure quantity is set
+              });
+            } catch (error) {
+              console.error(`Error fetching game for OrderGame ID ${orderGameId}:`, error);
+            }
+          }
+        }
+
         // Fetch all payment cards associated with the customer
         const cardResponse: PaymentCardListResponse = await getCustomerPaymentCards(customerId);
   
@@ -58,30 +75,45 @@ const OrdersPage: React.FC = () => {
           return map;
         }, {} as { [key: number]: string });
   
-        // Transform game details into a map for quick access
-        const gameMap = gameDetails.reduce((map, game) => {
-          map[game.gameId] = game;
-          return map;
-        }, {} as { [key: number]: GameDetails });
-
-        console.log("this is the game map: ", gameMap);
-  
-        const reviewsMap: { [key: number]: { showComment: boolean; review: { rating: string; comment?: string } | null } } = {};
-        for (const game of gameDetails) {
-          const gameReviews = await getGameReviews(game.gameId);
-          reviewsMap[game.gameId] = {
-            showComment: false, // Default to hidden
-            review: gameReviews.length > 0
-              ? {
-                  ...gameReviews[0],
-                  rating: gameReviews[0].rating, // Ensure the rating is treated as a string
-                }
-              : null,
+        // Map reviews to OrderGameIds based on the new `customerOrderToGamesMap` structure
+        const reviewsMap: {
+          [key: number]: {
+            showComment: boolean;
+            review: { rating: string; comment?: string } | null;
           };
+        } = {};
+
+        for (const [customerOrderId, games] of Object.entries(customerOrderToGamesMap)) {
+          for (const game of games) {
+            try {
+              console.log("order game id: ", game.orderGameId);
+              // Fetch the reviews associated with the current OrderGameId
+              const gameReviews = await getGameReviews(game.gameId);
+
+              // Map the review to the corresponding OrderGameId
+              reviewsMap[game.orderGameId] = {
+                showComment: false, // Default to hidden
+                review: gameReviews.length > 0
+                  ? {
+                      rating: gameReviews[0].rating, // Map the first review's rating
+                      comment: gameReviews[0].comment, // Map the first review's comment
+                    }
+                  : null, // No review available
+              };
+            } catch (error) {
+              console.error(
+                `Failed to fetch reviews for OrderGame ID ${game.orderGameId}:`,
+                error
+              );
+            }
+          }
         }
 
+        console.log("Reviews: ", reviewsMap);
+        
         setOrders(orderHistory);
-        setGames(gameMap);
+        setGames(customerOrderToGamesMap);
+        console.log("games: ", customerOrderToGamesMap);
         setCards(cardMap);
         setReviews(reviewsMap);
       } catch (err) {
@@ -92,7 +124,6 @@ const OrdersPage: React.FC = () => {
     fetchOrdersAndGames();
   }, []);
   
-
   if (error) {
     return <p className="text-red-500">Error: {error}</p>;
   }
@@ -155,22 +186,20 @@ const OrdersPage: React.FC = () => {
     setSelectedOrderId(null);
   };
 
-  const openReviewModal = (gameId: number, orderId: number) => {
-    setSelectedGameId(gameId);
-    setSelectedOrderId(orderId);
+  const openReviewModal = (orderGameId: number) => {
+    setSelectedOrderGameId(orderGameId); // Set the selected OrderGame ID
     setReviewModalOpen(true);
-  };
+  };  
   
   const closeReviewModal = () => {
     setReviewModalOpen(false);
-    setSelectedGameId(null);
-    setSelectedOrderId(null);
+    setSelectedOrderGameId(null);
     setRating("");
     setComment("");
   };
   
   const handleSubmitReview = async () => {
-    if (!selectedGameId || rating === "") {
+    if (!selectedOrderGameId || rating === "") {
       alert("Please select a rating before submitting.");
       return;
     }
@@ -192,17 +221,11 @@ const OrdersPage: React.FC = () => {
   
     try {
 
-      console.log(selectedGameId);
-      console.log(selectedOrderId);
-
-      console.log("Submitting review:", reviewPayload);
-      const review = await submitReview(selectedGameId, reviewPayload);
-  
-      console.log("Review submitted response:", review);
+      const review = await submitReview(selectedOrderGameId, reviewPayload);
   
       setReviews((prevReviews) => ({
         ...prevReviews,
-        [selectedGameId]: {
+        [selectedOrderGameId]: {
           showComment: true,
           review: { rating, comment },
         },
@@ -231,16 +254,16 @@ const OrdersPage: React.FC = () => {
       <p className="text-sm text-gray-500">
         Check the status of recent orders, manage returns, and discover similar products.
       </p>
-
+  
       {orders.orders.map((order) => {
         const cardNumber = cards[order.paymentInformationId];
         const orderDate = new Date(order.orderDate);
         const currentDate = new Date();
-
+  
         // Check if the order date is within 7 days
         const isReturnable =
           (currentDate.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24) <= 7;
-
+  
         return (
           <div key={order.orderId} className="border rounded-lg p-4 my-4 shadow-sm">
             {/* Order Header */}
@@ -277,9 +300,9 @@ const OrdersPage: React.FC = () => {
                       className="absolute bg-gray-700 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100"
                       style={{
                         position: "absolute",
-                        top: "100%", // Position below the button
-                        left: "45%", // Adjust left positioning to shift the tooltip
-                        transform: "translateX(-50%)", // Center the tooltip relative to the button
+                        top: "100%",
+                        left: "45%",
+                        transform: "translateX(-50%)",
                         zIndex: 1,
                         whiteSpace: "nowrap",
                       }}
@@ -290,77 +313,92 @@ const OrdersPage: React.FC = () => {
                 </div>
               </div>
             </div>
-
+  
             {/* Order Items */}
-            {Object.values(games)
-            .filter((game) => game.orderIds.includes(order.orderId))
-            .map((game, index) => (
-              <div key={index} className="border-b py-4">
-                {/* Game Info, Price, and Buttons */}
-                <div className="flex items-center">
-                  {/* Game Info Section */}
-                  <div className="flex items-center gap-4 flex-grow">
-                    <img
-                      src={game.imageUrl}
-                      alt={game.name}
-                      className="w-16 h-16 rounded"
-                    />
-                    <div>
-                      <p className="font-medium">{game.name}</p>
-                      <p className="text-sm text-gray-500">{game.description}</p>
-                      {!game.available && (
-                        <span className="text-xs text-red-500 font-bold">
-                          Archived Game
-                        </span>
-                      )}
+            {games[order.orderId].map((gameEntry, index) => {
+              const {
+                name,
+                description,
+                imageUrl,
+                price,
+                available,
+                quantity,
+                orderGameId,
+              } = gameEntry;
+  
+              // Access review for the current OrderGameId
+              const reviewEntry =
+                reviews[orderGameId] || { showComment: false, review: null };
+  
+              return (
+                <div key={`${order.orderId}-${orderGameId}-${index}`} className="border-b py-4">
+                  {/* Game Info, Price, and Buttons */}
+                  <div className="flex items-center">
+                    {/* Game Info Section */}
+                    <div className="flex items-center gap-4 flex-grow">
+                      <img
+                        src={imageUrl}
+                        alt={name}
+                        className="w-16 h-16 rounded"
+                      />
+                      <div>
+                        <p className="font-medium">{name}</p>
+                        <p className="text-sm text-gray-500">{description}</p>
+                        {!available && (
+                          <span className="text-xs text-red-500 font-bold">
+                            Archived Game
+                          </span>
+                        )}
+                      </div>
+                    </div>
+  
+                    {/* Price Section */}
+                    <div className="flex justify-center flex-shrink-0 w-32">
+                      <p className="font-medium">Unit Price: ${price.toFixed(2)}</p>
+                    </div>
+  
+                    {/* Action Buttons Section */}
+                    <div className="flex gap-2 ml-auto flex-shrink-0">
+                      <Button
+                        variant="link"
+                        onClick={() => openReviewModal(orderGameId)}
+                      >
+                        Submit Review
+                      </Button>
+                      <Button variant="link" disabled={!available}>
+                        Buy again
+                      </Button>
                     </div>
                   </div>
-
-                  {/* Price Section */}
-                  <div className="flex justify-center flex-shrink-0 w-32">
-                    <p className="font-medium">Price: ${game.price.toFixed(2)}</p>
-                  </div>
-
-                  {/* Action Buttons Section */}
-                  <div className="flex gap-2 ml-auto flex-shrink-0">
-                    <Button variant="link" onClick={() => openReviewModal(game.gameId, order.orderId)}>
-                      Submit Review
-                    </Button>
-                    <Button variant="link" disabled={!game.available}>
-                      Buy again
-                    </Button>
-                  </div>
-                </div>
-
-
-                {/* Toggle Customer Review */}
-                <div className="mt-2">
-                  <button
-                    className="text-blue-500 text-sm underline"
-                    onClick={() => toggleReviewVisibility(game.gameId)}
-                  >
-                    {reviews[game.gameId]?.showComment ? "Hide Your Review" : "Show Your Review"}
-                  </button>
-                  {reviews[game.gameId] &&
-                    reviews[game.gameId]?.showComment &&
-                    reviews[game.gameId]?.review?.comment && (
+  
+                  {/* Toggle Customer Review */}
+                  <div className="mt-2">
+                    <button
+                      className="text-blue-500 text-sm underline"
+                      onClick={() => toggleReviewVisibility(orderGameId)}
+                    >
+                      {reviewEntry.showComment
+                        ? "Hide Your Review"
+                        : "Show Your Review"}
+                    </button>
+                    {reviewEntry.showComment && reviewEntry.review?.comment && (
                       <div className="mt-1 p-2 bg-gray-100 rounded">
                         <p className="text-sm">
-                          <strong>Your Rating:</strong> {reviews[game.gameId]?.review?.rating.replace("_", " ")}
+                          <strong>Your Rating:</strong> {reviewEntry.review.rating.replace("_", " ")}
                         </p>
                         <p className="text-sm">
-                          <strong>Your Comment:</strong> {reviews[game.gameId]?.review?.comment}
+                          <strong>Your Comment:</strong> {reviewEntry.review.comment}
                         </p>
                       </div>
                     )}
+                  </div>
                 </div>
-              </div>
-            ))}
-
+              );
+            })}
           </div>
         );
       })}
-
+  
       {/* Modal for order return */}
       <Modal isOpen={modalOpen} onClose={closeModal}>
         <p>{modalMessage}</p>
@@ -375,7 +413,7 @@ const OrdersPage: React.FC = () => {
           </div>
         )}
       </Modal>
-
+  
       {/* Modal for review submission */}
       <Modal isOpen={reviewModalOpen} onClose={closeReviewModal}>
         <h2 className="text-xl font-bold">Submit Review</h2>
@@ -393,7 +431,7 @@ const OrdersPage: React.FC = () => {
             <option value="FOUR_STARS">4 Stars</option>
             <option value="FIVE_STARS">5 Stars</option>
           </select>
-
+  
           <label className="block mt-4 text-sm font-bold">Comment (optional):</label>
           <textarea
             className="block w-full p-2 mt-1 border rounded"
@@ -401,7 +439,7 @@ const OrdersPage: React.FC = () => {
             onChange={(e) => setComment(e.target.value)}
             placeholder="Write a comment..."
           />
-
+  
           <div className="mt-4 flex gap-2">
             <Button variant="default" onClick={handleSubmitReview}>
               Submit
@@ -412,10 +450,9 @@ const OrdersPage: React.FC = () => {
           </div>
         </form>
       </Modal>
-
-
     </div>
   );
+  
 };
 
 export default OrdersPage;

@@ -10,9 +10,8 @@ import {
   getCustomerPaymentCards,
   updatePaymentCard,
   createPaymentCard, // Import createPaymentCard
-  PaymentCard,
-  PaymentDetailsRequest,
 } from "../../api/customerService";
+import { PaymentCard, PaymentDetailsRequest } from "../../model/customer/paymentCardInterfaces";
 import { getAuthUser } from "../../state/authState";
 
 const CustomerProfilePage: React.FC = () => {
