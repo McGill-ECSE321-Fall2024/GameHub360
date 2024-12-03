@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal"; // Import your Modal component
 import { getCustomerOrderHistory, getCustomerPaymentCards, returnOrder } from "../../api/customerService";
-import { OrderHistoryResponse } from "../../model/customer/customerOrderInterfaces";
+import { CustomerOrderResponse, OrderHistoryResponse } from "../../model/customer/customerOrderInterfaces";
 import { PaymentCardListResponse } from "../../model/customer/paymentCardInterfaces";
 import { getGamesByOrderGameIds, GameDetails } from "../../api/gameService";
 import { submitReview, getGameReviews, deleteReview } from "../../api/reviewService";
@@ -34,14 +34,20 @@ const OrdersPage: React.FC = () => {
   
         // Fetch the customer's order history
         const orderHistory = await getCustomerOrderHistory(customerId);
+
+        console.log("this is order history: ", orderHistory);
   
         // Extract all unique game IDs from the orders
-        const gameIds = Array.from(
+        const orderGameIds = Array.from(
           new Set(orderHistory.orders.flatMap((order) => order.orderedGamesIds))
         );
-  
+
+        console.log("this is ordered game ids: ", orderGameIds);
+
         // Fetch game details for all game IDs
-        const gameDetails = await getGamesByOrderGameIds(gameIds);
+        const gameDetails = await getGamesByOrderGameIds(orderGameIds);
+
+        console.log("game details we got from ordered game ids: ", gameDetails);
   
         // Fetch all payment cards associated with the customer
         const cardResponse: PaymentCardListResponse = await getCustomerPaymentCards(customerId);
@@ -57,6 +63,8 @@ const OrdersPage: React.FC = () => {
           map[game.gameId] = game;
           return map;
         }, {} as { [key: number]: GameDetails });
+
+        console.log("this is the game map: ", gameMap);
   
         const reviewsMap: { [key: number]: { showComment: boolean; review: { rating: string; comment?: string } | null } } = {};
         for (const game of gameDetails) {
@@ -71,7 +79,7 @@ const OrdersPage: React.FC = () => {
               : null,
           };
         }
-  
+
         setOrders(orderHistory);
         setGames(gameMap);
         setCards(cardMap);
@@ -147,14 +155,16 @@ const OrdersPage: React.FC = () => {
     setSelectedOrderId(null);
   };
 
-  const openReviewModal = (gameId: number) => {
+  const openReviewModal = (gameId: number, orderId: number) => {
     setSelectedGameId(gameId);
+    setSelectedOrderId(orderId);
     setReviewModalOpen(true);
   };
   
   const closeReviewModal = () => {
     setReviewModalOpen(false);
     setSelectedGameId(null);
+    setSelectedOrderId(null);
     setRating("");
     setComment("");
   };
@@ -181,6 +191,10 @@ const OrdersPage: React.FC = () => {
     };
   
     try {
+
+      console.log(selectedGameId);
+      console.log(selectedOrderId);
+
       console.log("Submitting review:", reviewPayload);
       const review = await submitReview(selectedGameId, reviewPayload);
   
@@ -309,7 +323,7 @@ const OrdersPage: React.FC = () => {
 
                   {/* Action Buttons Section */}
                   <div className="flex gap-2 ml-auto flex-shrink-0">
-                    <Button variant="link" onClick={() => openReviewModal(game.gameId)}>
+                    <Button variant="link" onClick={() => openReviewModal(game.gameId, order.orderId)}>
                       Submit Review
                     </Button>
                     <Button variant="link" disabled={!game.available}>

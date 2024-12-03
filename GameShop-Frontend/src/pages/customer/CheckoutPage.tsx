@@ -4,7 +4,8 @@ import PaymentCards from "../../components/PaymentCards";
 import { Button } from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import { createPaymentCard, getCustomerPaymentCards, createCustomerOrder } from "../../api/customerService";
-import { PaymentCard, PaymentDetailsRequest, CustomerOrderRequest } from "../../api/customerService";
+import { PaymentCard, PaymentDetailsRequest } from "../../model/customer/paymentCardInterfaces";
+import { CustomerOrderRequest } from "../../model/customer/customerOrderInterfaces";
 
 const CheckoutPage: React.FC = () => {
   const [savedCards, setSavedCards] = useState<PaymentCard[]>([]);
@@ -39,13 +40,20 @@ const CheckoutPage: React.FC = () => {
       alert("No valid customer or cart data found. Please check and try again.");
       return;
     }
+
+    const orderedGameIds: number[] = cartData.items.flatMap(
+      (item: { gameId: number; quantity: number }) =>
+        Array(item.quantity).fill(item.gameId)
+    );
+
+    console.log("Ordered Game Ids: ", orderedGameIds);
   
     const orderRequest: CustomerOrderRequest = {
-      orderedGameIds: cartData.items.map((item: { gameId: number }) => item.gameId), // Extract game IDs from cart
+      orderedGameIds,
       paymentInformationId: selectedCardId!, // Selected card ID
       customerId: customerData.id, // Logged-in customer ID
     };
-  
+
     try {
       await createCustomerOrder(orderRequest);
       setShowModal(true); // Show confirmation popup
