@@ -10,7 +10,7 @@ import { Category } from '../model/manager/Category';
  */
 export async function getAllCategories(): Promise<Category[]> {
   try {
-    const response = await apiService.get('/categories');
+    const response = await apiService.get('http://localhost:8080/manager/categories');
     return response.data.gameCategories as Category[];
   } catch (error) {
     throw new Error('Failed to fetch categories.');

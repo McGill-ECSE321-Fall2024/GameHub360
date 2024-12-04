@@ -44,6 +44,22 @@ public class EmployeeController {
     }
 
     /**
+     * Endpoint to create a new employee.
+     *
+     * @param employeeRequestDto The request object containing the employee's email,
+     *                           password, name (optional), phone number
+     *                           (optional) and isActive (optional).
+     * @return A response containing the newly created employee's details.
+     */
+    @PostMapping("/create")
+    public EmployeeResponseDto createEmployee(
+            @Validated({ ValidationGroups.Post.class }) @RequestBody EmployeeRequestDto employeeRequestDto) {
+        EmployeeAccount employee = employeeService.createEmployee(employeeRequestDto);
+
+        return new EmployeeResponseDto(employee);
+    }
+
+    /**
      * Endpoint to update an existing employee's details by employee ID.
      *
      * @param employeeId         The ID of the employee to update.

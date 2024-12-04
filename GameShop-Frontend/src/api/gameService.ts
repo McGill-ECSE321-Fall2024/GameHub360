@@ -52,7 +52,7 @@ export async function getGamesByOrderGameIds(
  */
 export async function getAllGames(): Promise<Game[]> {
   try {
-    const response = await apiService.get('/games/all');
+    const response = await apiService.get('http://localhost:8080/manager/games');
     return response.data.games as Game[];
   } catch (error) {
     if (isAxiosError(error)) {
