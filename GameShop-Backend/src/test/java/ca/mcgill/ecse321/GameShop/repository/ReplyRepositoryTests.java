@@ -68,7 +68,7 @@ public class ReplyRepositoryTests {
 
         CustomerAccount customerAcc = new CustomerAccount("mab_222@mail.com", "password");
         customerAcc = customerAccRepo.save(customerAcc);
-        PaymentDetails payementDetails = new PaymentDetails("TDCard", "XXX XXX", 1234, 10, 2025, customerAcc);
+        PaymentDetails payementDetails = new PaymentDetails("TDCard", "XXX XXX", "1234", 10, 2025, customerAcc);
         payementDetails = payementDetRepo.save(payementDetails);
         CustomerOrder customerOrder = new CustomerOrder(date, customerAcc, payementDetails);
         customerOrder = customerOrdRepo.save(customerOrder);

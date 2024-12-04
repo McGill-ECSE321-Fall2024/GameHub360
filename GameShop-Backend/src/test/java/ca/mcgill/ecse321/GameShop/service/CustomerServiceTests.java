@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.GameShop.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -384,7 +385,7 @@ public class CustomerServiceTests {
     public void testCreatePaymentCardSuccessfully() {
         // Arrange
         Integer customerId = 1;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", "123456789", 12, 2025);
         CustomerAccount customer = new CustomerAccount();
         customer.setName("John Doe");
 
@@ -407,7 +408,7 @@ public class CustomerServiceTests {
     public void testCreatePaymentCardCustomerNotFound() {
         // Arrange
         Integer customerId = 1;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", "123456789", 12, 2025);
 
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
 
@@ -427,11 +428,11 @@ public class CustomerServiceTests {
     public void testCreatePaymentCardAlreadyExists() {
         // Arrange
         Integer customerId = 1;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", 123456789, 12, 2025);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("John Doe", "12345", "123456789", 12, 2025);
         CustomerAccount customer = new CustomerAccount();
         customer.setName("John Doe");
 
-        PaymentDetails existingCard = new PaymentDetails("John Doe", "12345", 123456789, 12, 2025, customer);
+        PaymentDetails existingCard = new PaymentDetails("John Doe", "12345", "123456789", 12, 2025, customer);
         customer.addPaymentCard(existingCard);
 
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
@@ -455,12 +456,12 @@ public class CustomerServiceTests {
         // Arrange
         Integer customerId = 1;
         int cardId = 2;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", "987654321", 6, 2026);
 
         CustomerAccount customer = new CustomerAccount();
         customer.setName("Jane Doe");
 
-        PaymentDetails card = new PaymentDetails("John Doe", "12345", 123456789, 12, 2025, customer);
+        PaymentDetails card = new PaymentDetails("John Doe", "12345", "123456789", 12, 2025, customer);
         customer.addPaymentCard(card);
 
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
@@ -485,7 +486,7 @@ public class CustomerServiceTests {
         // Arrange
         Integer customerId = 1;
         int cardId = 2;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", "987654321", 6, 2026);
 
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
 
@@ -506,7 +507,7 @@ public class CustomerServiceTests {
         // Arrange
         Integer customerId = 1;
         int cardId = 2;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", "987654321", 6, 2026);
 
         CustomerAccount customer = new CustomerAccount();
 
@@ -530,12 +531,12 @@ public class CustomerServiceTests {
         // Arrange
         Integer customerId = 1;
         int cardId = 2;
-        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", 987654321, 6, 2026);
+        PaymentDetailsRequestDto requestDto = new PaymentDetailsRequestDto("Jane Doe", "54321", "987654321", 6, 2026);
 
         CustomerAccount customer = new CustomerAccount();
 
         CustomerAccount otherCustomer = new CustomerAccount();
-        PaymentDetails card = new PaymentDetails("Other", "12345", 123456789, 12, 2025, otherCustomer);
+        PaymentDetails card = new PaymentDetails("Other", "12345", "123456789", 12, 2025, otherCustomer);
 
         when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
         when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(cardId)).thenReturn(card);
@@ -655,6 +656,49 @@ public class CustomerServiceTests {
         });
 
         // Assert
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        assertEquals("Customer not found.", exception.getMessage());
+    }
+
+    // Tests deletePaymentCard service method
+
+    @Test
+    public void testDeletePaymentCard_Success() {
+        // Arrange
+        Integer customerId = 800;
+        Integer cardId = 632;
+
+        // Create mock customer and payment card
+        CustomerAccount customer = new CustomerAccount();
+        PaymentDetails card = new PaymentDetails();
+        card.setPaymentDetailsId(cardId);
+        card.setCardName("Test Card");
+        customer.addPaymentCard(card);
+
+        // Mock repository behavior
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(customer);
+        when(paymentDetailsRepository.findPaymentDetailsByPaymentDetailsId(cardId)).thenReturn(card);
+
+        // Act
+        PaymentDetails deletedCard = customerService.deletePaymentCard(customerId, cardId);
+
+        // Assert
+        assertEquals(cardId, deletedCard.getPaymentDetailsId());
+        assertFalse(customer.getPaymentCards().contains(card));
+        verify(paymentDetailsRepository, times(1)).delete(card);
+    }
+
+    @Test
+    public void testDeletePaymentCard_CustomerNotFound() {
+        // Arrange
+        Integer customerId = 800;
+        Integer cardId = 632;
+
+        when(customerAccountRepository.findCustomerAccountByCustomerId(customerId)).thenReturn(null);
+
+        // Act & Assert
+        GameShopException exception = assertThrows(GameShopException.class, () ->
+                customerService.deletePaymentCard(customerId, cardId));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals("Customer not found.", exception.getMessage());
     }

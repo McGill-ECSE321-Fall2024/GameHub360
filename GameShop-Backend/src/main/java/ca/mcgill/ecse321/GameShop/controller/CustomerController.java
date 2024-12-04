@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
 import ca.mcgill.ecse321.GameShop.dto.*;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.CustomerAccount;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.PaymentDetails;
@@ -100,13 +101,13 @@ public class CustomerController {
      * Endpoint to retrieve order history for a specific customer.
      *
      * @param customerId The ID of the customer.
-     * @return An OrderHistoryDto containing a list of OrderResponseDto representing
+     * @return An OrderHistoryDto containing a list of CustomerOrderResponseDto representing
      *         the order history of the customer.
      */
     @GetMapping("/{customerId}/orders")
     public OrderHistoryDto viewOrderHistory(@PathVariable Integer customerId) {
-        List<OrderResponseDto> orders = customerService.getOrderHistoryByCustomerId(customerId).stream()
-                .map(OrderResponseDto::new)
+        List<CustomerOrderResponseDto> orders = customerService.getOrderHistoryByCustomerId(customerId).stream()
+                .map(CustomerOrderResponseDto::new)
                 .collect(Collectors.toList());
         return new OrderHistoryDto(orders);
     }
@@ -168,6 +169,20 @@ public class CustomerController {
                 .map(PaymentDetailsResponseDto::new)
                 .collect(Collectors.toList());
         return new PaymentCardListDto(paymentCards);
+    }
+
+    /**
+     * Endpoint to delete a payment card for a specific customer and return its details.
+     *
+     * @param customerId The ID of the customer who owns the payment card.
+     * @param cardId     The ID of the payment card to be deleted.
+     * @return PaymentDetailsResponseDto representing the deleted payment card.
+     */
+    @DeleteMapping("/{customerId}/payment/{cardId}")
+    public void deletePaymentCard(
+            @PathVariable("customerId") Integer customerId,
+            @PathVariable("cardId") Integer cardId) {
+        customerService.deletePaymentCard(customerId, cardId);
     }
 
     /**

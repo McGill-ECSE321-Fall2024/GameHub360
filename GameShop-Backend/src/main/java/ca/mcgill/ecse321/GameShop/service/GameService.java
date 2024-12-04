@@ -12,9 +12,11 @@ import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
+import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.model.Promotion;
 import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
+import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
 import ca.mcgill.ecse321.GameShop.repository.PromotionRepository;
 
 @Service
@@ -25,6 +27,9 @@ public class GameService {
 
     @Autowired
     private GameCategoryRepository gameCategoryRepository;
+
+    @Autowired
+    private OrderGameRepository orderGameRepository;
 
     @Autowired
     private PromotionRepository promotionRepository;
@@ -51,14 +56,14 @@ public class GameService {
         game.setPrice(gameRequestDto.getPrice());
         game.setQuantityInStock(gameRequestDto.getQuantityInStock());
         gameRequestDto.getCategoryIds().stream()
-            .map(categoryId -> {
-                GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
-                if (category == null) {
-                throw new GameShopException(HttpStatus.NOT_FOUND, "Category not found");
-                }
-                return category;
-            })
-            .forEach(game::addCategory);
+                .map(categoryId -> {
+                    GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
+                    if (category == null) {
+                        throw new GameShopException(HttpStatus.NOT_FOUND, "Category not found");
+                    }
+                    return category;
+                })
+                .forEach(game::addCategory);
 
         return gameRepository.save(game);
     }
@@ -165,6 +170,7 @@ public class GameService {
 
     /**
      * add promotion to game
+     * 
      * @param gameId
      * @return the game with promotion
      * @throws GameShopException if game or promotion is not found
@@ -215,10 +221,10 @@ public class GameService {
      * Browse games based on optional filters: category, minimum price, and maximum
      * price.
      * 
-     * @param category the category to filter games by (optional)
+     * @param category     the category to filter games by (optional)
      * @param categoryType the category type to filter games by (optional)
-     * @param minPrice the minimum price to filter games by (optional)
-     * @param maxPrice the maximum price to filter games by (optional)
+     * @param minPrice     the minimum price to filter games by (optional)
+     * @param maxPrice     the maximum price to filter games by (optional)
      * @return a list of Game objects that match the provided filters
      */
     @Transactional
@@ -227,7 +233,8 @@ public class GameService {
         return games.stream()
                 .filter(Game::getIsAvailable)
                 .filter(game -> {
-                    if (categoryType == null) return true;
+                    if (categoryType == null)
+                        return true;
                     return game.getCategories().stream()
                             .anyMatch(cat -> categoryType.equals(cat.getCategoryType().name()));
                 })
@@ -341,5 +348,19 @@ public class GameService {
 
         game.setPrice(price);
         return gameRepository.save(game);
+    }
+
+    /**
+     * Retrieves a game by its associated OrderGame ID.
+     *
+     * @param orderGameId The ID of the OrderGame.
+     * @return The Game entity associated with the given OrderGame ID.
+     * @throws GameShopException If no OrderGame or Game is found for the given ID.
+     */
+    public Game getGameByOrderGameId(Integer orderGameId) {
+        OrderGame orderGame = orderGameRepository.findById(orderGameId)
+                .orElseThrow(() -> new GameShopException(HttpStatus.NOT_FOUND, "OrderGame not found for the given ID"));
+
+        return orderGame.getGame();
     }
 }

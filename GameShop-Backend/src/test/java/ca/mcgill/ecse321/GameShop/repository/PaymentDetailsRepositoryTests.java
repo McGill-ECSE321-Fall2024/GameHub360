@@ -38,7 +38,7 @@ public class PaymentDetailsRepositoryTests {
 
         String cardName = "John Doe";
         String postalCode = "H2X3Y5";
-        int cardNumber = 123456789;
+        String cardNumber = "123456789";
         int expMonth = 12;
         int expYear = 2025;
 

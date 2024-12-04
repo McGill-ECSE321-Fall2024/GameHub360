@@ -70,7 +70,7 @@ public class ReviewRepositoryTests {
 
         String cardName = "Cardholder";
         String postalCode = "H3H 1K1";
-        int cardNumber = 12345678;
+        String cardNumber = "12345678";
         int expMonth = 12;
         int expYear = 2024;
         PaymentDetails payment = new PaymentDetails(cardName, postalCode, cardNumber, expMonth, expYear, customer);

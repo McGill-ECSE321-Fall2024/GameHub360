@@ -35,7 +35,7 @@ public class CustomerOrderResponseDto {
         this.orderStatus = customerOrder.getOrderStatus();
         this.orderDate = customerOrder.getOrderDate();
         this.orderedGamesIds = customerOrder.getOrderedGames().stream()
-                .map(orderGame -> orderGame.getGame().getGameEntityId())
+                .map(orderGame -> orderGame.getOrderGameId())
                 .collect(Collectors.toList());
         this.orderedById = customerOrder.getOrderedBy().getCustomerId();
         this.paymentInformationId = customerOrder.getPaymentInformation().getPaymentDetailsId();

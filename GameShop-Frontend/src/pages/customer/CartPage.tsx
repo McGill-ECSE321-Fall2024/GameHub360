@@ -1,3 +1,4 @@
+import apiService from '../../config/axiosConfig';
 import { useCart } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,10 +14,28 @@ const CartPage = () => {
     }
   };
 
+  const handleIncreaseQuantity = async (
+    gameId: number,
+    newQuantity: number
+  ) => {
+    try {
+      const gameResponse = await apiService.get(`/games/${gameId}`);
+      const quantityInStock = gameResponse.data.quantityInStock;
+      if (newQuantity > quantityInStock) {
+        alert('Not enough stock available.');
+        return;
+      } else {
+        updateQuantity(gameId, newQuantity);
+      }
+    } catch (error) {
+      console.error('Error fetching game data:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
-      
+
       {cart.items.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-gray-600 mb-4">Your cart is empty</p>
@@ -46,19 +65,23 @@ const CartPage = () => {
                   <p className="text-gray-600">${item.price.toFixed(2)}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-4">
                 {/* Quantity controls */}
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => handleQuantityChange(item.gameId, item.quantity - 1)}
+                    onClick={() =>
+                      handleQuantityChange(item.gameId, item.quantity - 1)
+                    }
                     className="px-2 py-1 border rounded"
                   >
                     -
                   </button>
                   <span>{item.quantity}</span>
                   <button
-                    onClick={() => handleQuantityChange(item.gameId, item.quantity + 1)}
+                    onClick={() =>
+                      handleIncreaseQuantity(item.gameId, item.quantity + 1)
+                    }
                     className="px-2 py-1 border rounded"
                   >
                     +
@@ -73,7 +96,7 @@ const CartPage = () => {
               </div>
             </div>
           ))}
-          
+
           {/* Cart summary and checkout button */}
           <div className="mt-6 p-4 border rounded-lg">
             <div className="flex justify-between items-center mb-4">

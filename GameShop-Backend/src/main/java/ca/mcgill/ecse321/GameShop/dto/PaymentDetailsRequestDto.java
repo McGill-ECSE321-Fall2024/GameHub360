@@ -11,8 +11,8 @@ public class PaymentDetailsRequestDto {
     @NotBlank(message = "Postal code cannot be empty.")
     private String postalCode;
 
-    @Positive(message = "Card number must be a positive integer.")
-    private int cardNumber;
+    @NotBlank(message = "Card number cannot be empty.")
+    private String cardNumber;
 
     @Positive(message = "Expiry month must be a positive integer.")
     private int expMonth;
@@ -21,7 +21,7 @@ public class PaymentDetailsRequestDto {
     private int expYear;
 
     // Constructor
-    public PaymentDetailsRequestDto(String cardName, String postalCode, int cardNumber, int expMonth, int expYear) {
+    public PaymentDetailsRequestDto(String cardName, String postalCode, String cardNumber, int expMonth, int expYear) {
         this.cardName = cardName;
         this.postalCode = postalCode;
         this.cardNumber = cardNumber;
@@ -47,11 +47,11 @@ public class PaymentDetailsRequestDto {
         this.postalCode = postalCode;
     }
 
-    public int getCardNumber() {
+    public String getCardNumber() {
         return cardNumber;
     }
-
-    public void setCardNumber(int cardNumber) {
+    
+    public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
     }
 

@@ -1,6 +1,8 @@
 package ca.mcgill.ecse321.GameShop.controller;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -10,7 +12,9 @@ import ca.mcgill.ecse321.GameShop.dto.GameListDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameResponseDto;
 import ca.mcgill.ecse321.GameShop.dto.ValidationGroups;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Game;
+import ca.mcgill.ecse321.GameShop.model.OrderGame;
 import ca.mcgill.ecse321.GameShop.service.GameService;
 
 @CrossOrigin(origins = "*")
@@ -211,5 +215,18 @@ public class GameController {
             @RequestParam Double price) {
         Game updatedGame = gameService.updateGamePrice(gameId, price);
         return new GameResponseDto(updatedGame);
+    }
+
+    /**
+     * Retrieves a game by its associated OrderGame ID.
+     *
+     * @param orderGameId The ID of the OrderGame.
+     * @return A GameResponseDto containing the details of the requested game.
+     * @throws GameShopException If no game is found for the given OrderGame ID.
+     */
+    @GetMapping("/game/{orderGameId}")
+    public GameResponseDto getGameByOrderGameId(@PathVariable Integer orderGameId) {
+        Game game = gameService.getGameByOrderGameId(orderGameId);
+        return new GameResponseDto(game);
     }
 }

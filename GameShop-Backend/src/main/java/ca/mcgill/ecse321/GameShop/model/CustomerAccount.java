@@ -169,7 +169,7 @@ public class CustomerAccount extends Account
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public PaymentDetails addPaymentCard(String aCardName, String aPostalCode, int aCardNumber, int aExpMonth, int aExpYear)
+  public PaymentDetails addPaymentCard(String aCardName, String aPostalCode, String aCardNumber, int aExpMonth, int aExpYear)
   {
     return new PaymentDetails(aCardName, aPostalCode, aCardNumber, aExpMonth, aExpYear, this);
   }
