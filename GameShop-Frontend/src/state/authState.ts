@@ -1,7 +1,7 @@
 import { AuthState } from '../model/AuthState';
 import { LoginUser } from '../model/user/LoginUser';
 import { UserType } from '../model/user/UserType';
-import {StoredUserData} from '../api/authService';
+import { StoredUserData } from '../model/UserData';
 
 /*
 Note for TAs: we know that this authentication system is not secure, but we are not focusing on security in this project. 
@@ -35,7 +35,7 @@ export const setAuthUser = (userData: StoredUserData) => {
 
 // Utility function to retrieve the logged-in user object from localStorage
 export const getAuthUser = () => {
-  const storedUser = localStorage.getItem('loggedInUser');
+  const storedUser = localStorage.getItem(LOCAL_STORAGE_KEY);
   return storedUser ? JSON.parse(storedUser) : null;
 };
 

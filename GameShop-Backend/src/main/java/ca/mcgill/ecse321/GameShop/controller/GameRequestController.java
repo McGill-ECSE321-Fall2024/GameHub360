@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestApprovalDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.GameRequestResponseDto;
+import ca.mcgill.ecse321.GameShop.dto.GameRequestsListDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.RequestNoteResponseDto;
 import ca.mcgill.ecse321.GameShop.model.GameRequest;
@@ -30,7 +31,7 @@ public class GameRequestController {
      * @param request the game request data transfer object
      * @return the created game request as a response entity
      */
-    @PostMapping("/")
+    @PostMapping
     public GameRequestResponseDto submitGameRequest(@RequestBody @Valid GameRequestRequestDto request) {
         GameRequest createdRequest = gameRequestService.createGameRequest(request);
         return new GameRequestResponseDto(createdRequest);
@@ -58,9 +59,8 @@ public class GameRequestController {
      * @return a response entity indicating the result of the operation
      */
     @DeleteMapping("/{requestId}")
-    public Void deleteGameRequest(@PathVariable("requestId") int requestId) {
+    public void deleteGameRequest(@PathVariable("requestId") int requestId) {
         gameRequestService.deleteGameRequest(requestId);
-        return null;
     }
 
     /**
@@ -118,9 +118,12 @@ public class GameRequestController {
      * @return a list of all game requests as a response entity
      */
     @GetMapping
-    public List<GameRequestResponseDto> getAllRequests() {
+    public GameRequestsListDto getAllRequests() {
         List<GameRequest> requests = gameRequestService.getAllRequests();
-        return requests.stream().map(GameRequestResponseDto::new).collect(Collectors.toList());
+        List<GameRequestResponseDto> responseDtos = requests.stream()
+                .map(GameRequestResponseDto::new)
+                .collect(Collectors.toList());
+        return new GameRequestsListDto(responseDtos);
     }
 
     /**
@@ -133,5 +136,19 @@ public class GameRequestController {
     public GameRequestResponseDto getRequest(@PathVariable("requestId") int requestId) {
         GameRequest request = gameRequestService.getRequest(requestId);
         return new GameRequestResponseDto(request);
+    }
+
+    /**
+     * Retrieves all notes associated with a game request.
+     *
+     * @param requestId the ID of the game request
+     * @return a list of all notes associated with the game request
+     */
+    @GetMapping("/{requestId}/notes")
+    public List<RequestNoteResponseDto> getNotes(@PathVariable("requestId") int requestId) {
+        List<RequestNote> notes = gameRequestService.getNotes(requestId);
+        return notes.stream()
+                .map(RequestNoteResponseDto::new)
+                .collect(Collectors.toList());
     }
 }

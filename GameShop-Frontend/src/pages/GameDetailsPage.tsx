@@ -3,9 +3,9 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import apiService from '../config/axiosConfig';
 import { getAuthState } from '../state/authState';
 import { AuthState } from '../model/AuthState';
-import { useCart } from '../Context/CartContext';
-import { useWishlist } from '../Context/WishlistContext';
-import { useToast } from '../Context/ToastContext';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import { useToast } from '../context/ToastContext';
 
 interface Game {
   gameId: number;
@@ -199,7 +199,7 @@ const GameDetailsPage = () => {
               </div>
             </div>
 
-            {(authState === AuthState.CUSTOMER || authState === AuthState.EMPLOYEE || authState === AuthState.MANAGER) && (
+            {authState === AuthState.CUSTOMER && (
               <div className="flex gap-4">
                 <button
                   onClick={handleWishlistToggle}

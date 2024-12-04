@@ -1,17 +1,19 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
-import ca.mcgill.ecse321.GameShop.exception.GameShopException;
-import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
-import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
-import ca.mcgill.ecse321.GameShop.utils.PasswordUtils;
-import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
-import ca.mcgill.ecse321.GameShop.utils.PhoneUtils;
-import jakarta.transaction.Transactional;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import ca.mcgill.ecse321.GameShop.dto.ManagerRequestDto;
+import ca.mcgill.ecse321.GameShop.exception.GameShopException;
+import ca.mcgill.ecse321.GameShop.model.ManagerAccount;
+import ca.mcgill.ecse321.GameShop.repository.ManagerAccountRepository;
+import ca.mcgill.ecse321.GameShop.utils.EncryptionUtils;
+import ca.mcgill.ecse321.GameShop.utils.PasswordUtils;
+import ca.mcgill.ecse321.GameShop.utils.PhoneUtils;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ManagerService {
@@ -42,7 +44,7 @@ public class ManagerService {
      * @param managerRequestDto the details for creating the manager.
      * @return the created ManagerAccount.
      * @throws GameShopException if a manager already exists or if password
-     *                          requirements are not met.
+     *                           requirements are not met.
      */
     @Transactional
     public ManagerAccount createManager(ManagerRequestDto managerRequestDto) {
@@ -75,7 +77,7 @@ public class ManagerService {
      * @param managerRequestDto the manager details to update.
      * @return the updated ManagerAccount.
      * @throws GameShopException if the manager is not found or if password
-     *                          requirements are not met.
+     *                           requirements are not met.
      */
     @Transactional
     public ManagerAccount updateManager(ManagerRequestDto managerRequestDto) {
@@ -100,5 +102,18 @@ public class ManagerService {
         }
 
         return managerAccountRepository.save(manager);
+    }
+
+    /**
+     * Retrieves the single manager's details.
+     *
+     * @return The manager's details as a ManagerResponseDto.
+     * @throws GameShopException if no manager is found.
+     */
+    public ManagerAccount getManagerDetails() {
+        ManagerAccount manager = StreamSupport.stream(managerAccountRepository.findAll().spliterator(), false)
+                .findFirst()
+                .orElseThrow(() -> new GameShopException(HttpStatus.NOT_FOUND, "No manager account found."));
+        return manager;
     }
 }

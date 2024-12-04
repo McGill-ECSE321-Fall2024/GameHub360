@@ -2,6 +2,7 @@
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
 
 package ca.mcgill.ecse321.GameShop.model;
+
 import java.util.*;
 
 import jakarta.persistence.CascadeType;
@@ -15,28 +16,32 @@ import jakarta.persistence.OneToMany;
 
 import java.sql.Date;
 
+import jakarta.persistence.Column;
+
 // line 45 "../../../../../../model.ump"
 // line 182 "../../../../../../model.ump"
 @Entity
-public class PaymentDetails
-{
+public class PaymentDetails {
 
-  //------------------------
+  // ------------------------
   // MEMBER VARIABLES
-  //------------------------
+  // ------------------------
 
-  //PaymentDetails Attributes
+  // PaymentDetails Attributes
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int paymentDetailsId;
 
   private String cardName;
   private String postalCode;
+
+  @Column(nullable = true)
   private String cardNumber;
+
   private int expMonth;
   private int expYear;
 
-  //PaymentDetails Associations
+  // PaymentDetails Associations
   @ManyToOne
   @JoinColumn(name = "customer_id")
   private CustomerAccount cardOwner;
@@ -44,12 +49,12 @@ public class PaymentDetails
   @OneToMany(mappedBy = "paymentInformation", cascade = CascadeType.ALL)
   private List<CustomerOrder> paidOrders;
 
-  //------------------------
+  // ------------------------
   // CONSTRUCTOR
-  //------------------------
+  // ------------------------
 
-  public PaymentDetails(String aCardName, String aPostalCode, String aCardNumber, int aExpMonth, int aExpYear, CustomerAccount aCardOwner) 
-  {
+  public PaymentDetails(String aCardName, String aPostalCode, String aCardNumber, int aExpMonth, int aExpYear,
+      CustomerAccount aCardOwner) {
     this.cardName = aCardName;
     this.postalCode = aPostalCode;
     this.cardNumber = aCardNumber;
@@ -57,7 +62,8 @@ public class PaymentDetails
     this.expYear = aExpYear;
     boolean didAddCardOwner = setCardOwner(aCardOwner);
     if (!didAddCardOwner) {
-        throw new RuntimeException("Unable to create paymentCard due to cardOwner. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException(
+          "Unable to create paymentCard due to cardOwner. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     this.paidOrders = new ArrayList<CustomerOrder>();
   }
@@ -66,189 +72,170 @@ public class PaymentDetails
     paidOrders = new ArrayList<CustomerOrder>();
   }
 
-  //------------------------
+  // ------------------------
   // INTERFACE
-  //------------------------
+  // ------------------------
 
-  public boolean setPaymentDetailsId(int aPaymentDetailsId)
-  {
+  public boolean setPaymentDetailsId(int aPaymentDetailsId) {
     boolean wasSet = false;
     paymentDetailsId = aPaymentDetailsId;
     wasSet = true;
     return wasSet;
   }
 
-  public boolean setCardName(String aCardName)
-  {
+  public boolean setCardName(String aCardName) {
     boolean wasSet = false;
     cardName = aCardName;
     wasSet = true;
     return wasSet;
   }
 
-  public boolean setPostalCode(String aPostalCode)
-  {
+  public boolean setPostalCode(String aPostalCode) {
     boolean wasSet = false;
     postalCode = aPostalCode;
     wasSet = true;
     return wasSet;
   }
 
-  public boolean setCardNumber(String aCardNumber) 
-  {
+  public boolean setCardNumber(String aCardNumber) {
     boolean wasSet = false;
     this.cardNumber = aCardNumber;
     wasSet = true;
     return wasSet;
   }
 
-  public boolean setExpMonth(int aExpMonth)
-  {
+  public boolean setExpMonth(int aExpMonth) {
     boolean wasSet = false;
     expMonth = aExpMonth;
     wasSet = true;
     return wasSet;
   }
 
-  public boolean setExpYear(int aExpYear)
-  {
+  public boolean setExpYear(int aExpYear) {
     boolean wasSet = false;
     expYear = aExpYear;
     wasSet = true;
     return wasSet;
   }
 
-  public int getPaymentDetailsId()
-  {
+  public int getPaymentDetailsId() {
     return paymentDetailsId;
   }
 
-  public String getCardName()
-  {
+  public String getCardName() {
     return cardName;
   }
 
-  public String getPostalCode()
-  {
+  public String getPostalCode() {
     return postalCode;
   }
 
-  public String getCardNumber() 
-  {
+  public String getCardNumber() {
     return cardNumber;
   }
 
-  public int getExpMonth()
-  {
+  public int getExpMonth() {
     return expMonth;
   }
 
-  public int getExpYear()
-  {
+  public int getExpYear() {
     return expYear;
   }
+
   /* Code from template association_GetOne */
-  public CustomerAccount getCardOwner()
-  {
+  public CustomerAccount getCardOwner() {
     return cardOwner;
   }
+
   /* Code from template association_GetMany */
-  public CustomerOrder getPaidOrder(int index)
-  {
+  public CustomerOrder getPaidOrder(int index) {
     CustomerOrder aPaidOrder = paidOrders.get(index);
     return aPaidOrder;
   }
 
-  public List<CustomerOrder> getPaidOrders()
-  {
+  public List<CustomerOrder> getPaidOrders() {
     List<CustomerOrder> newPaidOrders = Collections.unmodifiableList(paidOrders);
     return newPaidOrders;
   }
 
-  public int numberOfPaidOrders()
-  {
+  public int numberOfPaidOrders() {
     int number = paidOrders.size();
     return number;
   }
 
-  public boolean hasPaidOrders()
-  {
+  public boolean hasPaidOrders() {
     boolean has = paidOrders.size() > 0;
     return has;
   }
 
-  public int indexOfPaidOrder(CustomerOrder aPaidOrder)
-  {
+  public int indexOfPaidOrder(CustomerOrder aPaidOrder) {
     int index = paidOrders.indexOf(aPaidOrder);
     return index;
   }
+
   /* Code from template association_SetOneToMany */
-  public boolean setCardOwner(CustomerAccount aCardOwner)
-  {
+  public boolean setCardOwner(CustomerAccount aCardOwner) {
     boolean wasSet = false;
-    if (aCardOwner == null)
-    {
+    if (aCardOwner == null) {
       return wasSet;
     }
 
     CustomerAccount existingCardOwner = cardOwner;
     cardOwner = aCardOwner;
-    if (existingCardOwner != null && !existingCardOwner.equals(aCardOwner))
-    {
+    if (existingCardOwner != null && !existingCardOwner.equals(aCardOwner)) {
       existingCardOwner.removePaymentCard(this);
     }
     cardOwner.addPaymentCard(this);
     wasSet = true;
     return wasSet;
   }
+
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfPaidOrders()
-  {
+  public static int minimumNumberOfPaidOrders() {
     return 0;
   }
+
   /* Code from template association_AddManyToOne */
-  public CustomerOrder addPaidOrder(Date aOrderDate, CustomerAccount aOrderedBy)
-  {
-    return new CustomerOrder( aOrderDate, aOrderedBy, this);
+  public CustomerOrder addPaidOrder(Date aOrderDate, CustomerAccount aOrderedBy) {
+    return new CustomerOrder(aOrderDate, aOrderedBy, this);
   }
 
-  public boolean addPaidOrder(CustomerOrder aPaidOrder)
-  {
+  public boolean addPaidOrder(CustomerOrder aPaidOrder) {
     boolean wasAdded = false;
-    if (paidOrders.contains(aPaidOrder)) { return false; }
+    if (paidOrders.contains(aPaidOrder)) {
+      return false;
+    }
     PaymentDetails existingPaymentInformation = aPaidOrder.getPaymentInformation();
     boolean isNewPaymentInformation = existingPaymentInformation != null && !this.equals(existingPaymentInformation);
-    if (isNewPaymentInformation)
-    {
+    if (isNewPaymentInformation) {
       aPaidOrder.setPaymentInformation(this);
-    }
-    else
-    {
+    } else {
       paidOrders.add(aPaidOrder);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removePaidOrder(CustomerOrder aPaidOrder)
-  {
+  public boolean removePaidOrder(CustomerOrder aPaidOrder) {
     boolean wasRemoved = false;
-    //Unable to remove aPaidOrder, as it must always have a paymentInformation
-    if (!this.equals(aPaidOrder.getPaymentInformation()))
-    {
+    // Unable to remove aPaidOrder, as it must always have a paymentInformation
+    if (!this.equals(aPaidOrder.getPaymentInformation())) {
       paidOrders.remove(aPaidOrder);
       wasRemoved = true;
     }
     return wasRemoved;
   }
+
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addPaidOrderAt(CustomerOrder aPaidOrder, int index)
-  {  
+  public boolean addPaidOrderAt(CustomerOrder aPaidOrder, int index) {
     boolean wasAdded = false;
-    if(addPaidOrder(aPaidOrder))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfPaidOrders()) { index = numberOfPaidOrders() - 1; }
+    if (addPaidOrder(aPaidOrder)) {
+      if (index < 0) {
+        index = 0;
+      }
+      if (index > numberOfPaidOrders()) {
+        index = numberOfPaidOrders() - 1;
+      }
       paidOrders.remove(aPaidOrder);
       paidOrders.add(index, aPaidOrder);
       wasAdded = true;
@@ -256,49 +243,45 @@ public class PaymentDetails
     return wasAdded;
   }
 
-  public boolean addOrMovePaidOrderAt(CustomerOrder aPaidOrder, int index)
-  {
+  public boolean addOrMovePaidOrderAt(CustomerOrder aPaidOrder, int index) {
     boolean wasAdded = false;
-    if(paidOrders.contains(aPaidOrder))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfPaidOrders()) { index = numberOfPaidOrders() - 1; }
+    if (paidOrders.contains(aPaidOrder)) {
+      if (index < 0) {
+        index = 0;
+      }
+      if (index > numberOfPaidOrders()) {
+        index = numberOfPaidOrders() - 1;
+      }
       paidOrders.remove(aPaidOrder);
       paidOrders.add(index, aPaidOrder);
       wasAdded = true;
-    } 
-    else 
-    {
+    } else {
       wasAdded = addPaidOrderAt(aPaidOrder, index);
     }
     return wasAdded;
   }
 
-  public void delete()
-  {
+  public void delete() {
     CustomerAccount placeholderCardOwner = cardOwner;
     this.cardOwner = null;
-    if(placeholderCardOwner != null)
-    {
+    if (placeholderCardOwner != null) {
       placeholderCardOwner.removePaymentCard(this);
     }
-    for(int i=paidOrders.size(); i > 0; i--)
-    {
+    for (int i = paidOrders.size(); i > 0; i--) {
       CustomerOrder aPaidOrder = paidOrders.get(i - 1);
       aPaidOrder.delete();
     }
   }
 
-
-  public String toString()
-  {
-    return super.toString() + "["+
-            "paymentDetailsId" + ":" + getPaymentDetailsId()+ "," +
-            "cardName" + ":" + getCardName()+ "," +
-            "postalCode" + ":" + getPostalCode()+ "," +
-            "cardNumber" + ":" + getCardNumber()+ "," +
-            "expMonth" + ":" + getExpMonth()+ "," +
-            "expYear" + ":" + getExpYear()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "cardOwner = "+(getCardOwner()!=null?Integer.toHexString(System.identityHashCode(getCardOwner())):"null");
+  public String toString() {
+    return super.toString() + "[" +
+        "paymentDetailsId" + ":" + getPaymentDetailsId() + "," +
+        "cardName" + ":" + getCardName() + "," +
+        "postalCode" + ":" + getPostalCode() + "," +
+        "cardNumber" + ":" + getCardNumber() + "," +
+        "expMonth" + ":" + getExpMonth() + "," +
+        "expYear" + ":" + getExpYear() + "]" + System.getProperties().getProperty("line.separator") +
+        "  " + "cardOwner = "
+        + (getCardOwner() != null ? Integer.toHexString(System.identityHashCode(getCardOwner())) : "null");
   }
 }

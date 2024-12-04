@@ -38,12 +38,16 @@ const Navbar = ({ userType }: NavbarProps) => {
         return [
           { name: 'Browse', to: GeneralRouteNames.BROWSE },
           { name: 'Game Requests', to: EmployeeRouteNames.GAME_REQUESTS },
+          { name: 'Categories', to: EmployeeRouteNames.CATEGORIES },
           // Add more links as needed (these are just examples)
         ];
       case UserType.MANAGER:
         return [
           { name: 'Browse', to: GeneralRouteNames.BROWSE },
           { name: 'Dashboard', to: ManagerRouteNames.DASHBOARD },
+          { name: 'Game Requests', to: ManagerRouteNames.GAME_REQUESTS },
+          { name: 'Games', to: ManagerRouteNames.GAMES },
+          { name: 'Categories', to: ManagerRouteNames.CATEGORIES },
           // Add more links as needed (these are just examples)
         ];
       default:

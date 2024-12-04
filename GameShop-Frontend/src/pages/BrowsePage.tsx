@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import apiService from '../config/axiosConfig';
 import GameCard from '../components/GameCard';
 
+// Types for filter state and data models
 interface FilterState {
   category?: string;
   priceRange?: [number, number];
@@ -28,6 +29,7 @@ interface Category {
 }
 
 const BrowsePage = () => {
+  // State management with URL search params
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState<FilterState>({
     category: searchParams.get('category') || undefined,
@@ -38,6 +40,7 @@ const BrowsePage = () => {
   const [games, setGames] = useState<Game[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
+  // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -51,6 +54,7 @@ const BrowsePage = () => {
     fetchCategories();
   }, []);
 
+  // Update URL and fetch games when filters change
   useEffect(() => {
     const params = new URLSearchParams();
     if (filters.category) params.set('category', filters.category);
@@ -130,7 +134,7 @@ const BrowsePage = () => {
             </select>
           </div>
 
-          {/* Category Filter */}
+          {/* Category Filter - Filtered by selected category type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Category
@@ -151,7 +155,7 @@ const BrowsePage = () => {
             </select>
           </div>
 
-          {/* Price Range */}
+          {/* Price Range Slider */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Price Range: ${filters.priceRange?.[0] || 0} - ${filters.priceRange?.[1] || 200}
@@ -186,7 +190,7 @@ const BrowsePage = () => {
         </div>
       </div>
 
-      {/* Games Grid */}
+      {/* Games Grid - Shows filtered games or empty state */}
       {games.length === 0 ? (
         <div className="text-center py-8">
           <h3 className="text-xl text-gray-600">No games found matching your filters</h3>

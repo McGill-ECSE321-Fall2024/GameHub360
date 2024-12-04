@@ -77,7 +77,7 @@ public class GameIntegrationTests {
         game.setCategoryIds(List.of(validCategoryId));
 
         // Act
-        ResponseEntity<GameResponseDto> response = client.postForEntity("/games/", game, GameResponseDto.class);
+        ResponseEntity<GameResponseDto> response = client.postForEntity("/games", game, GameResponseDto.class);
 
         // Assert
         assertNotNull(response, "Response should not be null");
@@ -106,7 +106,7 @@ public class GameIntegrationTests {
         gameDto.setIsAvailable(true);
         gameDto.setCategoryIds(List.of(validCategoryId));
 
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games/", gameDto,
+        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", gameDto,
                 GameResponseDto.class);
         assertNotNull(createResponse, "Create response should not be null");
         assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
@@ -161,7 +161,7 @@ public class GameIntegrationTests {
         gameDto.setIsAvailable(true);
         gameDto.setCategoryIds(List.of(validCategoryId));
 
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games/", gameDto,
+        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", gameDto,
                 GameResponseDto.class);
         assertNotNull(createResponse, "Create response should not be null");
         assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
@@ -202,7 +202,7 @@ public class GameIntegrationTests {
         gameDto.setIsAvailable(true);
         gameDto.setCategoryIds(List.of(validCategoryId));
 
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games/", gameDto,
+        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", gameDto,
                 GameResponseDto.class);
         assertNotNull(createResponse, "Create response should not be null");
         assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
@@ -257,7 +257,7 @@ public class GameIntegrationTests {
         gameDto.setIsAvailable(true);
         gameDto.setCategoryIds(List.of(validCategoryId));
 
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games/", gameDto,
+        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", gameDto,
                 GameResponseDto.class);
         assertNotNull(createResponse, "Create response should not be null");
         assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");
@@ -306,7 +306,7 @@ public class GameIntegrationTests {
         gameDto.setIsAvailable(true);
         gameDto.setCategoryIds(List.of(validCategoryId));
 
-        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games/", gameDto,
+        ResponseEntity<GameResponseDto> createResponse = client.postForEntity("/games", gameDto,
                 GameResponseDto.class);
         assertNotNull(createResponse, "Create response should not be null");
         assertEquals(HttpStatus.OK, createResponse.getStatusCode(), "Game creation failed");

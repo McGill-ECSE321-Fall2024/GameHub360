@@ -1,10 +1,12 @@
-import { useCart } from '../../Context/CartContext';
+import { useCart } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 
+// Component to display and manage shopping cart
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
   const navigate = useNavigate();
 
+  // Handle quantity changes, ensuring it stays above 0
   const handleQuantityChange = (gameId: number, newQuantity: number) => {
     if (newQuantity > 0) {
       updateQuantity(gameId, newQuantity);
@@ -27,6 +29,7 @@ const CartPage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
+          {/* Cart items list */}
           {cart.items.map((item) => (
             <div
               key={item.gameId}
@@ -45,6 +48,7 @@ const CartPage = () => {
               </div>
               
               <div className="flex items-center space-x-4">
+                {/* Quantity controls */}
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => handleQuantityChange(item.gameId, item.quantity - 1)}
@@ -70,6 +74,7 @@ const CartPage = () => {
             </div>
           ))}
           
+          {/* Cart summary and checkout button */}
           <div className="mt-6 p-4 border rounded-lg">
             <div className="flex justify-between items-center mb-4">
               <span className="font-bold">Total:</span>

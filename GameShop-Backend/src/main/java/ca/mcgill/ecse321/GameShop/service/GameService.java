@@ -1,9 +1,7 @@
 package ca.mcgill.ecse321.GameShop.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +13,11 @@ import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Game;
 import ca.mcgill.ecse321.GameShop.model.GameCategory;
 import ca.mcgill.ecse321.GameShop.model.OrderGame;
+import ca.mcgill.ecse321.GameShop.model.Promotion;
 import ca.mcgill.ecse321.GameShop.repository.GameCategoryRepository;
 import ca.mcgill.ecse321.GameShop.repository.GameRepository;
 import ca.mcgill.ecse321.GameShop.repository.OrderGameRepository;
+import ca.mcgill.ecse321.GameShop.repository.PromotionRepository;
 
 @Service
 public class GameService {
@@ -30,6 +30,9 @@ public class GameService {
 
     @Autowired
     private OrderGameRepository orderGameRepository;
+
+    @Autowired
+    private PromotionRepository promotionRepository;
 
     /**
      * Create a new game directly.
@@ -53,7 +56,13 @@ public class GameService {
         game.setPrice(gameRequestDto.getPrice());
         game.setQuantityInStock(gameRequestDto.getQuantityInStock());
         gameRequestDto.getCategoryIds().stream()
-                .map(categoryId -> gameCategoryRepository.findGameCategoryByCategoryId(categoryId))
+                .map(categoryId -> {
+                    GameCategory category = gameCategoryRepository.findGameCategoryByCategoryId(categoryId);
+                    if (category == null) {
+                        throw new GameShopException(HttpStatus.NOT_FOUND, "Category not found");
+                    }
+                    return category;
+                })
                 .forEach(game::addCategory);
 
         return gameRepository.save(game);
@@ -133,6 +142,60 @@ public class GameService {
     }
 
     /**
+     * View all games.
+     * 
+     * @return a list of all games as Game objects
+     */
+    @Transactional
+    public List<Game> viewAllGames() {
+        return (List<Game>) gameRepository.findAll();
+    }
+
+    /**
+     * Get a game by ID.
+     * 
+     * @param gameId the ID of the game to retrieve
+     * @return the game as a Game
+     * @throws GameShopException if game is not found
+     */
+    @Transactional
+    public Game getGame(Integer gameId) {
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
+        }
+
+        return game;
+    }
+
+    /**
+     * add promotion to game
+     * 
+     * @param gameId
+     * @return the game with promotion
+     * @throws GameShopException if game or promotion is not found
+     */
+    @Transactional
+    public Game addPromotionToGame(Integer gameId, Integer promotionId) {
+        Game game = gameRepository.findGameByGameEntityId(gameId);
+        if (game == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Game not found");
+        }
+
+        Promotion promotion = promotionRepository.findPromotionByPromotionId(promotionId);
+        if (promotion == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Promotion not found");
+        }
+
+        if (game.getPromotions().contains(promotion)) {
+            throw new GameShopException(HttpStatus.BAD_REQUEST, "Game already has this promotion");
+        }
+
+        game.addPromotion(promotion);
+        return gameRepository.save(game);
+    }
+
+    /**
      * Reactivate an archived game.
      * 
      * @param gameId the ID of the game to reactivate
@@ -158,10 +221,10 @@ public class GameService {
      * Browse games based on optional filters: category, minimum price, and maximum
      * price.
      * 
-     * @param category the category to filter games by (optional)
+     * @param category     the category to filter games by (optional)
      * @param categoryType the category type to filter games by (optional)
-     * @param minPrice the minimum price to filter games by (optional)
-     * @param maxPrice the maximum price to filter games by (optional)
+     * @param minPrice     the minimum price to filter games by (optional)
+     * @param maxPrice     the maximum price to filter games by (optional)
      * @return a list of Game objects that match the provided filters
      */
     @Transactional
@@ -170,7 +233,8 @@ public class GameService {
         return games.stream()
                 .filter(Game::getIsAvailable)
                 .filter(game -> {
-                    if (categoryType == null) return true;
+                    if (categoryType == null)
+                        return true;
                     return game.getCategories().stream()
                             .anyMatch(cat -> categoryType.equals(cat.getCategoryType().name()));
                 })

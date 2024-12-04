@@ -45,9 +45,7 @@ const LoginPage = () => {
     }
 
     try {
-      // Call the API
       const responseData = await login(formData);
-      console.log('Login successful:', responseData);
 
       // Update formData with the ID from response
       const updatedUser: LoginUser = {
@@ -58,7 +56,7 @@ const LoginPage = () => {
       // Set the auth user in the state
       setAuthUser(updatedUser);
 
-      // Refresh to update the router
+      // Redirect to base page
       window.location.href = GeneralRouteNames.BASE;
     } catch (error) {
       setErrorMsg((error as AxiosError).message);
