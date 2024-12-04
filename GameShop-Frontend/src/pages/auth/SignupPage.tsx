@@ -5,6 +5,7 @@ import { GeneralRouteNames } from '../../model/routeNames/GeneralRouteNames';
 import { registerCustomer } from '../../api/authService';
 import { setAuthUser } from '../../state/authState';
 import { UserType } from '../../model/user/UserType';
+import { StoredUserData } from '../../model/UserData';
 
 const SignUpPage = () => {
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -97,15 +98,14 @@ const SignUpPage = () => {
       console.log('Registration successful:', registeredCustomer);
 
       // Build user state for pseudo-login, including the Id
-      const loginData = {
-        id: registeredCustomer.id, // Store the customer ID
-        email: registeredCustomer.email,
-        password: formData.password,
+      const registerData: StoredUserData = {
+        email: formData.email,
         userType: UserType.CUSTOMER,
+        customerId: registeredCustomer.customerId,
       };
 
       // Set the auth user in the state
-      setAuthUser(loginData);
+      setAuthUser(registerData);
 
       // Refresh to update the router
       window.location.href = GeneralRouteNames.BASE;

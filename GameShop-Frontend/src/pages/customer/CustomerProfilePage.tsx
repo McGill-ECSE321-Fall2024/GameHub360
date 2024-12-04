@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import AccountInfo from "../../components/AccountInfo";
-import PaymentCards from "../../components/PaymentCards";
+import React, { useEffect, useState } from 'react';
+import AccountInfo from '../../components/AccountInfo';
+import PaymentCards from '../../components/PaymentCards';
 
 import {
   getCustomerProfile,
@@ -10,9 +10,12 @@ import {
   getCustomerPaymentCards,
   updatePaymentCard,
   createPaymentCard, // Import createPaymentCard
-} from "../../api/customerService";
-import { PaymentCard, PaymentDetailsRequest } from "../../model/customer/paymentCardInterfaces";
-import { getAuthUser } from "../../state/authState";
+} from '../../api/customerService';
+import {
+  PaymentCard,
+  PaymentDetailsRequest,
+} from '../../model/customer/paymentCardInterfaces';
+import { getAuthUser } from '../../state/authState';
 
 const CustomerProfilePage: React.FC = () => {
   const [customerProfile, setCustomerProfile] = useState<{
@@ -31,28 +34,30 @@ const CustomerProfilePage: React.FC = () => {
     const fetchData = async () => {
       try {
         const authUser = getAuthUser();
-        if (!authUser || !authUser.id) {
-          console.error("No authenticated user found or user ID is missing.");
+        if (!authUser || !authUser.customerId) {
+          console.error('No authenticated user found or user ID is missing.');
           return;
         }
 
         // Fetch customer profile
-        const profile = await getCustomerProfile(authUser.id);
+        const profile = await getCustomerProfile(authUser.customerId);
         setCustomerProfile({
           customerId: profile.customerId,
           email: profile.email,
-          name: profile.name || "",
-          phoneNumber: profile.phoneNumber || "",
+          name: profile.name || '',
+          phoneNumber: profile.phoneNumber || '',
         });
         setProfileLoading(false);
 
         // Fetch payment cards
-        const paymentCardData = await getCustomerPaymentCards(authUser.id);
+        const paymentCardData = await getCustomerPaymentCards(
+          authUser.customerId
+        );
         setPaymentCards(paymentCardData.paymentCards);
         console.log(paymentCardData);
         setCardLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
         setProfileLoading(false);
         setCardLoading(false);
       }
@@ -68,7 +73,7 @@ const CustomerProfilePage: React.FC = () => {
     password?: string;
   }) => {
     if (!customerProfile) {
-      console.error("Customer profile is not loaded.");
+      console.error('Customer profile is not loaded.');
       return;
     }
 
@@ -86,11 +91,11 @@ const CustomerProfilePage: React.FC = () => {
       setCustomerProfile({
         customerId: updatedProfile.customerId,
         email: updatedProfile.email,
-        name: updatedProfile.name || "",
-        phoneNumber: updatedProfile.phoneNumber || "",
+        name: updatedProfile.name || '',
+        phoneNumber: updatedProfile.phoneNumber || '',
       });
     } catch (error) {
-      console.error("Error updating customer profile:", error);
+      console.error('Error updating customer profile:', error);
       throw error;
     }
   };
@@ -98,40 +103,47 @@ const CustomerProfilePage: React.FC = () => {
   // Handle card details update
   const handleUpdateCard = async (cardId: number, updatedCard: PaymentCard) => {
     if (!customerProfile) {
-      console.error("Customer profile is not loaded.");
+      console.error('Customer profile is not loaded.');
       return;
     }
 
     try {
-      const updated = await updatePaymentCard(customerProfile.customerId, cardId, {
-        cardName: updatedCard.cardName,
-        cardNumber: updatedCard.cardNumber,
-        postalCode: updatedCard.postalCode,
-        expMonth: updatedCard.expMonth,
-        expYear: updatedCard.expYear,
-      });
+      const updated = await updatePaymentCard(
+        customerProfile.customerId,
+        cardId,
+        {
+          cardName: updatedCard.cardName,
+          cardNumber: updatedCard.cardNumber,
+          postalCode: updatedCard.postalCode,
+          expMonth: updatedCard.expMonth,
+          expYear: updatedCard.expYear,
+        }
+      );
       setPaymentCards((prevCards) =>
         prevCards.map((card) =>
           card.paymentDetailsId === cardId ? { ...card, ...updated } : card
         )
       );
     } catch (error) {
-      console.error("Error updating payment card:", error);
+      console.error('Error updating payment card:', error);
     }
   };
 
   // Handle adding a new card
   const handleAddCard = async (newCard: PaymentDetailsRequest) => {
     if (!customerProfile) {
-      console.error("Customer profile is not loaded.");
+      console.error('Customer profile is not loaded.');
       return;
     }
 
     try {
-      const addedCard = await createPaymentCard(customerProfile.customerId, newCard);
+      const addedCard = await createPaymentCard(
+        customerProfile.customerId,
+        newCard
+      );
       setPaymentCards((prevCards) => [...prevCards, addedCard]); // Add the new card to the list
     } catch (error) {
-      console.error("Error adding new payment card:", error);
+      console.error('Error adding new payment card:', error);
     }
   };
 

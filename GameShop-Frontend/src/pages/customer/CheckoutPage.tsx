@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import PaymentCards from "../../components/PaymentCards";
-import { Button } from "../../components/ui/Button";
-import Modal from "../../components/ui/Modal";
-import { createPaymentCard, getCustomerPaymentCards, createCustomerOrder } from "../../api/customerService";
-import { PaymentCard, PaymentDetailsRequest } from "../../model/customer/paymentCardInterfaces";
-import { CustomerOrderRequest } from "../../model/customer/customerOrderInterfaces";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import PaymentCards from '../../components/PaymentCards';
+import { Button } from '../../components/ui/Button';
+import Modal from '../../components/ui/Modal';
+import {
+  createPaymentCard,
+  getCustomerPaymentCards,
+  createCustomerOrder,
+} from '../../api/customerService';
+import {
+  PaymentCard,
+  PaymentDetailsRequest,
+} from '../../model/customer/paymentCardInterfaces';
+import { CustomerOrderRequest } from '../../model/customer/customerOrderInterfaces';
 
 const CheckoutPage: React.FC = () => {
   const [savedCards, setSavedCards] = useState<PaymentCard[]>([]);
@@ -17,27 +24,33 @@ const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
 
   // Fetch customer and cart data from local storage
-  const customerData = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
-  const cartData = JSON.parse(localStorage.getItem("cart") || "{}");
+  const customerData = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+  const cartData = JSON.parse(localStorage.getItem('cart') || '{}');
 
   useEffect(() => {
     // Fetch saved cards from backend
     const fetchCards = async () => {
-      const cards = await getCustomerPaymentCards(customerData.id);
+      const cards = await getCustomerPaymentCards(customerData.customerId);
       setSavedCards(cards.paymentCards);
     };
     fetchCards();
-  }, [customerData.id]);
+  }, [customerData.customerId]);
 
   const handlePlaceOrder = async () => {
     if (!selectedCardId && !newCard) {
-      alert("Please select or add a payment method.");
+      alert('Please select or add a payment method.');
       return;
     }
-  
+
     // Ensure cart and customer data exist and are valid
-    if (!customerData.id || !cartData.items || cartData.items.length === 0) {
-      alert("No valid customer or cart data found. Please check and try again.");
+    if (
+      !customerData.customerId ||
+      !cartData.items ||
+      cartData.items.length === 0
+    ) {
+      alert(
+        'No valid customer or cart data found. Please check and try again.'
+      );
       return;
     }
 
@@ -46,44 +59,46 @@ const CheckoutPage: React.FC = () => {
         Array(item.quantity).fill(item.gameId)
     );
 
-    console.log("Ordered Game Ids: ", orderedGameIds);
-  
+    console.log('Ordered Game Ids: ', orderedGameIds);
+
     const orderRequest: CustomerOrderRequest = {
       orderedGameIds,
       paymentInformationId: selectedCardId!, // Selected card ID
-      customerId: customerData.id, // Logged-in customer ID
+      customerId: customerData.customerId, // Logged-in customer ID
     };
 
     try {
       await createCustomerOrder(orderRequest);
       setShowModal(true); // Show confirmation popup
     } catch (error) {
-      console.error("Error placing order:", error);
-      alert("Failed to place the order. Please try again.");
+      console.error('Error placing order:', error);
+      alert('Failed to place the order. Please try again.');
     }
   };
-  
+
   const handleConfirm = () => {
     setShowModal(false);
-    localStorage.removeItem("cart"); // Clear the cart
-    navigate("/orders"); // Redirect to orders page
+    localStorage.removeItem('cart'); // Clear the cart
+    navigate('/orders'); // Redirect to orders page
   };
 
   const handleAddNewCard = async (card: PaymentDetailsRequest) => {
     try {
       // Save card to backend
-      const savedCard = await createPaymentCard(customerData.id, card); // API call to save card
-  
+      const savedCard = await createPaymentCard(customerData.customerId, card); // API call to save card
+
       // Re-fetch updated list of cards
-      const updatedCards = await getCustomerPaymentCards(customerData.id);
+      const updatedCards = await getCustomerPaymentCards(
+        customerData.customerId
+      );
       setSavedCards(updatedCards.paymentCards);
-  
+
       setAddingNewCard(false); // Close the "Add New Card" form
     } catch (error) {
-      console.error("Error adding new card:", error);
-      alert("Failed to save the card. Please try again.");
+      console.error('Error adding new card:', error);
+      alert('Failed to save the card. Please try again.');
     }
-  };  
+  };
 
   return (
     <div className="p-6">
@@ -94,10 +109,15 @@ const CheckoutPage: React.FC = () => {
         {cartData.items?.length > 0 ? (
           <ul className="mb-4">
             {cartData.items.map((item: any) => (
-              <li key={item.gameId} className="flex justify-between border-b py-2">
+              <li
+                key={item.gameId}
+                className="flex justify-between border-b py-2"
+              >
                 <div>
                   <p className="font-medium">{item.name}</p>
-                  <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
+                  <p className="text-sm text-gray-500">
+                    Quantity: {item.quantity}
+                  </p>
                 </div>
                 <p className="text-gray-700">${item.price.toFixed(2)}</p>
               </li>
@@ -106,7 +126,9 @@ const CheckoutPage: React.FC = () => {
         ) : (
           <p>Your cart is empty.</p>
         )}
-        <p className="font-bold text-right">Total: ${cartData.total.toFixed(2)}</p>
+        <p className="font-bold text-right">
+          Total: ${cartData.total.toFixed(2)}
+        </p>
       </div>
 
       <div className="mb-6">
@@ -118,13 +140,16 @@ const CheckoutPage: React.FC = () => {
             </label>
             <select
               id="saved-cards"
-              value={selectedCardId || ""}
+              value={selectedCardId || ''}
               onChange={(e) => setSelectedCardId(Number(e.target.value))}
               className="border border-gray-300 p-2 rounded w-full"
             >
               <option value="">-- Select a Card --</option>
               {savedCards.map((card) => (
-                <option key={card.paymentDetailsId} value={card.paymentDetailsId}>
+                <option
+                  key={card.paymentDetailsId}
+                  value={card.paymentDetailsId}
+                >
                   **** **** **** {card.cardNumber.slice(-4)}
                 </option>
               ))}
@@ -141,7 +166,7 @@ const CheckoutPage: React.FC = () => {
           onClick={() => setAddingNewCard((prev) => !prev)}
           className="mb-4"
         >
-          {addingNewCard ? "Cancel Adding New Card" : "Add a New Card"}
+          {addingNewCard ? 'Cancel Adding New Card' : 'Add a New Card'}
         </Button>
         {addingNewCard && (
           <PaymentCards
@@ -155,7 +180,7 @@ const CheckoutPage: React.FC = () => {
       <div className="flex justify-between gap-4 mt-6">
         <Button
           variant="outline"
-          onClick={() => navigate("/cart")} // Navigate back to cart
+          onClick={() => navigate('/cart')} // Navigate back to cart
           className="mt-4"
         >
           Go Back to Cart

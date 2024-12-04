@@ -56,7 +56,7 @@ const DashboardOrderTable = () => {
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      Number of Games
+                      Ordered Game IDs
                     </th>
                     <th
                       scope="col"

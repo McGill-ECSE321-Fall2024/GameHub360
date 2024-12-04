@@ -6,6 +6,7 @@ import { AxiosError } from 'axios';
 import { login } from '../../api/authService';
 import { setAuthUser } from '../../state/authState';
 import { GeneralRouteNames } from '../../model/routeNames/GeneralRouteNames';
+import { StoredUserData } from '../../model/UserData';
 
 const LoginPage = () => {
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -48,9 +49,18 @@ const LoginPage = () => {
       const responseData = await login(formData);
 
       // Update formData with the ID from response
-      const updatedUser: LoginUser = {
-        ...formData,
-        id: responseData.customerId ?? null, // Set the ID from the server response
+      const updatedUser: StoredUserData = {
+        email: formData.email,
+        userType: formData.userType,
+        customerId:
+          formData.userType === UserType.CUSTOMER
+            ? responseData.customerId
+            : undefined,
+        staffId:
+          formData.userType === UserType.EMPLOYEE ||
+          formData.userType === UserType.MANAGER
+            ? responseData.staffId
+            : undefined,
       };
 
       // Set the auth user in the state
