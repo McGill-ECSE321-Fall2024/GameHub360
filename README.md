@@ -145,7 +145,7 @@ Upon the startup of the backend, a default manager account is automatically crea
 
 - [Wiki Home Page](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki)
 - [Project Report D3](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Project-Report-D3)
-
+- [Routing Schema](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Routing-Schema)
 ### Effort Table (D3)
 
 | Team Member           | Time Spent (h) | Responsibilities                                                                                                  |
