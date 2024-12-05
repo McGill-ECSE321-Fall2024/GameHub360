@@ -15,6 +15,9 @@ import PromotionsPage from '../pages/manager/ManagerPromotionsPage';
 import CreatePromotionPage from '../pages/manager/ManagerCreatePromotionPage';
 import ReviewsPage from '../pages/manager/ManagerReviewsPage';
 import ReviewDetailsPage from '../pages/manager/ManagerReviewDetailsPage';
+import PromotedGamesPage from "../pages/manager/ManagerPromotedGames";
+
+
 
 const ManagerRouter = () => {
   return (
@@ -32,6 +35,9 @@ const ManagerRouter = () => {
           <Route path={ManagerRouteNames.CREATE_PROMOTION} element={<CreatePromotionPage />} />
           <Route path={ManagerRouteNames.REVIEWS} element={<ReviewsPage />} />
           <Route path={`${ManagerRouteNames.REVIEW_DETAILS}/:id`} element={<ReviewDetailsPage />} />
+        <Route path={ManagerRouteNames.PROMOTED_GAMES} element={<PromotedGamesPage />} />
+        <Route path="/promotions/create" element={<CreatePromotionPage />} />
+
 
         {/* Redirect base route to browse */}
         <Route

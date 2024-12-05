@@ -15,4 +15,5 @@ export enum ManagerRouteNames {
   CATEGORIES = '/manager/categories',
   CREATE_CATEGORY = '/manager/categories/create',
   CATEGORY_DETAIL = '/manager/categories/:id',
+  PROMOTED_GAMES = 'promotions/:id/items'
 }

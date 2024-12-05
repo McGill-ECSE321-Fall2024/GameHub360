@@ -45,7 +45,7 @@ const EmployeesPage: React.FC = () => {
     const handleFormSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch("http://localhost:8080/employees", {
+            const response = await fetch("http://localhost:8080/manager/employees", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

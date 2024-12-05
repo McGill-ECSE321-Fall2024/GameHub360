@@ -1,6 +1,8 @@
 package ca.mcgill.ecse321.GameShop.service;
 
 import ca.mcgill.ecse321.GameShop.dto.PromotionRequestDto;
+import ca.mcgill.ecse321.GameShop.dto.GameListDto;
+import ca.mcgill.ecse321.GameShop.dto.GameResponseDto;
 import ca.mcgill.ecse321.GameShop.exception.GameShopException;
 import ca.mcgill.ecse321.GameShop.model.Promotion;
 import ca.mcgill.ecse321.GameShop.model.StoreInformation;
@@ -266,6 +268,25 @@ public class PromotionService {
     }
 
     /**
+     * Retrieves a promotion by ID.
+     *
+     * @param promotionId The ID of the promotion to retrieve.
+     * @return the Promotion.
+     * @throws GameShopException if the promotion is not found.
+     */
+    @Transactional
+    public Promotion getPromotionById(Integer promotionId) {
+        // Find employee by ID
+        Promotion promotion = promotionRepository.findPromotionByPromotionId(promotionId);
+
+        // Check if employee exists
+        if (promotion == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Promotion not found.");
+        }
+        return promotion;
+    }
+
+    /**
      * Updates the promoted categories in a promotion.
      * 
      * @param promotion   the promotion to update.
@@ -377,5 +398,28 @@ public class PromotionService {
         if (discountPercentage > 100.0) {
             throw new GameShopException(HttpStatus.BAD_REQUEST, "Discount percentage cannot exceed 100%.");
         }
+    }
+
+    /**
+     * Retrieves promoted games by promotion.
+     *
+     * @param promotionId The id of the promotion.
+     * @return A list of promoted games.
+     */
+    @Transactional
+    public GameListDto getPromotedGames(Integer promotionId) {
+        // Fetch the promotion by ID
+        Promotion promotion = promotionRepository.findPromotionByPromotionId(promotionId);
+        if (promotion == null) {
+            throw new GameShopException(HttpStatus.NOT_FOUND, "Promotion with ID " + promotionId + " not found.");
+        }
+
+        // Convert associated games to GameResponseDto
+        List<GameResponseDto> gameDtos = promotion.getPromotedGames().stream()
+                .map(GameResponseDto::new)
+                .collect(Collectors.toList());
+
+        // Return the games wrapped in GameListDto
+        return new GameListDto(gameDtos);
     }
 }

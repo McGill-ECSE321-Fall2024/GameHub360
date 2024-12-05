@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.GameShop.controller;
 import ca.mcgill.ecse321.GameShop.dto.PromotionListDto;
 import ca.mcgill.ecse321.GameShop.dto.PromotionRequestDto;
 import ca.mcgill.ecse321.GameShop.dto.PromotionResponseDto;
+import ca.mcgill.ecse321.GameShop.dto.GameListDto;
 import ca.mcgill.ecse321.GameShop.model.Promotion;
 import ca.mcgill.ecse321.GameShop.service.PromotionService;
 import jakarta.validation.Valid;
@@ -50,7 +51,7 @@ public class PromotionController {
      * @param promotionRequestDto The details of the new promotion.
      * @return The created promotion details.
      */
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<PromotionResponseDto> createPromotion(
             @Valid @RequestBody PromotionRequestDto promotionRequestDto) {
         Promotion promotion = promotionService.createPromotion(promotionRequestDto);
@@ -125,5 +126,17 @@ public class PromotionController {
             promotionDtos.add(new PromotionResponseDto(promotion));
         }
         return new PromotionListDto(promotionDtos);
+    }
+
+    /**
+     * Endpoint to get promoted games by promotion.
+     *
+     * @param promotionId The id of the promotion.
+     * @return A list of promoted games.
+     */
+    @GetMapping("/{promotionId}/games")
+    public ResponseEntity<GameListDto> getPromotedGames(@PathVariable Integer promotionId) {
+        GameListDto games = promotionService.getPromotedGames(promotionId);
+        return ResponseEntity.ok(games);
     }
 }
