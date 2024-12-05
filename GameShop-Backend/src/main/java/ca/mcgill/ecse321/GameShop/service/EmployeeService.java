@@ -173,4 +173,14 @@ public class EmployeeService {
         }
         return employee;
     }
+
+    /**
+     * Retrieves all employee accounts.
+     * 
+     * @return a list of all EmployeeAccounts.
+     */
+    @Transactional
+    public Iterable<EmployeeAccount> getAllEmployees() {
+        return employeeAccountRepository.findAll();
+    }
 }

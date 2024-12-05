@@ -138,4 +138,18 @@ public class EmployeeController {
         EmployeeAccount employee = employeeService.getEmployeeById(employeeId);
         return new EmployeeResponseDto(employee);
     }
+
+    /**
+     * Endpoint to retrieve all employees.
+     * 
+     * @return A list of all employees.
+     */
+    @GetMapping
+    public List<EmployeeResponseDto> getAllEmployees() {
+        List<EmployeeResponseDto> employeesDto = new ArrayList<EmployeeResponseDto>();
+        for (EmployeeAccount employee : employeeService.getAllEmployees()) {
+            employeesDto.add(new EmployeeResponseDto(employee));
+        }
+        return employeesDto;
+    }
 }
