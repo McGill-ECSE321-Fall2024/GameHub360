@@ -31,7 +31,6 @@ public class CustomerIntegrationTests {
 
         @Autowired
         private TestRestTemplate client;
-
         @Autowired
         private CustomerAccountRepository customerAccountRepository;
         @Autowired

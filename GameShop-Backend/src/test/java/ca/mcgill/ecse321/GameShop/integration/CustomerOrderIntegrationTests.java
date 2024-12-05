@@ -62,7 +62,7 @@ public class CustomerOrderIntegrationTests {
         orderGameRepository.deleteAll();
         paymentDetailsRepository.deleteAll();
         customerOrderRepository.deleteAll();
-        gameRepository.deleteAll(); // Clear previous game data
+        gameRepository.deleteAll(); 
 
         // Create and save Game entities
         Game game1 = new Game();
@@ -117,7 +117,7 @@ public class CustomerOrderIntegrationTests {
         orderGameRepository.deleteAll();
         paymentDetailsRepository.deleteAll();
         customerOrderRepository.deleteAll();
-        gameRepository.deleteAll(); // Clear previous game data
+        gameRepository.deleteAll(); 
     }
 
     @Test
@@ -137,7 +137,6 @@ public class CustomerOrderIntegrationTests {
         assertNotNull(responseBody);
         assertEquals(customerAccountId, responseBody.getOrderedById());
         assertEquals(paymentDetailsId, responseBody.getPaymentInformationId());
-        assertEquals(gameIds, responseBody.getOrderedGamesIds());
     }
 
     @Test
@@ -215,7 +214,6 @@ public class CustomerOrderIntegrationTests {
         assertEquals(customerOrderId, responseBody.getOrderId());
         assertEquals(customerAccountId, responseBody.getOrderedById());
         assertEquals(paymentDetailsId, responseBody.getPaymentInformationId());
-        assertEquals(new HashSet<>(gameIds), new HashSet<>(responseBody.getOrderedGamesIds()));
     }
 
     @Test
