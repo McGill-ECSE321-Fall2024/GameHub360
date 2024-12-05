@@ -17,6 +17,7 @@ import GameDetailPage from '../pages/manager/ManagerGameDetailPage';
 import CreateGameCategoryPage from '../pages/manager/ManagerCreateCategoryPage';
 import GameCategoryDetailPage from '../pages/manager/ManagerCategoryDetailPage';
 import GameDetailsPage from '../pages/GameDetailsPage';
+import ManagerEmployeesPage from '../pages/manager/ManagerEmployeesPage';
 
 
 const ManagerRouter = () => {
@@ -38,6 +39,9 @@ const ManagerRouter = () => {
         <Route path={ManagerRouteNames.CREATE_GAME} element={<CreateGamePage />} />
         <Route path={ManagerRouteNames.CREATE_CATEGORY} element={<CreateGameCategoryPage />} />
         <Route path={ManagerRouteNames.CATEGORY_DETAIL} element={<GameCategoryDetailPage />} />
+        <Route path={ManagerRouteNames.EMPLOYEES} element={<ManagerEmployeesPage />} />
+        
+
 
 
         {/* Redirect base route to browse */}

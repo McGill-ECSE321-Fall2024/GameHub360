@@ -48,6 +48,7 @@ const Navbar = ({ userType }: NavbarProps) => {
           { name: 'Game Requests', to: ManagerRouteNames.GAME_REQUESTS },
           { name: 'Games', to: ManagerRouteNames.GAMES },
           { name: 'Categories', to: ManagerRouteNames.CATEGORIES },
+          { name: 'Employees', to: ManagerRouteNames.EMPLOYEES },
           // Add more links as needed (these are just examples)
         ];
       default:
