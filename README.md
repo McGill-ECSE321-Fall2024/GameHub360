@@ -7,8 +7,9 @@ Our Game Shop Management System offers a seamless way to manage inventory, custo
 
 1. [Our Team](#our-team)
 2. [Getting Started](#getting-started)
-3. [Deliverable 2](#deliverable-2)
-4. [Deliverable 1](#deliverable-1)
+3. [Deliverable 3](#deliverable-3)
+4. [Deliverable 2](#deliverable-2)
+5. [Deliverable 1](#deliverable-1)
 
 ## Our Team
 
@@ -138,6 +139,23 @@ Upon the startup of the backend, a default manager account is automatically crea
 
 > ⚠️ **Important**: It is strongly recommended to change the default credentials after the first login to ensure security.
 
+## Deliverable 3
+
+### Links
+
+- [Wiki Home Page](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki)
+- [Project Report D3](https://github.com/McGill-ECSE321-Fall2024/project-group-9/wiki/Project-Report-D3)
+
+### Effort Table (D3)
+
+| Team Member           | Time Spent (h) | Responsibilities                                                                                                  |
+| --------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Ismail Sentissi       | 40             | Employee, Review and Promotion management routes          |
+| Ahmed Mossa           | 50             | Manager Account, Game, Game Request and Category management routes & start-up script for Manager account creation |
+| Nicolas Bolouri       | 45             | Landing page, Manager dashboard routes, public routing setup, 404 page & frontend directory setup |
+| Hamza Alfarrash       | 45             | Employee Account, Game Request and Category assignment routes & project report                              |
+| Amgad Elgamal         | 45             | 	Public browsing routes & Wishlist/Cart management                                 |
+| Mohamed-Amine Benzaid | 45             | Customer Account, Checkout and Order management routes                                        |
 
 ## Deliverable 2
 
