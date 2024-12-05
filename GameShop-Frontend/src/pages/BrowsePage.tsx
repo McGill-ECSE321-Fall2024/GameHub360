@@ -39,6 +39,7 @@ const BrowsePage = () => {
   });
   const [games, setGames] = useState<Game[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [filteredGames, setFilteredGames] = useState<Game[]>([]);
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -85,6 +86,19 @@ const BrowsePage = () => {
     };
     fetchGames();
   }, [filters, setSearchParams]);
+
+  const filterGames = (games: Game[]) => {
+    const normalizedSearchTerm = filters.name?.toLowerCase().trim() || '';
+
+    return games.filter(game => {
+      const normalizedGameName = game.name.toLowerCase().trim();
+      return normalizedGameName.includes(normalizedSearchTerm);
+    });
+  };
+
+  useEffect(() => {
+    setFilteredGames(filterGames(games));
+  }, [games, filters.name]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -191,7 +205,7 @@ const BrowsePage = () => {
       </div>
 
       {/* Games Grid - Shows filtered games or empty state */}
-      {games.length === 0 ? (
+      {filteredGames.length === 0 ? (
         <div className="text-center py-8">
           <h3 className="text-xl text-gray-600">No games found matching your filters</h3>
           <button
@@ -203,7 +217,7 @@ const BrowsePage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {games
+          {filteredGames
             .filter(game => {
               if (!filters.categoryType) return true;
               return game.categoryIds?.some(categoryId => {
