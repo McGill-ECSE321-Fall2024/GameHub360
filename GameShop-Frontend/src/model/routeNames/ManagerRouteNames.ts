@@ -9,6 +9,6 @@ export enum ManagerRouteNames {
   CREATE_CATEGORY = '/manager/categories/create',
   CATEGORY_DETAIL = '/manager/categories/:id',
   EMPLOYEES = '/manager/employees',
-  EMPLOYEE_DETAILS = 'manager/employees/:id',
-  EMPLOYEE_CREATE = 'manager/employees/create',
+  EMPLOYEE_DETAILS = '/manager/employees/:id',
+  EMPLOYEE_CREATE = '/manager/employees/create',
 }

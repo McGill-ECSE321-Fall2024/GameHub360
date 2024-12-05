@@ -70,8 +70,41 @@ export async function updateEmployeeProfile(
   }
 }
 
+/**
+ * Retrieves all Employees.
+ * @returns A promise that resolves to an array of Employee profiles.
+ */
 export const getAllEmployees = async () => {
-  const response = await apiService.get('/employees'); // Ensure the backend provides this endpoint
+  const response = await apiService.get('/employees');
   return response.data;
 };
+
+
+/**
+ * Creates a new Employee account.
+ * @param employeeData The data for the new Employee account.
+ * @returns A promise that resolves to the created Employee's profile.
+ */
+export async function createEmployee(employeeData: {
+  email: string;
+  password: string;
+  name?: string;
+  phoneNumber?: string;
+  isActive?: boolean;
+}) {
+  try {
+    const response = await apiService.post('/employees', employeeData);
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 400) {
+        throw new Error('Invalid input data. Please check the fields.');
+      }
+      if (error.response?.status === 500) {
+        throw new Error('Internal server error. Please try again later.');
+      }
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+}
 
